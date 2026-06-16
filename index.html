@@ -343,14 +343,13 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 .minibar-inner{height:5px;border-radius:4px}
 .period-bar{background:#fff;border-bottom:.5px solid #E2E4E9;padding:8px 1.25rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 /* dashboard tab visibility fix */
-#dashView .page { opacity: 1 !important; animation: none !important; }
+#dashView #dashView .page { opacity:1 !important; animation:none !important; }
 #dashView .page.active { display: block !important; opacity: 1 !important; }
 
 
 
 /* SharePoint safe - no animations, no opacity issues */
-#dashView .dpage { opacity:1 !important; animation:none !important; }
-#dashView .dpage.active { display:block !important; opacity:1 !important; }
+#dashView /* dashboard tab pages — hidden by default, shown when .active */
 
 </style>
 </head><body>
@@ -1884,7 +1883,7 @@ window.addEventListener('load', async function(){
   var tabMap = ['team','productivity','sm','customer'];
   Array.from(document.querySelectorAll('#dashTabs button')).forEach(function(btn, i){
     btn.addEventListener('click', function(){
-      Array.from(document.querySelectorAll('.dpage')).forEach(function(p){ p.classList.remove('active'); });
+      Array.from(document.querySelectorAll('#dashView .page')).forEach(function(p){ p.classList.remove('active'); });
       Array.from(document.querySelectorAll('#dashTabs button')).forEach(function(b){
         b.style.background='transparent'; b.style.color='rgba(255,255,255,.65)';
       });
