@@ -1451,31 +1451,6 @@
           "aged": 0
         }
       ]
-    },
-    {
-      "smName": "Direct Test",
-      "smEmail": "a@b.com",
-      "smVertical": "Enterprise",
-      "month": "July",
-      "year": "2026",
-      "workDays": 20,
-      "cfPct": 82,
-      "customers": [
-        {
-          "name": "Test Co",
-          "healthScore": 80,
-          "nps": 100,
-          "npsRaw": 9,
-          "sentiment": 8,
-          "sla": 98,
-          "csipPct": 85,
-          "retention": 0.95,
-          "p12Incidents": 0,
-          "openFaults": 0,
-          "csipQuality": 85,
-          "serviceReviews": 1
-        }
-      ]
     }
   ]
 }
