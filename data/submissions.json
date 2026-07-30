@@ -1,3 +1,30 @@
 {
-  "submissions": []
+  "submissions": [
+    {
+      "smName": "Integration Test",
+      "smEmail": "test@test.com",
+      "smVertical": "Enterprise",
+      "month": "July",
+      "year": "2026",
+      "workDays": 20,
+      "cfPct": 85,
+      "cfTotal": 136,
+      "customers": [
+        {
+          "name": "Test Customer",
+          "healthScore": 82,
+          "nps": 100,
+          "npsRaw": 9,
+          "sentiment": 8,
+          "sla": 98,
+          "csipPct": 85,
+          "retention": 0.95,
+          "p12Incidents": 1,
+          "openFaults": 0,
+          "csipQuality": 85,
+          "serviceReviews": 1
+        }
+      ]
+    }
+  ]
 }
