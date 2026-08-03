@@ -1,0 +1,24 @@
+{
+  "smName": "Thomas Foster",
+  "smEmail": "t@t.com",
+  "smVertical": "Enterprise",
+  "month": "July",
+  "year": "2026",
+  "cfPct": 83,
+  "customers": [
+    {
+      "name": "Test Co",
+      "healthScore": 80,
+      "nps": 100,
+      "npsRaw": 9,
+      "sentiment": 8,
+      "sla": 98,
+      "csipPct": 85,
+      "retention": 0.95,
+      "p12Incidents": 0,
+      "openFaults": 0,
+      "csipQuality": 85,
+      "serviceReviews": 1
+    }
+  ]
+}
