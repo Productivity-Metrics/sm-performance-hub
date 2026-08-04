@@ -14,13 +14,13 @@
   "availableHrs": 120,
   "utilisation": 86,
   "cfWeeks": [
-    7.4,
-    0,
     37.5,
+    37.5,
+    0,
     37.5
   ],
-  "cfTotal": 82.4,
-  "cfPct": 68.7,
+  "cfTotal": 112.5,
+  "cfPct": 93.8,
   "siteVisits": 0,
   "serviceReviews": 8,
   "leads": 0,
@@ -605,5 +605,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-08-04T14:17:43.814Z"
+  "submittedAt": "2026-08-04T14:19:35.486Z"
 }
