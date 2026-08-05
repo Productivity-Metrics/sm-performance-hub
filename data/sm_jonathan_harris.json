@@ -17,12 +17,13 @@
     32.5,
     36.5,
     36.5,
-    78.5
+    78.5,
+    0
   ],
   "cfTotal": 184,
   "cfPct": 106.7,
   "siteVisits": 2,
-  "serviceReviews": 5,
+  "serviceReviews": 0,
   "leads": 0,
   "qbrs": 0,
   "directedAccts": 0,
@@ -39,7 +40,6 @@
   "totalAgedDebt": 0,
   "agedDebtCleared": 0,
   "costToServe": 0,
-  "ctsTarget": 0,
   "billingCredits": 0,
   "serviceCreditsValue": 0,
   "serviceCreditsCount": 0,
@@ -73,8 +73,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 100,
       "sts": 795600,
       "recovered": 0,
@@ -88,7 +88,7 @@
       "name": "Wolseley",
       "type": "Governed",
       "renewal": "2026-12-01",
-      "retention": 100,
+      "retention": 1,
       "escalations": 0,
       "escCategories": [],
       "siteVisits": 1,
@@ -113,8 +113,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 100,
       "sts": 0,
       "recovered": 0,
@@ -125,5 +125,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-08-04T14:31:30.932Z"
+  "submittedAt": "2026-08-05T11:58:55.404Z"
 }
