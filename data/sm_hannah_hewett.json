@@ -5,7 +5,7 @@
   "smEmail": "hannah.hewett@virginmediao2.co.uk",
   "smVertical": "Enterprise",
   "teamLeader": "Gail Dwyer",
-  "serviceLead": "Ceri-Lynn Meek",
+  "serviceLead": "Ceri-Lyn Meek",
   "month": "July",
   "year": "2026",
   "workDays": 23,
@@ -14,14 +14,14 @@
   "availableHrs": 97.5,
   "utilisation": 90,
   "cfWeeks": [
-    37.5,
+    36,
+    36,
     0,
     0,
-    37.5,
-    39.5
+    36
   ],
-  "cfTotal": 114.5,
-  "cfPct": 117.4,
+  "cfTotal": 108,
+  "cfPct": 110.8,
   "siteVisits": 1,
   "serviceReviews": 0,
   "leads": 0,
@@ -131,5 +131,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-08-05T12:44:45.730Z"
+  "submittedAt": "2026-08-05T14:39:12.036Z"
 }
