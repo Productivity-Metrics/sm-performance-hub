@@ -602,19 +602,19 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
         <div class="dash-card-title">SM league table</div>
         <div style="overflow-x:auto">
           <table class="dash-table" style="min-width:780px">
-            <thead><tr id="leagueThead">
-              <th class="t-left" style="min-width:200px;white-space:nowrap;cursor:pointer" onclick="sortLeague('name')">Name <span id="lsort_name"></span></th>
-              <th style="cursor:pointer" onclick="sortLeague('accts')">Accts <span id="lsort_accts"></span></th>
-              <th style="background:#0F6E56;cursor:pointer" onclick="sortLeague('health')">Health <span id="lsort_health">▼</span></th>
-              <th style="background:#0F6E56;cursor:pointer" onclick="sortLeague('retention')">Retention <span id="lsort_retention"></span></th>
-              <th style="background:#185FA5;cursor:pointer" onclick="sortLeague('cfPct')">CF% <span id="lsort_cfPct"></span></th>
-              <th style="background:#534AB7;cursor:pointer" onclick="sortLeague('nps')">NPS Input <span id="lsort_nps"></span></th>
-              <th style="background:#1A2B4A;cursor:pointer" onclick="sortLeague('sla')">SLA% <span id="lsort_sla"></span></th>
-              <th style="background:#1A2B4A;cursor:pointer" onclick="sortLeague('csip')">CSIP% <span id="lsort_csip"></span></th>
-              <th style="background:#185FA5;cursor:pointer" onclick="sortLeague('visits')">Visits <span id="lsort_visits"></span></th>
-              <th style="background:#2D3F5C;cursor:pointer" onclick="sortLeague('esc')">Escals <span id="lsort_esc"></span></th>
-              <th style="background:#0F6E56;cursor:pointer" onclick="sortLeague('sts')">STS £ <span id="lsort_sts"></span></th>
-              <th style="background:#854F0B;cursor:pointer" onclick="sortLeague('prod')">Prod <span id="lsort_prod">"></span></th>
+            <thead><tr>
+              <th class="t-left" style="min-width:110px">Name</th>
+              <th>Accts</th>
+              <th style="background:#0F6E56">Health</th>
+              <th style="background:#0F6E56">Retention</th>
+              <th style="background:#185FA5">CF%</th>
+              <th style="background:#534AB7">NPS Input</th>
+              <th style="background:#1A2B4A">SLA%</th>
+              <th style="background:#1A2B4A">CSIP%</th>
+              <th style="background:#185FA5">Visits</th>
+              <th style="background:#2D3F5C">Escals</th>
+              <th style="background:#0F6E56">STS £</th>
+              <th style="background:#854F0B">Prod</th>
               <th></th>
             </tr></thead>
             <tbody id="leagueBody"></tbody>
@@ -716,35 +716,18 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
     </div>
 
     <div class="page" id="tab-customer">
-      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
         <input type="text" id="custSearch" placeholder="Search customer&hellip;" oninput="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;width:200px;background:#fff">
         <select id="custVertFilter" onchange="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff"><option value="">All verticals</option><option value="Enterprise">Enterprise</option><option value="Public Sector">Public Sector</option></select>
         <select id="custSMFilter" onchange="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff">
           <option value="">All SMs</option>
         </select>
-        <div style="position:relative;display:inline-block">
-          <button id="healthFilterBtn" onclick="toggleHealthDropdown(event)" type="button"
-            style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff;cursor:pointer;min-width:130px;text-align:left;display:flex;align-items:center;gap:4px">
-            <span id="healthFilterLabel">All health</span><span style="margin-left:auto">&#9660;</span>
-          </button>
-          <div id="healthFilterMenu" style="display:none;position:absolute;top:110%;left:0;z-index:200;background:#fff;border:.5px solid #E2E4E9;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 10px;min-width:170px">
-            <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:12px">
-              <input type="checkbox" id="hf_healthy" onchange="applyHealthFilter()" checked style="accent-color:#3B6D11"> Healthy
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:12px">
-              <input type="checkbox" id="hf_needs" onchange="applyHealthFilter()" checked style="accent-color:#854F0B"> Needs attention
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:12px">
-              <input type="checkbox" id="hf_risk" onchange="applyHealthFilter()" checked style="accent-color:#A32D2D"> At Risk
-            </label>
-            <hr style="border:none;border-top:.5px solid #E2E4E9;margin:6px 0">
-            <div style="display:flex;gap:6px">
-              <button onclick="setAllHealth(true)" type="button" style="font-size:11px;background:none;border:.5px solid #E2E4E9;border-radius:4px;cursor:pointer;color:#6B7280;padding:3px 8px">All</button>
-              <button onclick="setAllHealth(false)" type="button" style="font-size:11px;background:none;border:.5px solid #E2E4E9;border-radius:4px;cursor:pointer;color:#6B7280;padding:3px 8px">None</button>
-            </div>
-          </div>
-        </div>
-        <select id="custSort" onchange="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff"><option value="health_desc">Health: High → Low</option><option value="health_asc">Health: Low → High</option><option value="name_asc">Name: A → Z</option><option value="name_desc">Name: Z → A</option><option value="sm_asc">Service Manager: A → Z</option><option value="sentiment_asc">Sentiment: Low → High</option><option value="sla_asc">SLA: Low → High</option></select>
+        <select id="custHealthFilter" onchange="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff">
+          <option value="">All health</option>
+          <option value="Healthy">Healthy</option>
+          <option value="Needs attention">Needs attention</option>
+          <option value="At Risk">At Risk</option>
+        </select>
         <span id="custCount" style="font-size:12px;color:#6B7280;align-self:center"></span>
       </div>
       <div class="dash-card" style="padding:0">
@@ -793,28 +776,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
         </div>
       </div>
       <!-- Detail table -->
-      <div id="escDrillPanel" style="display:none;margin-bottom:16px">
-  <div class="dash-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <div class="dash-card-title" style="margin:0;color:#A32D2D">⚠️ <span id="escDrillTitle">Billing</span> escalations</div>
-      <button onclick="closeEscDrill()" type="button" style="background:none;border:.5px solid #E2E4E9;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;color:#6B7280">× Close</button>
-    </div>
-    <div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#1A2B4A;color:#fff">
-        <th style="padding:8px 10px;text-align:left;min-width:160px">Customer</th>
-        <th style="padding:8px 8px;text-align:left">Service Manager</th>
-        <th style="padding:8px 8px;text-align:center">Vertical</th>
-        <th style="padding:8px 8px;text-align:center">Health</th>
-        <th style="padding:8px 8px;text-align:center">Status</th>
-        <th style="padding:8px 8px;text-align:left">All Categories on this account</th>
-      </tr></thead>
-      <tbody id="escDrillBody"></tbody>
-    </table>
-    </div>
-  </div>
-</div>
-<div class="dash-card">
+      <div class="dash-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div class="dash-card-title" style="margin:0">Escalation detail by account</div>
           <div style="display:flex;gap:8px">
@@ -1176,11 +1138,6 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
-
-
-
-
-
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -1200,70 +1157,31 @@ var activePeriod = 'latest';
    STORAGE
 ===================================================================== */
 async function loadStore(){
-  // ── Phase 1: Show cached data instantly so dashboard isn't blank ──────
-  var cached = false;
+  var base='https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+GH_CONFIG.path;
   try{
-    var lc = localStorage.getItem(STORE_KEY);
-    if(lc){
-      submissions = JSON.parse(lc);
-      if(submissions.length){
-        cached = true;
-        var smNames = submissions.map(function(s){return (s.smName||'?').trim();}).sort();
-        setStatus('\u21bb Refreshing\u2026 (showing cached data)', 'warn');
-        refreshDash();
-      }
-    }
-  }catch(e){}
-
-  // ── Phase 2: Fetch file listing from GitHub API (one call) ─────────────
-  // Then use direct raw URLs for each file (fast, no auth needed)
-  var rawBase = 'https://raw.githubusercontent.com/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/main/'+GH_CONFIG.path+'/';
-  var apiBase  = 'https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+GH_CONFIG.path;
-  try{
-    // Get file listing (one API call to discover sm_*.json files)
-    var listResp = await fetch(apiBase, {
-      headers:{'Authorization':'token '+GH_CONFIG.token,'User-Agent':'SM-Hub'}
-    });
-    if(!listResp.ok) throw new Error('list '+listResp.status);
-    var files = await listResp.json();
-    var smFiles = Array.isArray(files)
-      ? files.filter(function(f){return f.name.match(/^sm_.+\.json$/);})
-      : [];
-
+    var r=await fetch(base,{headers:{'Authorization':'token '+GH_CONFIG.token,'User-Agent':'SM-Hub'}});
+    if(!r.ok) throw new Error('list failed '+r.status);
+    var files=await r.json();
+    var smFiles=Array.isArray(files)?files.filter(function(f){return f.name.match(/^sm_.+\.json$/);}) : [];
     if(!smFiles.length){
-      submissions = [];
-      setStatus('\u2601\ufe0f Connected \u00b7 No submissions yet \u2014 awaiting SM data','ok');
+      submissions=[];
+      setStatus('\u2601\ufe0f Connected \u00b7 No submissions yet','ok');
       try{localStorage.setItem(STORE_KEY,JSON.stringify(submissions));}catch(e){}
-      refreshDash();
       return;
     }
-
-    // Fetch all SM files in parallel using direct raw URLs (bypasses API rate limits)
-    var t = Date.now();
-    var results = await Promise.all(smFiles.map(function(f){
-      // Use raw URL for speed — no auth header needed, no rate limiting
-      return fetch(rawBase + f.name + '?t=' + t)
-        .then(function(r){ return r.ok ? r.json() : null; })
-        .catch(function(){ return null; });
+    var results=await Promise.all(smFiles.map(function(f){
+      return fetch(f.download_url+'?t='+Date.now())
+        .then(function(r){return r.ok?r.json():null;})
+        .catch(function(){return null;});
     }));
-
-    var fresh = results.filter(Boolean);
-    if(fresh.length){
-      submissions = fresh;
-      var smNames = submissions.map(function(s){return (s.smName||'?').trim();}).sort();
-      setStatus('\u2601\ufe0f Synced \u00b7 '+submissions.length+' SM'+(submissions.length!==1?'s':'')+': '+smNames.join(', '),'ok');
-      try{localStorage.setItem(STORE_KEY,JSON.stringify(submissions));}catch(e){}
-      refreshDash();
-    }
+    submissions=results.filter(Boolean);
+    var smNames=submissions.map(function(s){return (s.smName||'?').trim();}).sort();
+    setStatus('\u2601\ufe0f Synced \u00b7 '+submissions.length+' SM'+(submissions.length!==1?'s':'')+': '+smNames.join(', '),'ok');
+    try{localStorage.setItem(STORE_KEY,JSON.stringify(submissions));}catch(e){}
   }catch(e){
-    if(!cached){
-      setStatus('\u26a0\ufe0f Cloud unreachable \u2014 using local copy','warn');
-      try{var lc2=localStorage.getItem(STORE_KEY);if(lc2)submissions=JSON.parse(lc2);}catch(e2){}
-      if(!submissions.length) seedDemo();
-      refreshDash();
-    } else {
-      setStatus('\u26a0\ufe0f Could not refresh \u2014 showing cached data','warn');
-    }
+    setStatus('\u26a0\ufe0f Cloud unreachable \u2014 using local copy','warn');
+    try{var lc=localStorage.getItem(STORE_KEY);if(lc)submissions=JSON.parse(lc);}catch(e2){}
+    if(!submissions.length) seedDemo();
   }
 }
 async function saveStore(sub){
@@ -1548,21 +1466,13 @@ function renderMetrics(){
 
 function renderLeague(){
   var el=document.getElementById('leagueBody'); if(!el) return;
-  var sms=_agg.sms.slice().sort(function(a,b){
-    var av=leagueSortKey(a,_leagueSort.col), bv=leagueSortKey(b,_leagueSort.col);
-    return av<bv?_leagueSort.dir:av>bv?-_leagueSort.dir:0;
-  });
-  // Update sort indicators
-  ['name','accts','health','retention','cfPct','nps','sla','csip','visits','esc','sts','prod'].forEach(function(c){
-    var el=document.getElementById('lsort_'+c);
-    if(el) el.textContent=c===_leagueSort.col?(_leagueSort.dir===-1?'▼':'▲'):'';
-  });
+  var sms=_agg.sms.slice().sort(function(a,b){return b.health-a.health;});
   if(!sms.length){el.innerHTML='<tr><td colspan="12" style="text-align:center;padding:1rem;color:#6B7280">No data</td></tr>';return;}
   el.innerHTML=sms.map(function(sm){
     var pi=prodIdx(sm), pic=pi>=80?'#3B6D11':pi>=65?'#854F0B':'#A32D2D';
     var av='<div style="width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:'+(CBGS[sm.idx%8]||'#eee')+';color:'+(COLOURS[sm.idx%8]||'#333')+'">'+sm.name[0]+'</div>';
     return '<tr>'
-      +'<td class="t-left" style="white-space:nowrap;min-width:200px">'+av+' '+sm.name+'</td>'
+      +'<td class="t-left">'+av+' '+sm.name+'</td>'
       +'<td>'+sm.accts+'</td>'
       +'<td>'+mbar(sm.health,100,hCol(sm.health))+'</td>'
       +'<td style="color:'+(sm.retention<.9?'#A32D2D':'inherit')+'">'+(sm.retention*100).toFixed(1)+'%</td>'
@@ -1717,14 +1627,12 @@ function renderCustomers(){
   var custs=_agg.custs;
   var q=((document.getElementById('custSearch')||{}).value||'').toLowerCase();
   var sm=((document.getElementById('custSMFilter')||{}).value||'');
-  var hf=getHealthFilter();
+  var ht=((document.getElementById('custHealthFilter')||{}).value||'');
   var vt=((document.getElementById('custVertFilter')||{}).value||'');
-  var sortVal=((document.getElementById('custSort')||{}).value||'health_desc');
   var f=custs.filter(function(c){
     var hs=c.health>=75?'Healthy':c.health>=60?'Needs attention':'At Risk';
-    var hOk=(hs==='Healthy'&&hf.healthy)||(hs==='Needs attention'&&hf.needs)||(hs==='At Risk'&&hf.risk);
     return(!q||c.name.toLowerCase().includes(q)||c.sm.toLowerCase().includes(q))
-      &&(!sm||c.sm===sm)&&hOk&&(!vt||(c.vertical||'Enterprise')===vt);
+      &&(!sm||c.sm===sm)&&(!ht||hs===ht)&&(!vt||(c.vertical||'Enterprise')===vt);
   });
   var cnt=document.getElementById('custCount');
   if(cnt) cnt.textContent=f.length+' accounts';
@@ -1752,17 +1660,6 @@ function renderCustomers(){
     return '<td style="text-align:center;padding:6px 5px;font-size:12px;font-weight:600;color:'+col+'">'+display+'</td>';
   }
 
-  // Sort
-  f.sort(function(a,b){
-    if(sortVal==='health_desc') return b.health-a.health;
-    if(sortVal==='health_asc')  return a.health-b.health;
-    if(sortVal==='name_asc')    return a.name.localeCompare(b.name);
-    if(sortVal==='name_desc')   return b.name.localeCompare(a.name);
-    if(sortVal==='sm_asc')      return (a.sm||'').localeCompare(b.sm||'');
-    if(sortVal==='sentiment_asc') return (a.sentiment||0)-(b.sentiment||0);
-    if(sortVal==='sla_asc')     return (a.sla||0)-(b.sla||0);
-    return 0;
-  });
   var rows=[];
   f.slice(0,150).forEach(function(c,ci){
     var rid='dbr'+ci;
@@ -2509,7 +2406,7 @@ function renderEscalations(){
     catEl.innerHTML=allCats.filter(function(c){return catCount[c]>0;}).map(function(cat){
       var pct=Math.round(catCount[cat]/maxC*100);
       var col=catCount[cat]>0?'#A32D2D':'#E2E4E9';
-      return'<div onclick="drillEscCategory(\''+cat+'\')" style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:.5px solid #F0F0F0;cursor:pointer;border-radius:4px" onmouseover="this.style.background=\'#FEF2F2\'" onmouseout="this.style.background=\'\'">'
+      return'<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:.5px solid #F0F0F0">'
         +'<span style="min-width:160px;font-size:12px;color:#374151">'+cat+'</span>'
         +'<div style="flex:1;height:18px;background:#F3F4F6;border-radius:4px;overflow:hidden">'
         +'<div style="height:18px;width:'+pct+'%;background:'+col+';border-radius:4px;display:flex;align-items:center;padding-left:6px">'
@@ -2954,138 +2851,6 @@ function syncCustomerCount(){
   }
   updateCustBadge();
 }
-
-var _leagueSort = {col:'health', dir:-1};  // -1=desc, 1=asc
-
-function sortLeague(col){
-  if(_leagueSort.col===col){ _leagueSort.dir *= -1; }
-  else { _leagueSort.col=col; _leagueSort.dir = col==='name'?1:-1; }
-  renderLeague();
-}
-
-function leagueSortKey(sm, col){
-  if(col==='name')      return sm.name.toLowerCase();
-  if(col==='accts')     return sm.accts||0;
-  if(col==='health')    return sm.health||0;
-  if(col==='retention') return sm.retention||0;
-  if(col==='cfPct')     return sm.cfPct||0;
-  if(col==='nps')       return sm.nps||0;
-  if(col==='sla')       return sm.sla||0;
-  if(col==='csip')      return sm.csip||0;
-  if(col==='visits')    return sm.visits||0;
-  if(col==='esc')       return sm.esc||0;
-  if(col==='sts')       return sm.sts||0;
-  if(col==='prod')      return prodIdx(sm)||0;
-  return 0;
-}
-
-function toggleHealthDropdown(e){
-  if(e) e.stopPropagation();
-  var m=document.getElementById('healthFilterMenu');
-  if(m) m.style.display=m.style.display==='none'?'block':'none';
-}
-// Close dropdown when clicking outside
-document.addEventListener('click',function(e){
-  var btn=document.getElementById('healthFilterBtn');
-  var menu=document.getElementById('healthFilterMenu');
-  if(menu&&btn&&!btn.contains(e.target)&&!menu.contains(e.target)){
-    menu.style.display='none';
-  }
-});
-function setAllHealth(val){
-  ['hf_healthy','hf_needs','hf_risk'].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.checked=val;
-  });
-  applyHealthFilter();
-}
-function applyHealthFilter(){
-  renderCustomers();
-  // Update button label
-  var h=document.getElementById('hf_healthy')?.checked;
-  var n=document.getElementById('hf_needs')?.checked;
-  var r=document.getElementById('hf_risk')?.checked;
-  var all=h&&n&&r, none=!h&&!n&&!r;
-  var parts=[];
-  if(h) parts.push('Healthy'); if(n) parts.push('Needs attention'); if(r) parts.push('At Risk');
-  var lbl=document.getElementById('healthFilterLabel');
-  if(lbl) lbl.textContent=all?'All health':none?'None':parts.join(', ');
-}
-function getHealthFilter(){
-  return {
-    healthy: document.getElementById('hf_healthy')?.checked!==false,
-    needs:   document.getElementById('hf_needs')?.checked!==false,
-    risk:    document.getElementById('hf_risk')?.checked!==false,
-  };
-}
-
-function drillEscCategory(cat){
-  // Find all customers that have this category in their escalations
-  var custs = _agg.custs;
-  var smF   = (document.getElementById('escSMFilter')||{value:''}).value||'';
-  var matches = custs.filter(function(c){
-    var smOk = !smF || c.sm === smF;
-    return smOk && c.escCategories && c.escCategories.indexOf(cat) >= 0;
-  });
-
-  // Sort: most escalations first, then health worst first
-  matches.sort(function(a,b){
-    var aE = (a.escCategories||[]).filter(function(x){return x===cat;}).length;
-    var bE = (b.escCategories||[]).filter(function(x){return x===cat;}).length;
-    return bE - aE || a.health - b.health;
-  });
-
-  // Update panel title
-  var titleEl = document.getElementById('escDrillTitle');
-  if(titleEl) titleEl.textContent = cat;
-
-  // Build table rows
-  var tbody = document.getElementById('escDrillBody');
-  if(tbody){
-    if(!matches.length){
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:16px;color:#9CA3AF">'
-        + 'No customers with ' + cat + ' escalations in the current filter</td></tr>';
-    } else {
-      tbody.innerHTML = matches.map(function(c){
-        // Count how many times this specific category appears for this customer
-        var catCount = (c.escCategories||[]).filter(function(x){return x===cat;}).length;
-        // Show all categories on the account as chips
-        var allCats = [...new Set(c.escCategories||[])].map(function(x){
-          var isMatch = x === cat;
-          return '<span style="display:inline-block;background:'+(isMatch?'#FEE2E2':'#F3F4F6')
-            +';color:'+(isMatch?'#991B1B':'#374151')
-            +';font-size:10px;font-weight:'+(isMatch?'700':'400')
-            +';padding:2px 7px;border-radius:10px;margin:1px 2px">'+x+'</span>';
-        }).join('');
-        return '<tr style="border-bottom:.5px solid #E2E4E9;cursor:pointer" '
-          + 'title="Click to see full breakdown" onclick="this.nextElementSibling&&this.nextElementSibling.classList.contains(\'esc-drill-detail\')?this.nextElementSibling.remove():null">'
-          + '<td style="padding:8px 10px;font-weight:500;min-width:160px">'+c.name+'</td>'
-          + '<td style="padding:8px 8px">'+c.sm+'</td>'
-          + '<td style="padding:8px 8px;text-align:center;font-size:11px;color:#6B7280">'+(c.vertical||'Ent')+'</td>'
-          + '<td style="padding:8px 8px;text-align:center">'+mbar(c.health,100,hCol(c.health))+'</td>'
-          + '<td style="padding:8px 8px;text-align:center">'+hBadge(c.health)+'</td>'
-          + '<td style="padding:8px 8px">'+allCats+'</td>'
-          + '</tr>';
-      }).join('');
-    }
-  }
-
-  // Show panel, scroll to it
-  var panel = document.getElementById('escDrillPanel');
-  if(panel){
-    panel.style.display = 'block';
-    panel.scrollIntoView({behavior:'smooth', block:'nearest'});
-  }
-
-  // Highlight the clicked category bar
-  document.querySelectorAll('#escByCat > div').forEach(function(d){
-    d.style.background = '';
-  });
-}
-
-function closeEscDrill(){
-  var panel = document.getElementById('escDrillPanel');
-  if(panel) panel.style.display = 'none';
-}
 window.addEventListener('load', function(){
   loadStore();
   updateDraftBanner();
@@ -3108,11 +2873,4 @@ window.addEventListener('load', function(){
 
 
 
-
-
-
-
-
 </script>
-</body>
-</html>
