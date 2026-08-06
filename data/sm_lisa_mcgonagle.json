@@ -17,11 +17,11 @@
     17.5,
     18,
     35.45,
-    38,
-    30
+    45,
+    35.5
   ],
-  "cfTotal": 138.9,
-  "cfPct": 102.9,
+  "cfTotal": 151.4,
+  "cfPct": 112.2,
   "siteVisits": 6,
   "serviceReviews": 11,
   "leads": 1,
@@ -614,5 +614,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-08-06T07:35:24.129Z"
+  "submittedAt": "2026-08-06T07:39:31.589Z"
 }
