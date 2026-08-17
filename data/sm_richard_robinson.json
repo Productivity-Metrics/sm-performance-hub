@@ -5,7 +5,7 @@
   "smEmail": "richard.robinson2@o2business.com",
   "smVertical": "Enterprise",
   "teamLeader": "Gareth Stokes",
-  "serviceLead": "Alan Fletcher",
+  "serviceLead": "Gareth Stokes",
   "month": "July",
   "year": "2026",
   "workDays": 23,
@@ -51,15 +51,15 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Other"
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
       "sentiment": 8,
       "serviceReviews": 1,
-      "sla": 0,
+      "sla": 98,
       "p12Incidents": 0,
       "p12Baseline": 0,
       "openFaults": 0,
@@ -67,7 +67,7 @@
         "nps": 30,
         "sent": 28,
         "rev": 35,
-        "sla": 0,
+        "sla": 39.2,
         "p12": 20,
         "faults": 15,
         "csipQ": 0,
@@ -75,16 +75,16 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 93,
-      "opsScore": 35,
-      "healthScore": 66.9,
-      "status": "Needs attention"
+      "opsScore": 74.2,
+      "healthScore": 84.5,
+      "status": "Healthy"
     },
     {
       "name": "LONDON BOROUGH OF SOUTHWARK",
@@ -93,15 +93,15 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Other"
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
       "sentiment": 8,
       "serviceReviews": 1,
-      "sla": 0,
+      "sla": 98,
       "p12Incidents": 0,
       "p12Baseline": 0,
       "openFaults": 0,
@@ -109,7 +109,7 @@
         "nps": 30,
         "sent": 28,
         "rev": 35,
-        "sla": 0,
+        "sla": 39.2,
         "p12": 20,
         "faults": 15,
         "csipQ": 0,
@@ -117,16 +117,16 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 93,
-      "opsScore": 35,
-      "healthScore": 66.9,
-      "status": "Needs attention"
+      "opsScore": 74.2,
+      "healthScore": 84.5,
+      "status": "Healthy"
     },
     {
       "name": "SOUTH LANARKSHIRE COUNCIL",
@@ -135,16 +135,16 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
-        "Other"
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
       "sentiment": 8,
       "serviceReviews": 1,
-      "sla": 0,
+      "sla": 98,
       "p12Incidents": 0,
       "p12Baseline": 0,
       "openFaults": 0,
@@ -152,7 +152,7 @@
         "nps": 30,
         "sent": 28,
         "rev": 35,
-        "sla": 0,
+        "sla": 39.2,
         "p12": 20,
         "faults": 15,
         "csipQ": 0,
@@ -160,16 +160,16 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 2,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 93,
-      "opsScore": 35,
-      "healthScore": 66.9,
-      "status": "Needs attention"
+      "opsScore": 74.2,
+      "healthScore": 84.5,
+      "status": "Healthy"
     },
     {
       "name": "BRADFORD DISTRICT CARE TRUST",
@@ -200,8 +200,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -240,8 +240,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -260,7 +260,7 @@
       "escCategories": [
         "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 10,
@@ -282,8 +282,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -302,7 +302,7 @@
       "escCategories": [
         "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 10,
@@ -324,8 +324,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -342,7 +342,7 @@
       "retention": 0.95,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -364,8 +364,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -404,8 +404,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -422,7 +422,7 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Other"
+        "Billing"
       ],
       "siteVisits": 1,
       "leads": 0,
@@ -446,8 +446,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -464,11 +464,11 @@
       "retention": 0.95,
       "escalations": 3,
       "escCategories": [
-        "Incident Management",
-        "Other",
-        "Other"
+        "Billing",
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 10,
@@ -490,8 +490,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 3,
-      "csipPct": 0,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 0,
       "sts": 0,
       "recovered": 0,
@@ -502,5 +502,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-08-10T09:11:05.886Z"
+  "submittedAt": "2026-08-17T13:28:35.176Z"
 }
