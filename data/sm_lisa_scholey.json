@@ -5,7 +5,7 @@
   "smEmail": "lisa.scholey@virginmediao2.co.uk",
   "smVertical": "Public Sector",
   "teamLeader": "Gareth Stokes",
-  "serviceLead": "Alan Fletcher",
+  "serviceLead": "Gareth Stokes",
   "month": "July",
   "year": "2026",
   "workDays": 23,
@@ -14,14 +14,14 @@
   "availableHrs": 150,
   "utilisation": 0,
   "cfWeeks": [
-    33,
-    33,
-    25,
-    33,
+    0,
+    0,
+    0,
+    0,
     0
   ],
-  "cfTotal": 124,
-  "cfPct": 82.7,
+  "cfTotal": 0,
+  "cfPct": 0,
   "siteVisits": 0,
   "serviceReviews": 0,
   "leads": 0,
@@ -51,10 +51,10 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
-        "Incident Management"
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -76,7 +76,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 80,
       "sts": 0,
@@ -119,7 +119,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 80,
       "sts": 0,
@@ -137,7 +137,7 @@
       "retention": 0.95,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -159,7 +159,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 80,
       "sts": 0,
@@ -177,7 +177,7 @@
       "retention": 0.95,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -199,7 +199,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -218,10 +218,10 @@
       "escalations": 3,
       "escCategories": [
         "Billing",
-        "Other",
-        "Other"
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -243,7 +243,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 25,
       "sts": 0,
@@ -261,7 +261,7 @@
       "retention": 0.95,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -283,7 +283,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -303,10 +303,10 @@
       "escCategories": [
         "Billing",
         "Billing",
-        "Other",
-        "Other"
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 1,
       "nps": 100,
       "npsRaw": 9,
@@ -328,7 +328,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 1,
@@ -346,10 +346,10 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Mobile Core",
-        "Mobile Core"
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -371,7 +371,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -389,7 +389,7 @@
       "retention": 0.95,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -429,7 +429,7 @@
       "retention": 0.95,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -471,7 +471,7 @@
       "escCategories": [
         "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -493,7 +493,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -511,7 +511,7 @@
       "retention": 0.95,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -533,7 +533,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -551,10 +551,10 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
-        "Incident Management"
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -576,7 +576,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -594,14 +594,14 @@
       "retention": 0.95,
       "escalations": 6,
       "escCategories": [
-        "Other",
-        "Other",
-        "Other",
-        "Other",
-        "Other",
-        "Other"
+        "Billing",
+        "Billing",
+        "Billing",
+        "Billing",
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -623,7 +623,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -641,10 +641,10 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
-        "Other"
+        "Billing",
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -666,7 +666,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -724,9 +724,9 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Delivery"
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 7,
@@ -748,7 +748,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -766,9 +766,9 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Incident Management"
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 8,
@@ -808,9 +808,9 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Incident Management"
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
@@ -844,5 +844,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-08-06T10:29:00.226Z"
+  "submittedAt": "2026-08-17T13:22:42.794Z"
 }
