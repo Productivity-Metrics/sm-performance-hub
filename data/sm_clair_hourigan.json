@@ -15,13 +15,13 @@
   "utilisation": 13,
   "cfWeeks": [
     0,
-    0,
-    0,
-    0,
+    41,
+    40,
+    41.5,
     0
   ],
-  "cfTotal": 0,
-  "cfPct": 0,
+  "cfTotal": 122.5,
+  "cfPct": 108.9,
   "siteVisits": 1,
   "serviceReviews": 4,
   "leads": 0,
@@ -73,10 +73,10 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 100,
-      "sts": 766898,
+      "sts": 1058358,
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 93,
@@ -91,7 +91,7 @@
       "retention": 1,
       "escalations": 1,
       "escCategories": [
-        "BAU Order"
+        "Billing"
       ],
       "siteVisits": 1,
       "leads": 0,
@@ -118,7 +118,7 @@
       "csipActions": 5,
       "csipPct": 80,
       "csipQuality": 100,
-      "sts": 0,
+      "sts": 24487,
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 78,
@@ -207,5 +207,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-08-27T20:56:24.704Z"
+  "submittedAt": "2026-08-27T21:52:20.916Z"
 }
