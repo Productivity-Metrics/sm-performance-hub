@@ -1157,6 +1157,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2654,7 +2655,16 @@ function populateServiceLeadFilter(){
 
 var DRAFT_KEY = 'smHub_draft';
 
+function localStorageWorks(){
+  try{ localStorage.setItem('_test','1'); localStorage.removeItem('_test'); return true; }
+  catch(e){ return false; }
+}
+
 function saveProgress(){
+  if(!localStorageWorks()){
+    showToast('\u26a0\ufe0f Your browser does not support saving drafts. Please submit before closing this tab.');
+    return;
+  }
   try{
     var draft={
       savedAt:new Date().toISOString(),
@@ -2723,6 +2733,7 @@ function saveProgress(){
       })(),
     };
     localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
     showToast('Draft saved — you can close this browser and continue later');
     updateDraftBanner();
   }catch(e){showToast('Could not save: '+e.message);}
@@ -2731,6 +2742,7 @@ function saveProgress(){
 function restoreProgress(){
   try{
     var raw=localStorage.getItem(DRAFT_KEY);
+    if(!raw){ try{ raw=sessionStorage.getItem(DRAFT_KEY); }catch(e){} }
     if(!raw) return false;
     var draft=JSON.parse(raw);
     ['smName','smEmail','smTL','smSL','repMonth','repYear',
@@ -2768,6 +2780,7 @@ function restoreProgress(){
 
 function clearDraft(){
   localStorage.removeItem(DRAFT_KEY);
+  try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){}
   updateDraftBanner();
 }
 
@@ -2775,6 +2788,7 @@ function updateDraftBanner(){
   var banner=document.getElementById('draftBanner');
   if(!banner) return;
   var raw=localStorage.getItem(DRAFT_KEY);
+  if(!raw){ try{ raw=sessionStorage.getItem(DRAFT_KEY); }catch(e){} }
   if(raw){
     try{
       var d=JSON.parse(raw);
@@ -3007,12 +3021,21 @@ function drillEscCategory(cat){
 window.addEventListener('load', function(){
   loadStore();
   updateDraftBanner();
+  // Auto-save draft every 2 minutes while SM is filling in the form
+  setInterval(function(){
+    var formVisible = document.getElementById('formView');
+    if(formVisible && formVisible.style.display !== 'none'){
+      var name = document.getElementById('smName')?.value||'';
+      if(name.trim()) saveProgress();  // only auto-save if name is entered
+    }
+  }, 120000);
   if(!submissions.length) seedDemo();
   calcCF();
   // Start with 1 blank customer; SM can add more or use Load last month
   addCust();
   updateCustBadge();
 });
+
 
 
 
