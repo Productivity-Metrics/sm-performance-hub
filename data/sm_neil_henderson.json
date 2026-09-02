@@ -68,7 +68,7 @@
       "leads": 0,
       "nps": 0,
       "npsRaw": 6,
-      "sentiment": 5,
+      "sentiment": 7,
       "serviceReviews": 0,
       "sla": 98,
       "p12Incidents": 1,
@@ -76,7 +76,7 @@
       "openFaults": 6,
       "scoreBreakdown": {
         "nps": 0,
-        "sent": 17.5,
+        "sent": 24.5,
         "rev": 0,
         "sla": 39.2,
         "p12": 18,
@@ -92,9 +92,9 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 17.5,
+      "vocScore": 24.5,
       "opsScore": 83.2,
-      "healthScore": 47.1,
+      "healthScore": 50.9,
       "status": "At Risk"
     },
     {
@@ -147,5 +147,5 @@
       "status": "Needs attention"
     }
   ],
-  "submittedAt": "2026-09-02T12:21:47.514Z"
+  "submittedAt": "2026-09-02T12:44:24.698Z"
 }
