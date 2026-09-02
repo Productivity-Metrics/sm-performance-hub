@@ -36,7 +36,7 @@
   "internalHrs": 7,
   "csipHrs": 4,
   "totalSTS": 0,
-  "totalRecovered": 0,
+  "totalRecovered": 617000,
   "totalAgedDebt": 0,
   "agedDebtCleared": 0,
   "costToServe": 0,
@@ -52,8 +52,8 @@
       "escalations": 3,
       "escCategories": [
         "Incident Management",
-        "Billing",
-        "Delivery"
+        "Delivery",
+        "Billing"
       ],
       "siteVisits": 1,
       "leads": 0,
@@ -77,8 +77,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 100,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 100,
       "sts": 0,
       "recovered": 0,
@@ -95,15 +95,15 @@
       "retention": 100,
       "escalations": 2,
       "escCategories": [
-        "Fixed Core",
+        "Incident Management",
         "Delivery"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 7,
       "sentiment": 8,
-      "serviceReviews": 0,
+      "serviceReviews": 1,
       "sla": 100,
       "p12Incidents": 1,
       "p12Baseline": 2,
@@ -111,7 +111,7 @@
       "scoreBreakdown": {
         "nps": 15,
         "sent": 28,
-        "rev": 0,
+        "rev": 35,
         "sla": 40,
         "p12": 18,
         "faults": 15,
@@ -120,16 +120,16 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 3,
-      "csipPct": 33,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 43,
+      "vocScore": 78,
       "opsScore": 93,
-      "healthScore": 65.5,
-      "status": "Needs attention"
+      "healthScore": 84.8,
+      "status": "Healthy"
     },
     {
       "name": "Chershire Police",
@@ -141,7 +141,7 @@
         "Incident Management",
         "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 8,
@@ -163,8 +163,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 7,
-      "csipPct": 25,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
       "recovered": 0,
@@ -184,7 +184,7 @@
         "Incident Management",
         "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 8,
@@ -206,8 +206,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 7,
-      "csipPct": 25,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
       "recovered": 0,
@@ -225,14 +225,14 @@
       "escalations": 2,
       "escCategories": [
         "Incident Management",
-        "Change Management"
+        "Fixed Core"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 7,
       "sentiment": 4,
-      "serviceReviews": 0,
+      "serviceReviews": 1,
       "sla": 99,
       "p12Incidents": 1,
       "p12Baseline": 0,
@@ -240,25 +240,25 @@
       "scoreBreakdown": {
         "nps": 15,
         "sent": 14,
-        "rev": 0,
+        "rev": 35,
         "sla": 39.6,
         "p12": 18,
         "faults": 13.5,
         "csipQ": 25,
         "p12excess": 1,
         "p12baseline": 0,
-        "sentimentCapped": false
+        "sentimentCapped": true
       },
-      "csipActions": 0,
-      "csipPct": 100,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 25,
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 29,
+      "vocScore": 64,
       "opsScore": 96.1,
-      "healthScore": 59.2,
-      "status": "At Risk"
+      "healthScore": 74,
+      "status": "Needs attention"
     },
     {
       "name": "Warwickshire Police",
@@ -269,7 +269,7 @@
       "escCategories": [
         "Incident Management"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 8,
@@ -291,8 +291,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 100,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 25,
       "sts": 0,
       "recovered": 0,
@@ -311,7 +311,7 @@
       "escCategories": [
         "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 50,
       "npsRaw": 7,
@@ -333,11 +333,11 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 100,
+      "csipActions": 5,
+      "csipPct": 80,
       "csipQuality": 25,
       "sts": 0,
-      "recovered": 0,
+      "recovered": 617000,
       "agedDebt": 0,
       "vocScore": 74.5,
       "opsScore": 96.5,
@@ -345,5 +345,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-09-02T19:24:48.569Z"
+  "submittedAt": "2026-09-02T19:27:35.673Z"
 }
