@@ -36,7 +36,7 @@
   "internalHrs": 7,
   "csipHrs": 4,
   "totalSTS": 0,
-  "totalRecovered": 617000,
+  "totalRecovered": 0,
   "totalAgedDebt": 0,
   "agedDebtCleared": 0,
   "costToServe": 0,
@@ -51,8 +51,8 @@
       "retention": 100,
       "escalations": 3,
       "escCategories": [
-        "Incident Management",
-        "Delivery",
+        "Billing",
+        "Billing",
         "Billing"
       ],
       "siteVisits": 1,
@@ -95,8 +95,8 @@
       "retention": 100,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
-        "Delivery"
+        "Billing",
+        "Billing"
       ],
       "siteVisits": 1,
       "leads": 0,
@@ -138,7 +138,7 @@
       "retention": 100,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
+        "Billing",
         "Billing"
       ],
       "siteVisits": 1,
@@ -181,7 +181,7 @@
       "retention": 100,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
+        "Billing",
         "Billing"
       ],
       "siteVisits": 1,
@@ -224,8 +224,8 @@
       "retention": 50,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
-        "Fixed Core"
+        "Billing",
+        "Billing"
       ],
       "siteVisits": 1,
       "leads": 0,
@@ -267,7 +267,7 @@
       "retention": 100,
       "escalations": 1,
       "escCategories": [
-        "Incident Management"
+        "Billing"
       ],
       "siteVisits": 1,
       "leads": 0,
@@ -337,7 +337,7 @@
       "csipPct": 80,
       "csipQuality": 25,
       "sts": 0,
-      "recovered": 617000,
+      "recovered": 0,
       "agedDebt": 0,
       "vocScore": 74.5,
       "opsScore": 96.5,
@@ -345,5 +345,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-09-02T19:27:35.673Z"
+  "submittedAt": "2026-09-02T19:28:22.905Z"
 }
