@@ -16,12 +16,12 @@
   "cfWeeks": [
     50.25,
     42.75,
-    44.75,
+    44.25,
     39,
     0
   ],
-  "cfTotal": 176.8,
-  "cfPct": 117.8,
+  "cfTotal": 176.3,
+  "cfPct": 117.5,
   "siteVisits": 0,
   "serviceReviews": 5,
   "leads": 12,
@@ -30,11 +30,11 @@
   "govAccts": 4,
   "maintAccts": 1,
   "baseAccts": 0,
-  "totalEscalations": 6,
+  "totalEscalations": 0,
   "totalHoursWorked": 181,
   "travelHrs": 6,
   "internalHrs": 12.5,
-  "csipHrs": 17.5,
+  "csipHrs": 0,
   "totalSTS": 750.18,
   "totalRecovered": 23990.36,
   "totalAgedDebt": 1269.02,
@@ -51,8 +51,8 @@
       "retention": 0.85,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
-        "Change Management"
+        "Billing",
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 9,
@@ -94,8 +94,8 @@
       "retention": 0.85,
       "escalations": 2,
       "escCategories": [
-        "Other",
-        "Other"
+        "Billing",
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 2,
@@ -120,7 +120,7 @@
         "sentimentCapped": false
       },
       "csipActions": 2,
-      "csipPct": 1,
+      "csipPct": 50,
       "csipQuality": 20,
       "sts": 0,
       "recovered": 5908.58,
@@ -137,7 +137,7 @@
       "retention": 0.8,
       "escalations": 1,
       "escCategories": [
-        "Delivery"
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -161,8 +161,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
-      "csipPct": 0,
+      "csipActions": 0,
+      "csipPct": 100,
       "csipQuality": 20,
       "sts": 0,
       "recovered": 17096.81,
@@ -202,7 +202,7 @@
         "sentimentCapped": false
       },
       "csipActions": 0,
-      "csipPct": 0,
+      "csipPct": 100,
       "csipQuality": 20,
       "sts": 706,
       "recovered": 0,
@@ -219,7 +219,7 @@
       "retention": 0,
       "escalations": 1,
       "escCategories": [
-        "Other"
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -243,8 +243,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 2,
-      "csipPct": 50,
+      "csipActions": 0,
+      "csipPct": 100,
       "csipQuality": 20,
       "sts": 0,
       "recovered": 0,
@@ -255,5 +255,5 @@
       "status": "Needs attention"
     }
   ],
-  "submittedAt": "2026-09-01T15:15:33.548Z"
+  "submittedAt": "2026-09-18T10:17:00.512Z"
 }
