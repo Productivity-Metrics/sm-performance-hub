@@ -221,7 +221,7 @@
       "name": "West Midlands Police",
       "type": "Maintained",
       "renewal": "2027-02-26",
-      "retention": 0.5,
+      "retention": 0.75,
       "escalations": 2,
       "escCategories": [
         "Billing",
@@ -233,7 +233,7 @@
       "npsRaw": 7,
       "sentiment": 4,
       "serviceReviews": 1,
-      "sla": 98.7,
+      "sla": 99,
       "p12Incidents": 1,
       "p12Baseline": 0,
       "openFaults": 1,
@@ -241,7 +241,7 @@
         "nps": 15,
         "sent": 14,
         "rev": 35,
-        "sla": 39.5,
+        "sla": 39.6,
         "p12": 18,
         "faults": 13.5,
         "csipQ": 25,
@@ -256,7 +256,7 @@
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 64,
-      "opsScore": 96,
+      "opsScore": 96.1,
       "healthScore": 74,
       "status": "Needs attention"
     },
@@ -345,5 +345,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-09-18T10:27:08.743Z"
+  "submittedAt": "2026-09-18T10:28:46.465Z"
 }
