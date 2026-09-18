@@ -15,15 +15,15 @@
   "utilisation": 59,
   "cfWeeks": [
     0,
-    31,
-    39.5,
-    31,
+    0,
+    0,
+    0,
     0
   ],
-  "cfTotal": 101.5,
-  "cfPct": 71.2,
+  "cfTotal": 0,
+  "cfPct": 0,
   "siteVisits": 6,
-  "serviceReviews": 6,
+  "serviceReviews": 0,
   "leads": 0,
   "qbrs": 0,
   "directedAccts": 0,
@@ -34,7 +34,7 @@
   "totalHoursWorked": 101.5,
   "travelHrs": 7,
   "internalHrs": 7,
-  "csipHrs": 4,
+  "csipHrs": 0,
   "totalSTS": 0,
   "totalRecovered": 0,
   "totalAgedDebt": 0,
@@ -48,7 +48,7 @@
       "name": "West Mercia Police",
       "type": "Governed",
       "renewal": "2027-02-26",
-      "retention": 100,
+      "retention": 1,
       "escalations": 3,
       "escCategories": [
         "Billing",
@@ -92,7 +92,7 @@
       "name": "Merseyside Police",
       "type": "Maintained",
       "renewal": "2031-11-01",
-      "retention": 100,
+      "retention": 1,
       "escalations": 2,
       "escCategories": [
         "Billing",
@@ -135,7 +135,7 @@
       "name": "Chershire Police",
       "type": "Maintained",
       "renewal": "2030-06-25",
-      "retention": 100,
+      "retention": 1,
       "escalations": 2,
       "escCategories": [
         "Billing",
@@ -178,7 +178,7 @@
       "name": "Cheshire Fire",
       "type": "Maintained",
       "renewal": "2030-06-25",
-      "retention": 100,
+      "retention": 1,
       "escalations": 2,
       "escCategories": [
         "Billing",
@@ -221,7 +221,7 @@
       "name": "West Midlands Police",
       "type": "Maintained",
       "renewal": "2027-02-26",
-      "retention": 50,
+      "retention": 0.5,
       "escalations": 2,
       "escCategories": [
         "Billing",
@@ -233,7 +233,7 @@
       "npsRaw": 7,
       "sentiment": 4,
       "serviceReviews": 1,
-      "sla": 99,
+      "sla": 98.7,
       "p12Incidents": 1,
       "p12Baseline": 0,
       "openFaults": 1,
@@ -241,7 +241,7 @@
         "nps": 15,
         "sent": 14,
         "rev": 35,
-        "sla": 39.6,
+        "sla": 39.5,
         "p12": 18,
         "faults": 13.5,
         "csipQ": 25,
@@ -256,7 +256,7 @@
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 64,
-      "opsScore": 96.1,
+      "opsScore": 96,
       "healthScore": 74,
       "status": "Needs attention"
     },
@@ -264,7 +264,7 @@
       "name": "Warwickshire Police",
       "type": "Maintained",
       "renewal": "2028-11-18",
-      "retention": 100,
+      "retention": 1,
       "escalations": 1,
       "escCategories": [
         "Billing"
@@ -306,7 +306,7 @@
       "name": "West Yorkshire Police",
       "type": "Maintained",
       "renewal": "2028-03-30",
-      "retention": 100,
+      "retention": 1,
       "escalations": 1,
       "escCategories": [
         "Billing"
@@ -345,5 +345,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-09-02T19:28:22.905Z"
+  "submittedAt": "2026-09-18T10:27:08.743Z"
 }
