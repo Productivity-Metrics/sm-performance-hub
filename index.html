@@ -2005,7 +2005,7 @@ function addCust(d){
       </div>
         <div class="fg"><label>Meeting sentiment <span class="tgt">(1–10, target ≥7)</span></label>
           <div style="margin-top:3px">
-            <div class="slider-row"><input type="range" id="sent_${id}" min="1" max="10" value="${data.sent!==''?data.sent||7:1}" step="1" oninput="document.getElementById('sentval_${id}').textContent=this.value;recalc('${id}')"><span class="slider-val" id="sentval_${id}">${data.sent!==''?data.sent||7:1}</span></div>
+            <div class="slider-row"><input type="range" id="sent_${id}" min="1" max="10" value="${data.sent!==undefined&&data.sent!==null&&data.sent!==''?data.sent:1}" step="1" oninput="document.getElementById('sentval_${id}').textContent=this.value;recalc('${id}')"><span class="slider-val" id="sentval_${id}">${data.sent!==undefined&&data.sent!==null&&data.sent!==''?data.sent:1}</span></div>
             <div class="slider-ends"><span>Very negative</span><span>Very positive</span></div>
           </div>
         </div>
@@ -2014,7 +2014,7 @@ function addCust(d){
 
       <div class="sec-div sd-ops">Service, ops &amp; CSIP</div>
       <div class="g3 gap">
-        <div class="fg"><label>SLA compliance % <span class="tgt">(target ≥97%)</span></label><input type="number" id="sla_${id}" value="${data.sla!==''?data.sla||98:''}" min="0" max="100" step="0.1" oninput="recalc('${id}')"></div>
+        <div class="fg"><label>SLA compliance % <span class="tgt">(target ≥97%)</span></label><input type="number" id="sla_${id}" value="${data.sla!==undefined&&data.sla!==''&&data.sla!==null?data.sla:''}" min="0" max="100" step="0.1" oninput="recalc('${id}')"></div>
         <div class="fg"><label>P1/P2 incidents this month</label><input type="number" id="p12_${id}" value="${data.p12||0}" min="0" oninput="recalc('${id}')"></div>
         <div class="fg"><label>P1/P2 expected baseline <span class="tgt">(normal monthly volume)</span></label><input type="number" id="p12base_${id}" value="${data.p12base||0}" min="0" oninput="recalc('${id}')"><div class="sub">Typical monthly P1/P2s for this account — only excess above baseline penalises the score</div></div>
         <div class="fg"><label>Open faults &gt;5 days <span class="tgt">(target 0)</span></label><input type="number" id="flt_${id}" value="${data.faults||0}" min="0" oninput="recalc('${id}')"></div>
@@ -2022,7 +2022,7 @@ function addCust(d){
       <div class="g3 gap">
         <div class="fg"><label>CSIP total open actions</label><input type="number" id="csipA_${id}" value="${data.csipActions||5}" min="0"></div>
         <div class="fg"><label>CSIP % complete <span class="tgt">(target ≥80%)</span></label><input type="number" id="csipP_${id}" value="${data.csipPct||80}" min="0" max="100" oninput="recalc('${id}')"></div>
-        <div class="fg"><label>CSIP quality score <span class="tgt">(0–25, target ≥20)</span></label><input type="number" id="csipQ_${id}" value="${data.csipQ!==undefined?data.csipQ:20}" min="0" max="25" step="1" oninput="recalc('${id}')"><div class="sub">AI agent score: 25=Excellent · 20=Target (minimum) · 0=Not completed</div></div>
+        <div class="fg"><label>CSIP quality score <span class="tgt">(0–25, target ≥20)</span></label><input type="number" id="csipQ_${id}" value="${data.csipQ!==undefined&&data.csipQ!==null&&data.csipQ!==''?data.csipQ:''}" min="0" max="25" step="1" oninput="recalc('${id}')"><div class="sub">AI agent score: 25=Excellent · 20=Target (minimum) · 0=Not completed</div></div>
       </div>
 
       <div class="sec-div sd-rev">Revenue &amp; commercial</div>
