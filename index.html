@@ -1263,6 +1263,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3265,9 +3266,11 @@ function drillEscCategory(cat){
 }
 
 function renderExec(){
+  // Ensure aggregate is up to date
+  if(submissions.length && !_agg.custs.length) refreshDash();
   var custs = _agg.custs;
   var sms   = _agg.sms;
-  if(!custs.length) return;
+  // Don't return early - escalation sections work from submissions directly
 
   // Period label
   var period = (document.getElementById('periodDisplay')||{textContent:''}).textContent||'Latest';
@@ -3284,7 +3287,13 @@ function renderExec(){
   var healthy   = custs.filter(function(c){ return c.health >= 75; });
   var sentIssue = custs.filter(function(c){ return (c.sentiment||0) < 6; }).sort(function(a,b){ return a.sentiment-b.sentiment; });
 
-  // ── KPI cards ─────────────────────────────────────────────────────────
+  // ── KPI cards (only if custs available) ───────────────────────────────
+  if(!custs.length){
+    ['execKPIs','execRAGStrip','execRAGLegend','execAtRisk','execNeedsAttn','execSentiment','execStrengths','execFocus'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.innerHTML='<div style="color:#6B7280;font-size:11px;padding:6px 0">Loading…</div>';
+    });
+  } else {
   var totalC = custs.length;
   var pctHealthy = totalC ? Math.round(healthy.length/totalC*100) : 0;
   var avgHealth  = totalC ? (custs.reduce(function(t,c){return t+c.health;},0)/totalC) : 0;
@@ -3433,6 +3442,8 @@ function renderExec(){
       +focus.map(function(s){return '<li style="color:#374151;margin-bottom:4px">'+s+'</li>';}).join('')+'</ul>';
   }
 
+  } // end if(custs.length)
+
   // ── Trends (full multi-month analysis) ──────────────────────────────
   var trendCard = document.getElementById('execTrendCard');
   var trendEl   = document.getElementById('execTrend');
@@ -3529,6 +3540,7 @@ function renderExec(){
   trendEl.innerHTML = html || '<div style="color:#6B7280">No trend data available yet.</div>';
 
 }
+
 
 </script>
 <!-- rebuild -->
