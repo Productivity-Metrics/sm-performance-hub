@@ -2212,6 +2212,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3253,7 +3254,7 @@ function collectData(){
       name:document.getElementById("name_"+id).value||"(unnamed)",
       type:document.getElementById("type_"+id).value,
       renewal:document.getElementById("renewal_"+id).value,
-      retention:+document.getElementById("ret_"+id).value||0,
+      retention:(function(){ var v=+document.getElementById("ret_"+id).value||95; return v>1?v/100:v; })(),
       escalations:+document.getElementById("esc_"+id).value||0, escCategories:getEscCategories(id),
       siteVisits:+document.getElementById("sv_"+id).value||0,
       leads:+document.getElementById("leads_"+id).value||0,
@@ -4633,6 +4634,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
