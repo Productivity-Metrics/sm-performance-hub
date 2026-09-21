@@ -2209,6 +2209,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3845,7 +3846,7 @@ function saveProgress(){
             renewal:document.getElementById('renewal_'+id)?.value||'',
             ret:document.getElementById('ret_'+id)?.value||'0.95',
             npsRaw:document.getElementById('npsRaw_'+id)?.value??'',
-            sent:document.getElementById('sent_'+id)?.value||'7',
+            sent:document.getElementById('sent_'+id)?.value||'1',
             rev:document.getElementById('rev_'+id)?.value||'0',
             sla:document.getElementById('sla_'+id)?.value||'',
             p12:document.getElementById('p12_'+id)?.value||'0',
@@ -3896,10 +3897,14 @@ function restoreProgress(){
         custCount=0;
         draft.customers.forEach(function(c){
           addCust({name:c.name,type:c.type,renewal:c.renewal,
-            ret:+c.ret||0.95,npsRaw:c.npsRaw!==undefined&&c.npsRaw!==null&&c.npsRaw!==''?+c.npsRaw:null,sent:+c.sent||7,
-            rev:+c.rev||0,sla:c.sla!==''?+c.sla:undefined,
+            ret:+c.ret||0.95,
+            npsRaw:(c.npsRaw!==undefined&&c.npsRaw!==null&&c.npsRaw!=='')?+c.npsRaw:null,
+            sent:(c.sent!==undefined&&c.sent!==''&&c.sent!==null)?+c.sent:1,
+            rev:+c.rev||0,
+            sla:(c.sla!==undefined&&c.sla!==''&&c.sla!==null)?+c.sla:undefined,
             p12:+c.p12||0,p12base:+c.p12base||0,
-            faults:+c.flt||0,csipQ:+c.csipQ||0,
+            faults:+c.flt||0,
+            csipQ:(c.csipQ!==undefined&&c.csipQ!==''&&c.csipQ!==null)?+c.csipQ:undefined,
             esc:+c.esc||0,sv:+c.sv||1,leads:+c.leads||0,
             sts:+c.sts||0,rec:+c.rec||0,aged:+c.aged||0});
         });
@@ -4625,6 +4630,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 </script>
 <!-- rebuild -->
