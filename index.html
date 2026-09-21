@@ -860,6 +860,933 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
         </button>
       </div>
 
+      <!-- Print header -->
+      <div class="print-only" style="display:none;margin-bottom:20px;border-bottom:2px solid #1A2B4A;padding-bottom:12px">
+        <div style="font-size:22px;font-weight:700;color:#1A2B4A">SM Performance Hub</div>
+        <div style="font-size:14px;color:#6B7280" id="execPrintDate"></div>
+      </div>
+
+      <!-- 1. Headline KPIs -->
+      <div id="execKPIs" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
+
+      <!-- 2. Monthly Trends -->
+      <div class="dash-card" id="execTrendCard" style="margin-bottom:16px;display:none">
+        <div class="dash-card-title">&#8593; Monthly Trends</div>
+        <div id="execTrend" style="font-size:12px"></div>
+      </div>
+
+      <!-- 3. Portfolio Health RAG strip -->
+      <div class="dash-card" style="margin-bottom:16px">
+        <div class="dash-card-title">Portfolio Health Overview</div>
+        <div id="execRAGStrip" style="display:flex;gap:0;border-radius:8px;overflow:hidden;height:32px;margin:10px 0 8px"></div>
+        <div id="execRAGLegend" style="display:flex;gap:16px;font-size:11px;color:#6B7280"></div>
+      </div>
+
+      <!-- 4. At Risk + Needs Attention -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="dash-card" style="border-left:4px solid #A32D2D">
+          <div class="dash-card-title" style="color:#A32D2D">&#9888; At Risk Accounts</div>
+          <div id="execAtRisk" style="font-size:12px"></div>
+        </div>
+        <div class="dash-card" style="border-left:4px solid #854F0B">
+          <div class="dash-card-title" style="color:#854F0B">&#9651; Needs Attention</div>
+          <div id="execNeedsAttn" style="font-size:12px"></div>
+        </div>
+      </div>
+
+      <!-- 5. Sentiment concerns -->
+      <div class="dash-card" style="margin-bottom:16px">
+        <div class="dash-card-title">&#128172; Sentiment Concerns (score &lt; 6)</div>
+        <div id="execSentiment" style="font-size:12px"></div>
+      </div>
+
+      <!-- 6. Strengths -->
+      <div class="dash-card" style="margin-bottom:16px;border-left:4px solid #3B6D11">
+        <div class="dash-card-title" style="color:#3B6D11">&#10003; Strengths</div>
+        <div id="execStrengths" style="font-size:12px"></div>
+      </div>
+
+      <!-- 7. Areas of focus -->
+      <div class="dash-card" style="margin-bottom:16px">
+        <div class="dash-card-title">&#128269; Areas of Focus</div>
+        <div id="execFocus" style="font-size:12px"></div>
+      </div>
+
+      <!-- 8. Escalation sections -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="dash-card" style="border-left:4px solid #A32D2D">
+          <div class="dash-card-title">&#9650; Top Escalation Categories</div>
+          <div id="execEscCats" style="font-size:12px"></div>
+        </div>
+        <div class="dash-card" style="border-left:4px solid #854F0B">
+          <div class="dash-card-title">&#8635; Repeat Escalations (multiple months)</div>
+          <div id="execEscRepeat" style="font-size:12px"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="font-size:10px;color:#9CA3AF;text-align:center;margin-top:8px" class="print-only" id="execFooter"></div>
+    </div><!-- /dashView -->en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SM Performance Hub</title>
+<style>
+
+
+
+
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1A2B4A;--teal:#0F6E56;--purple:#534AB7;
+  --blue-l:#E6F1FB;--blue-m:#378ADD;--blue-d:#185FA5;
+  --green-l:#EAF3DE;--green-d:#3B6D11;
+  --amber-l:#FAEEDA;--amber-d:#854F0B;
+  --red-l:#FCEBEB;--red-d:#A32D2D;
+  --grey:#F4F5F7;--border:#E2E4E9;
+  --text:#1C1C1E;--muted:#6B7280;
+  --r:8px;--rc:12px;
+}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:#EEF2F7;color:var(--text);font-size:14px;line-height:1.5}
+
+/* ── topbar ── */
+
+.topbar-title{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.period-chip{font-size:11px;background:rgba(255,255,255,.13);padding:3px 10px;border-radius:20px;letter-spacing:.01em}
+.step-nav{display:flex;background:rgba(255,255,255,.1);border-radius:7px;padding:3px;gap:2px}
+.snav-btn{padding:5px 16px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:12px;font-weight:500;border-radius:5px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.snav-btn.active{background:#fff;color:var(--navy)}
+.snav-btn.done{color:rgba(255,255,255,.45)}
+.snav-btn.done::before{content:"✓ "}
+.progress-line{height:3px;background:var(--blue-m);transition:width .3s ease}
+
+/* ── layout ── */
+.wrap{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+.page{display:none}.page.active{display:block;opacity:1}
+@keyframes up{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ── cards ── */
+.card{background:#fff;border:.5px solid var(--border);border-radius:var(--rc);padding:1.5rem;margin-bottom:1.25rem}
+.card + .card{margin-top:0}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--navy);margin-bottom:1.25rem;padding-bottom:10px;border-bottom:1.5px solid var(--navy);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tag{font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;background:var(--blue-l);color:var(--blue-d);text-transform:none;letter-spacing:0;white-space:nowrap}
+
+/* ── form fields ── */
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:12px;font-weight:600;color:var(--navy);line-height:1.3}
+.fg .sub{font-size:11px;color:var(--muted)}
+.fg .tgt{font-size:10px;font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=email],input[type=date],select,textarea{
+  width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:7px;
+  font-size:13px;font-family:inherit;background:var(--blue-l);color:var(--text);
+  transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-m);box-shadow:0 0 0 3px rgba(55,138,221,.14)}
+input.calc{background:var(--grey);color:var(--muted);cursor:default;pointer-events:none}
+input.bad{border-color:var(--red-d)!important;background:var(--red-l)}
+select{cursor:pointer}
+input[type=range]{padding:0;background:transparent;border:none;cursor:pointer;accent-color:var(--blue-m);height:6px}
+input[type=range]:focus{box-shadow:none}
+
+/* ── grids ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem 1.25rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem 1.25rem}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1rem 1.25rem}
+.g5{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:1rem 1.25rem}
+.gap{margin-bottom:1.25rem}
+
+/* ── CF time result strip ── */
+.cf-strip{display:flex;align-items:center;gap:14px;padding:11px 14px;background:var(--grey);border-radius:8px;margin-top:.75rem;flex-wrap:wrap}
+.cf-pct{font-size:22px;font-weight:700}
+.cf-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.cf-hint{font-size:12px;color:var(--muted)}
+
+/* ── section dividers inside customer cards ── */
+.sec-div{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#fff;padding:7px 12px;margin:-1.5rem -1.5rem 1.25rem;border-radius:0;display:flex;align-items:center;gap:6px}
+.sec-div:not(:first-child){margin-top:1.25rem;border-radius:0}
+.sd-voc{background:var(--purple)}
+.sd-ops{background:var(--teal)}
+.sd-rev{background:var(--blue-d)}
+
+/* ── slider ── */
+.slider-row{display:flex;align-items:center;gap:10px;margin-top:3px}
+.slider-val{font-size:18px;font-weight:700;min-width:28px;color:var(--blue-d);text-align:center}
+.slider-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px}
+
+/* ── customer accordion ── */
+.cust-card{border:.5px solid var(--border);border-radius:var(--rc);overflow:hidden;margin-bottom:.75rem}
+.cust-hd{background:var(--navy);color:#fff;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;gap:10px}
+.cust-hd-left{display:flex;align-items:center;gap:10px}
+.cust-num{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.cust-hd-name{font-size:13px;font-weight:600}
+.cust-hd-right{display:flex;align-items:center;gap:8px}
+.health-chip{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.hc-g{background:#c7e8a5;color:#1e5c07}
+.hc-a{background:#fad99b;color:#6b3d00}
+.hc-r{background:#f9bbbb;color:#7a1111}
+.chevron{font-size:14px;transition:transform .2s;color:rgba(255,255,255,.7)}
+.cust-body{padding:1.5rem;background:#fff}
+.cust-body.hide{display:none}
+
+/* ── score bar at bottom of customer ── */
+.score-bar{grid-column:1/-1;background:var(--grey);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:.5rem}
+.score-item{display:flex;flex-direction:column;gap:2px}
+.score-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.score-num{font-size:20px;font-weight:700}
+.score-status{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
+.ss-g{background:var(--green-l);color:var(--green-d)}
+.ss-a{background:var(--amber-l);color:var(--amber-d)}
+.ss-r{background:var(--red-l);color:var(--red-d)}
+.remove-btn{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:4px 8px;border-radius:5px;transition:color .15s}
+.remove-btn:hover{color:var(--red-d)}
+
+/* ── add customer button ── */
+.add-btn{width:100%;padding:12px;border:1.5px dashed var(--blue-m);border-radius:var(--r);background:transparent;color:var(--blue-d);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;margin-bottom:1.25rem}
+.add-btn:hover{background:var(--blue-l)}
+
+/* ── nav row ── */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem}
+.btn{padding:10px 24px;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;letter-spacing:-.01em}
+.btn-pri{background:var(--navy);color:#fff}.btn-pri:hover{background:#243659}
+.btn-sec{background:#fff;color:var(--navy);border:1.5px solid var(--border)}.btn-sec:hover{background:var(--grey)}
+.btn-export{background:var(--teal);color:#fff;padding:11px 28px;font-size:14px}.btn-export:hover{background:#0a5542}
+.btn-copy{background:var(--blue-m);color:#fff}.btn-copy:hover{background:var(--blue-d)}
+
+/* ── review page ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem}
+.stat{background:var(--grey);border-radius:var(--r);padding:12px 14px}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.stat-val{font-size:22px;font-weight:700}
+.cust-review-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--border);font-size:12px;flex-wrap:wrap}
+.cust-review-row:last-child{border-bottom:none}
+
+/* ── export section ── */
+.export-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
+.export-note{font-size:11px;color:var(--muted);margin-top:8px}
+.json-preview{background:var(--grey);border-radius:var(--r);padding:12px;margin-top:1rem}
+.json-preview p{font-size:11px;color:var(--muted);margin-bottom:6px}
+.json-preview textarea{width:100%;height:80px;font-size:10px;font-family:monospace;background:#fff;border:.5px solid var(--border);border-radius:5px;padding:6px;resize:vertical;color:var(--text)}
+
+/* ── toast ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:13px;z-index:999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;max-width:320px}
+.toast.show{opacity:1;transform:none}
+
+@media(max-width:720px){
+  .g3,.g4,.g5{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr}
+  .step-nav{display:none}
+  .wrap{padding:1rem .75rem 4rem}
+}
+
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1A2B4A;--teal:#0F6E56;--blue-l:#E6F1FB;--blue-m:#378ADD;--blue-d:#185FA5;
+  --green-l:#EAF3DE;--green-d:#3B6D11;--amber-l:#FAEEDA;--amber-d:#854F0B;
+  --red-l:#FCEBEB;--red-d:#A32D2D;--purple-l:#EEEDFE;--purple-d:#534AB7;
+  --grey-l:#F4F5F7;--grey-m:#E2E4E9;--text:#1C1C1E;--muted:#6B7280;
+  --white:#FFFFFF;--r:8px;--rl:12px;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#EEF2F7;color:var(--text);font-size:14px;min-height:100vh}
+
+/* topbar */
+
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar h1{font-size:15px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap}
+.period-badge{font-size:11px;background:rgba(255,255,255,0.12);padding:3px 10px;border-radius:20px;white-space:nowrap}
+
+/* nav tabs */
+.nav-tabs{display:flex;gap:2px;background:rgba(255,255,255,0.08);border-radius:6px;padding:3px}
+.nav-tab{padding:5px 14px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;color:rgba(255,255,255,0.7);border:none;background:transparent;transition:all 0.15s;white-space:nowrap}
+.nav-tab.active{background:#fff;color:var(--navy)}
+.nav-tab:hover:not(.active){color:#fff;background:rgba(255,255,255,0.15)}
+
+/* layout */
+.main{max-width:1280px;margin:0 auto;padding:1.25rem 1rem 3rem}
+.page{display:none}.page.active{display:block;opacity:1}
+
+/* section heading */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:1rem}
+.sec-title{font-size:13px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em}
+.sec-sub{font-size:12px;color:var(--muted);margin-top:1px}
+
+/* metric row */
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem}
+.metric{background:var(--grey-l);border-radius:var(--r);padding:12px 14px}
+.metric-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px}
+.metric-value{font-size:22px;font-weight:600;line-height:1.1}
+.metric-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.metric-trend{font-size:11px;font-weight:500;margin-top:3px}
+.trend-up{color:var(--green-d)}.trend-dn{color:var(--red-d)}.trend-fl{color:var(--muted)}
+
+/* cards */
+.card{background:#fff;border:0.5px solid var(--grey-m);border-radius:var(--rl);padding:1rem 1.25rem;margin-bottom:1rem}
+.card-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-title .pill{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blue-l);color:var(--blue-d);font-weight:600;text-transform:none;letter-spacing:0}
+
+/* grid layouts */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem}
+
+/* pillar scorecard */
+.pillar-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--grey-m);font-size:13px}
+.pillar-row:last-child{border-bottom:none}
+.pillar-name{flex:1;color:var(--text)}
+.pillar-bar-wrap{width:100px;height:6px;background:var(--grey-m);border-radius:20px;overflow:hidden;flex-shrink:0}
+.pillar-bar{height:6px;border-radius:20px}
+.pillar-score{font-size:12px;font-weight:600;min-width:34px;text-align:right}
+.pillar-target{font-size:10px;color:var(--muted);min-width:50px;text-align:right}
+
+/* radar placeholder: we'll use chart.js radar */
+.chart-wrap{position:relative;width:100%}
+
+/* SM table */
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{font-size:10px;font-weight:600;color:#fff;text-align:center;padding:7px 6px;white-space:nowrap;overflow:hidden}
+td{padding:7px 6px;border-bottom:0.5px solid var(--grey-m);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tl{white-space:normal;overflow:visible;text-overflow:clip}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F5F8FF}
+.t-left{text-align:left}
+.sm-name{font-weight:500;display:flex;align-items:center;gap:6px}
+.av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+
+/* badges */
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.b-green{background:var(--green-l);color:var(--green-d)}
+.b-amber{background:var(--amber-l);color:var(--amber-d)}
+.b-red{background:var(--red-l);color:var(--red-d)}
+.b-blue{background:var(--blue-l);color:var(--blue-d)}
+.b-purple{background:var(--purple-l);color:var(--purple-d)}
+
+/* mini bar in cells */
+.mini-bar-wrap{display:flex;align-items:center;gap:5px}
+.mini-bar-outer{width:50px;height:5px;background:var(--grey-m);border-radius:20px;overflow:hidden;flex-shrink:0}
+.mini-bar-inner{height:5px;border-radius:20px}
+
+/* productivity score big ring */
+.score-ring-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0}
+.score-ring-canvas{position:relative}
+
+/* heat map grid */
+.heatmap{display:grid;gap:3px;margin-top:6px}
+.hm-cell{border-radius:3px;padding:4px 3px;text-align:center;font-size:10px;font-weight:600;cursor:default}
+
+/* csip table */
+.csip-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:6px;padding:7px 0;border-bottom:0.5px solid var(--grey-m);font-size:12px;align-items:center}
+.csip-row:last-child{border-bottom:none}
+.csip-head{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+
+/* filter bar */
+.filter-bar{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.filter-bar select,.filter-bar input{font-size:12px;padding:6px 10px;border:0.5px solid var(--grey-m);border-radius:var(--r);background:#fff;color:var(--text);cursor:pointer}
+.filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--blue-m)}
+
+/* section group headers */
+.group-head{background:var(--navy);color:#fff;font-size:10px;font-weight:600;letter-spacing:0.07em;text-align:center;padding:5px 6px}
+
+/* rag dot */
+.rag{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+.rag-g{background:var(--green-d)}.rag-a{background:var(--amber-d)}.rag-r{background:var(--red-d)}
+
+/* progress circle for productivity index */
+.prod-index{display:flex;align-items:center;gap:12px;padding:10px 0}
+.prod-ring{position:relative;width:64px;height:64px;flex-shrink:0}
+.prod-ring svg{transform:rotate(-90deg)}
+.prod-ring .ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600}
+
+@media(max-width:700px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .metric-row{grid-template-columns:repeat(3,1fr)}
+  .topbar h1{font-size:13px}
+}
+
+
+
+.view-toggle{display:flex;background:rgba(255,255,255,.1);border-radius:7px;padding:3px;gap:2px}
+.view-btn{padding:5px 18px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .15s}
+.view-btn.active{background:#fff;color:#1A2B4A}
+.view-btn:hover:not(.active){color:#fff;background:rgba(255,255,255,.18)}
+
+
+
+/* ── single topbar ── */
+
+/* ── view toggle ── */
+.view-toggle{display:flex;background:rgba(255,255,255,.1);border-radius:7px;padding:3px;gap:2px}
+.view-btn{padding:5px 18px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .15s}
+.view-btn.active{background:#fff;color:#1A2B4A}
+.view-btn:hover:not(.active){color:#fff;background:rgba(255,255,255,.18)}
+/* ── step nav (inside form view) ── */
+.snav-btn{padding:5px 14px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:12px;font-weight:500;border-radius:5px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.snav-btn.active{background:rgba(255,255,255,.2);color:#fff;font-weight:700}
+.snav-btn.done::before{content:'\2713 '}
+.snav-btn.done{color:rgba(255,255,255,.45)}
+
+
+
+
+.view-toggle{display:flex;background:rgba(255,255,255,.1);border-radius:7px;padding:3px;gap:2px}
+.view-btn{padding:5px 18px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .15s}
+.view-btn.active{background:#fff;color:#1A2B4A}
+.view-btn:hover:not(.active){color:#fff;background:rgba(255,255,255,.18)}
+.snav-btn{padding:5px 14px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:12px;font-weight:500;border-radius:5px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.snav-btn.active{background:rgba(255,255,255,.22);color:#fff;font-weight:700}
+.snav-btn.done::before{content:'\2713 '}
+.snav-btn.done{color:rgba(255,255,255,.45)}
+
+
+/* topbar */
+.topbar{background:#1A2B4A;color:#fff;height:56px;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;top:0;z-index:100}
+.view-toggle{display:flex;background:rgba(255,255,255,.1);border-radius:7px;padding:3px;gap:2px}
+.view-btn{padding:5px 18px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .15s}
+.view-btn.active{background:#fff;color:#1A2B4A}
+.view-btn:hover:not(.active){color:#fff;background:rgba(255,255,255,.18)}
+/* step nav */
+.snav-btn{padding:5px 14px;border:none;background:transparent;color:rgba(255,255,255,.65);font-size:12px;font-weight:500;border-radius:5px;cursor:pointer;white-space:nowrap}
+.snav-btn.active{background:rgba(255,255,255,.22);color:#fff;font-weight:700}
+.snav-btn.done::before{content:'\2713 '}.snav-btn.done{color:rgba(255,255,255,.4)}
+/* dashboard */
+.dash-metric{background:#F4F5F7;border-radius:8px;padding:12px 14px}
+.dash-metric-label{font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.dash-metric-value{font-size:22px;font-weight:700}
+.dash-metric-sub{font-size:11px;color:#6B7280;margin-top:2px}
+.dash-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem}
+.dash-card{background:#fff;border:.5px solid #E2E4E9;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.dash-card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1A2B4A;margin-bottom:12px;padding-bottom:8px;border-bottom:1.5px solid #1A2B4A}
+.dash-g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+table.dash-table{width:100%;border-collapse:collapse;font-size:12px}
+table.dash-table th{background:#2D3F5C;color:#fff;padding:7px 8px;text-align:center;white-space:nowrap;font-size:11px}
+table.dash-table th.t-left{text-align:left}
+table.dash-table td{padding:7px 8px;border-bottom:.5px solid #E2E4E9;vertical-align:middle;text-align:center}
+table.dash-table td.t-left{text-align:left;font-weight:500}
+table.dash-table tr:last-child td{border-bottom:none}
+table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.b-green{background:#EAF3DE;color:#3B6D11}.b-amber{background:#FAEEDA;color:#854F0B}.b-red{background:#FCEBEB;color:#A32D2D}
+.b-blue{background:#E6F1FB;color:#185FA5}.b-purple{background:#EEEDFE;color:#534AB7}.b-grey{background:#F4F5F7;color:#6B7280}
+.minibar-wrap{display:flex;align-items:center;gap:5px}
+.minibar-outer{width:54px;height:5px;background:#E2E4E9;border-radius:4px;overflow:hidden;flex-shrink:0}
+.minibar-inner{height:5px;border-radius:4px}
+.period-bar{background:#fff;border-bottom:.5px solid #E2E4E9;padding:8px 1.25rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* dashboard tab visibility fix */
+#dashView .page { opacity: 1 !important; animation: none !important; }
+#dashView .page.active { display: block !important; opacity: 1 !important; }
+
+
+#dashView .page{display:none;opacity:1!important;animation:none!important}
+#dashView .page.active{display:block!important;opacity:1!important}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .no-print, #topbar, #dashTabs, .period-bar, #dashTabs { display: none !important; }
+  .print-only { display: block !important; }
+  .page { display: block !important; }
+  .page:not(#tab-exec) { display: none !important; }
+  .dash-card { break-inside: avoid; box-shadow: none; border: 1px solid #E2E4E9; }
+  #tab-exec { padding: 0; }
+}
+</style>
+</head>
+<body>
+
+<div style="background:#0F1F38;padding:4px 1.25rem;display:flex;align-items:center;gap:12px;font-size:11px"><span id="spStatus" style="color:#fde68a">Loading…</span><button onclick="showSubmissionDebug()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);font-size:10px;padding:2px 8px;border-radius:4px;cursor:pointer;margin-left:8px">Who submitted?</button><button onclick="loadStore().then(function(){refreshDash();showToast('Dashboard refreshed');})" style="background:rgba(255,255,255,.12);border:none;color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;cursor:pointer">↻ Refresh</button></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <span style="font-size:15px;font-weight:600">SM Performance Hub</span>
+    <span id="headerBadge" style="font-size:11px;background:rgba(255,255,255,.13);padding:3px 10px;border-radius:20px">Loading&hellip;</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="view-toggle">
+      <button class="view-btn active" id="btnForm" onclick="showForm()">&#x1F4DD;&nbsp;Input form</button>
+      <button class="view-btn"        id="btnDash" onclick="showDash()">&#x1F4CA;&nbsp;Dashboard</button>
+    </div>
+    <nav id="dashTabs" style="display:none" class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('team',this)">Team</button>
+      <button class="nav-tab" onclick="showTab('productivity',this)">Productivity</button>
+      <button class="nav-tab" onclick="showTab('commercial',this)">Commercial</button>
+      <button class="nav-tab" onclick="showTab('sm',this)">Service Manager</button>
+      <button class="nav-tab" onclick="showTab('customer',this)">Customer</button>
+      <button class="nav-tab" onclick="showTab('escalations',this)">Escalations</button>
+      <button class="nav-tab" onclick="showTab('exec',this)">Exec Summary</button>
+    </nav>
+  </div>
+</div>
+<div id="formPline" class="progress-line" style="width:25%"></div>
+
+<div id="draftBanner" style="display:none;background:#1A2B4A;color:#fff;padding:10px 1.5rem;font-size:12px;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.1)"></div>
+<!-- FORM VIEW -->
+<div id="formView">
+<div style="background:linear-gradient(135deg,#1A2B4A,#0F6E56);color:#fff;padding:18px 1.5rem">
+  <div style="max-width:960px;margin:0 auto">
+    <div style="font-size:17px;font-weight:600;margin-bottom:3px">Monthly Data Input</div>
+    <div style="font-size:13px;opacity:.85">Complete your customer data and submit by the 3rd working day of each month.</div>
+  </div>
+</div>
+<div style="background:#2D3F5C;padding:6px 1.5rem;display:flex;gap:3px">
+  <button class="snav-btn active" id="sb1" onclick="goTo(1)">1 &middot; Details</button>
+  <button class="snav-btn"        id="sb2" onclick="goTo(2)">2 &middot; Time &amp; Activity</button>
+  <button class="snav-btn"        id="sb3" onclick="goTo(3)">3 &middot; Customers</button>
+  <button class="snav-btn"        id="sb4" onclick="goTo(4)">4 &middot; Review &amp; Export</button>
+</div>
+<div class="wrap">
+<div class="page active" id="pg1">
+  <div class="card">
+    <div class="card-title">Your details</div>
+    <div class="g3 gap">
+      <div class="fg"><label>Full name <span style="color:var(--red-d)">*</span></label><input type="text" id="smName" placeholder="e.g. Jane Smith"></div>
+      <div class="fg"><label>Email address <span style="color:var(--red-d)">*</span></label><input type="email" id="smEmail" placeholder="jane@company.com"></div>
+      <div class="fg"><label>Vertical <span style="color:var(--red-d)">*</span></label><select id="smVertical" style="width:100%;padding:8px 10px;border:.5px solid #E2E4E9;border-radius:7px;font-size:14px;background:#fff"><option value="Enterprise">Enterprise</option><option value="Public Sector">Public Sector</option></select></div>
+        <div class="fg"><label>Team Leader</label><input type="text" id="smTL" placeholder="Manager name"></div>
+        <div class="fg"><label>Service Lead</label><input type="text" id="smSL" placeholder="Service lead name"></div>
+    </div>
+    <div class="g4">
+      <div class="fg"><label>Reporting month <span style="color:var(--red-d)">*</span></label>
+        <select id="repMonth" onchange="updatePeriod()">
+          <option value="">Select…</option>
+          <option>January</option><option>February</option><option>March</option><option>April</option>
+          <option>May</option><option>June</option><option>July</option><option>August</option>
+          <option>September</option><option>October</option><option>November</option><option>December</option>
+        </select></div>
+      <div class="fg"><label>Year <span style="color:var(--red-d)">*</span></label>
+        <select id="repYear" onchange="updatePeriod()">
+          <option>2025</option><option selected>2026</option><option>2027</option>
+        </select></div>
+      <div class="fg"><label>Working days in month</label><input type="number" id="workDays" value="20" min="1" max="31" oninput="calcCF()"></div>
+      <div class="fg"><label>Contracted hours per week <span class="tgt">(e.g. 37.5 or 40)</span></label><input type="number" id="contractedHrs" value="37.5" min="10" max="60" step="0.5" oninput="calcCF()"><div class="sub">Your standard contracted working hours per week</div></div>
+      <div class="fg"><label>Annual leave taken (hrs) <span class="tgt">this month</span></label><input type="number" id="annualLeaveHrs" value="0" min="0" max="200" step="0.5" oninput="calcCF()"><div class="sub">Available hours = (contracted hrs ÷ 5 × work days) − annual leave</div></div>
+      <div class="fg"><label>SM utilisation % <span class="tgt">(target 86%)</span></label><input type="number" id="smUtil" placeholder="e.g. 88" min="0" max="100" step="0.1"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Account portfolio</div>
+    <div class="g4">
+      <div class="fg"><label>Total accounts managed <span style="color:#A32D2D">*</span></label><input type="number" id="totalAccts" placeholder="e.g. 12" min="1" max="30" oninput="syncCustomerCount()"></div>
+      <div class="fg"><label>Directed accounts</label><input type="number" id="directedAccts" placeholder="e.g. 2" min="0"><div class="sub">Strategic — highest touch</div></div>
+      <div class="fg"><label>Governed accounts</label><input type="number" id="govAccts" placeholder="e.g. 3" min="0"><div class="sub">Structured governance</div></div>
+      <div class="fg"><label>Maintained accounts</label><input type="number" id="maintAccts" placeholder="e.g. 2" min="0"><div class="sub">Standard service</div></div>
+      <div class="fg"><label>Base Enhanced accounts</label><input type="number" id="baseAccts" placeholder="e.g. 2" min="0"><div class="sub">Office-based management</div></div>
+      <div class="fg"><label>Total escalations this month</label><input type="number" id="totalEsc" value="0" min="0"></div>
+    </div>
+  </div>
+  <div class="nav-row"><div></div><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(1)">Continue to Time &amp; Activity →</button></div>
+</div>
+
+<!-- STEP 2 -->
+<div class="page" id="pg2">
+  <div class="card">
+    <div class="card-title">Customer activity time <span class="tag">Target ≥82% of working time</span></div>
+    <div class="g5 gap">
+      <div class="fg"><label>Week 1 (hrs)</label><input type="number" id="cf1" value="0" min="0" max="50" step="0.5" oninput="calcCF()"></div>
+      <div class="fg"><label>Week 2 (hrs)</label><input type="number" id="cf2" value="0" min="0" max="50" step="0.5" oninput="calcCF()"></div>
+      <div class="fg"><label>Week 3 (hrs)</label><input type="number" id="cf3" value="0" min="0" max="50" step="0.5" oninput="calcCF()"></div>
+      <div class="fg"><label>Week 4 (hrs)</label><input type="number" id="cf4" value="0" min="0" max="50" step="0.5" oninput="calcCF()"></div>
+      <div class="fg"><label>Week 5 (hrs) <span class="tgt">if applicable</span></label><input type="number" id="cf5" value="0" min="0" max="50" step="0.5" oninput="calcCF()"></div>
+      <div class="fg"><label>Total CF hrs</label><input type="text" id="cfTot" class="calc" readonly></div>
+    </div>
+    <div class="cf-strip">
+      <span style="font-size:13px;color:var(--muted)">CF time this month:</span>
+      <span class="cf-pct" id="cfPctDisplay">0%</span>
+      <span class="cf-badge" id="cfBadge"></span>
+      <span class="cf-hint" id="cfHint"></span>
+      <div id="cfAvailable" style="font-size:11px;color:#6B7280;margin-top:4px;grid-column:1/-1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Site presence &amp; activity</div>
+    <div class="g4 gap">
+      <div class="fg"><label>On-site visits this month <span class="tgt">(target ≥6)</span></label><input type="number" id="siteVisits" value="0" min="0"></div>
+      <div class="fg"><label>Service reviews delivered</label><input type="number" id="svcReviews" value="0" min="0"></div>
+      <div class="fg"><label>Leads passed to sales <span class="tgt">(target 4/qtr)</span></label><input type="number" id="leads" value="0" min="0"></div>
+      <div class="fg"><label>QBRs / exec meetings</label><input type="number" id="qbrs" value="0" min="0"></div>
+    </div>
+    <div class="g4">
+      <div class="fg"><label>Total hours worked <span class="tgt">(this month)</span></label><input type="number" id="totalHoursWorked" value="0" min="0" max="300" step="0.5"><div class="sub">For reference/reporting only</div></div>
+      <div class="fg"><label>Travel time (hrs)</label><input type="number" id="travelHrs" value="0" min="0" max="100" step="0.5"></div>
+      <div class="fg"><label>Internal meetings (hrs)</label><input type="number" id="internalHrs" value="0" min="0" max="100" step="0.5"></div>
+      <div class="fg"><label>CSIP work hours this month</label><input type="number" id="csipHrs" value="0" min="0" step="0.5"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Revenue summary <span class="tag">Month total — all accounts</span></div>
+    <div class="g4 gap">
+      <div class="fg">
+        <label>Sales Through Service (£) <span class="tgt">Team target £10m / 47 SMs = £212.8k</span></label>
+        <input type="number" id="totalSTS" value="0" min="0">
+        <div class="sub" id="stsBar"></div>
+      </div>
+      <div class="fg">
+        <label>Recovered Revenue (£) <span class="tgt">Team target £5m / 47 SMs = £106.4k</span></label>
+        <input type="number" id="totalRecov" value="0" min="0" oninput="updateRevBars()">
+        <div class="sub" id="recovBar"></div>
+      </div>
+      <div class="fg">
+        <label>Total Aged Debt (£) <span class="tgt">Target £0 — over £50k = risk</span></label>
+        <input type="number" id="totalAgedDebt" value="0" min="0" oninput="updateRevBars()">
+        <div class="sub" id="agedDebtBar"></div>
+      </div>
+      <div class="fg">
+        <label>Aged Debt Cleared this month (£)</label>
+        <input type="number" id="agedDebt" value="0" min="0">
+      </div>
+    </div>
+    <div class="g4">
+      <div class="fg">
+        <label>Cost To Serve (£) <span class="tgt">Enter actual monthly CTS for your portfolio</span></label>
+        <input type="number" id="costToServe" value="0" min="0" oninput="updateRevBars()">
+        <div class="sub" id="ctsBar"></div>
+      </div>
+      
+      <div class="fg"><label>Billing credits issued (£)</label><input type="number" id="billingCredits" value="0" min="0"></div>
+      <div class="fg"><label>Service credits paid (£) <span class="tgt">Total £ value of service credits issued this month</span></label><input type="number" id="serviceCreditsValue" value="0" min="0"></div>
+      <div class="fg"><label>Number of service credits <span class="tgt">Count of individual service credits paid</span></label><input type="number" id="serviceCreditsCount" value="0" min="0" step="1"></div>
+
+    </div>
+    <div id="commercialView" style="background:#F4F5F7;border-radius:8px;padding:14px 16px;margin-top:4px;display:none">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1A2B4A;margin-bottom:10px">Commercial view</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="commercialGrid"></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-sec" onclick="goTo(1)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(2)">Continue to Customers →</button>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="page" id="pg3">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1rem">
+    <div>
+      <div style="font-size:14px;font-weight:600;color:var(--navy)">Customer accounts</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px">Scores calculate live as you type. Click a header bar to collapse/expand.</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button type="button" onclick="loadPreviousCustomers()" style="background:#1A2B4A;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap" title="Pre-fills customer names and account types from your last submission">&#8635; Load last month's customers</button>
+      <span id="custBadge" style="font-size:12px;background:var(--blue-l);color:var(--blue-d);padding:4px 12px;border-radius:20px;font-weight:600;white-space:nowrap"></span>
+    </div>
+  </div>
+  <div id="custList"></div>
+  <button class="add-btn" onclick="addCust()">+ Add customer</button>
+  <div class="nav-row">
+    <button class="btn btn-sec" onclick="goTo(2)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(3)">Review &amp; Export →</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="page" id="pg4">
+  <div class="card">
+    <div class="card-title">Submission summary</div>
+    <div class="stat-grid" id="summaryStats"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Customer health overview</div>
+    <div id="custReview"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Export &amp; submit</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Click <strong>Submit to dashboard</strong> to update the team view instantly. Data is saved in this browser across sessions.</p>
+    <div class="export-actions">
+      <button class="btn btn-export" onclick="submitToDashboard()" style="font-size:15px;padding:13px 36px">✅ Submit to dashboard</button>
+      <button class="btn btn-sec" onclick="dlCSV()">⬇ Download CSV</button>
+      <button class="btn btn-sec" onclick="window.print()">🖨 Print</button>
+    </div>
+    <div class="export-note" id="filenameNote"></div>
+    </div>
+  <div class="nav-row">
+    <button class="btn btn-sec" onclick="goTo(3)">← Back</button>
+    <div>
+    </div>
+  </div>
+</div>
+</div>
+</div><!-- /formView -->
+
+<div id="dashView" style="display:none">
+<!-- period picker bar -->
+  <div class="period-bar">
+    <span style="font-size:12px;font-weight:600;color:#1A2B4A">View period:</span>
+    <select id="verticalFilter" onchange="refreshDash()" style="font-size:12px;padding:6px 10px;border:.5px solid #E2E4E9;border-radius:7px;background:#fff;margin-right:8px"><option value="">All verticals</option><option value="Enterprise">Enterprise</option><option value="Public Sector">Public Sector</option></select>
+        <select id="serviceLeadFilter" onchange="refreshDash()" style="font-size:12px;padding:6px 10px;border:.5px solid #E2E4E9;border-radius:7px;background:#fff;margin-right:8px"><option value="">All service leads</option></select>
+        <select id="periodPicker" onchange="onPeriodChange()" style="font-size:12px;padding:5px 10px;border:.5px solid #E2E4E9;border-radius:6px;background:#fff;cursor:pointer;min-width:200px">
+      <option value="latest">Latest data (per SM)</option>
+    </select>
+    <span id="periodLabel" style="font-size:12px;color:#6B7280"></span>
+    <button onclick="clearAllData()" style="margin-left:auto;font-size:11px;padding:4px 12px;border:.5px solid #E2E4E9;border-radius:6px;background:#fff;color:#A32D2D;cursor:pointer;font-weight:600">Clear all data</button>
+  </div>
+
+  <div class="main">
+
+    <!-- TEAM TAB -->
+    <div class="page active" id="tab-team">
+      <div id="teamMetrics" class="dash-metrics"></div>
+      <div class="dash-g2">
+        <div class="dash-card">
+          <div class="dash-card-title">Account health distribution</div>
+          <div style="height:200px"><canvas id="chartHealth"></canvas></div>
+          <div style="margin-top:10px;padding:8px 12px;background:#F4F5F7;border-radius:7px;font-size:10px;color:#6B7280;line-height:1.5">
+            <strong style="color:#1A2B4A">How Account Health is calculated:</strong>
+            Health = (VoC × 55%) + (Ops × 45%). <strong>VoC</strong> = NPS Input contribution + Sentiment + Service Reviews.
+            <strong>Ops</strong> = SLA(40) + P1/P2 Incidents(20) + Open Faults(15) + CSIP Quality(25).
+            <span style="color:#3B6D11">≥ 75 = Healthy</span> · <span style="color:#854F0B">60–74 = Needs Attention</span> · <span style="color:#A32D2D">&lt;60 = At Risk</span>
+          </div>
+        </div>
+        <div class="dash-card"><div class="dash-card-title">Team performance radar</div><div style="height:200px"><canvas id="chartRadar"></canvas></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">SM league table</div>
+        <div style="overflow-x:auto">
+          <table class="dash-table" style="min-width:1100px;table-layout:fixed">
+            <thead><tr id="leagueThead">
+              <th class="t-left" style="width:180px;min-width:180px;white-space:nowrap;cursor:pointer;position:sticky;left:0;background:#1A2B4A;z-index:2" onclick="sortLeague('name')">Name <span id="lsort_name"></span></th>
+              <th style="cursor:pointer" onclick="sortLeague('accts')">Accts <span id="lsort_accts"></span></th>
+              <th style="background:#0F6E56;cursor:pointer" onclick="sortLeague('health')">Health <span id="lsort_health">&#9660;</span></th>
+              <th style="background:#0F6E56;cursor:pointer" onclick="sortLeague('retention')">Retention <span id="lsort_retention"></span></th>
+              <th style="background:#185FA5;cursor:pointer" onclick="sortLeague('cfPct')">CF% <span id="lsort_cfPct"></span></th>
+              <th style="background:#534AB7;cursor:pointer" onclick="sortLeague('nps')">NPS Input <span id="lsort_nps"></span></th>
+              <th style="background:#1A2B4A;cursor:pointer" onclick="sortLeague('sla')">SLA% <span id="lsort_sla"></span></th>
+              <th style="background:#1A2B4A;cursor:pointer" onclick="sortLeague('csip')">CSIP% <span id="lsort_csip"></span></th>
+              <th style="background:#185FA5;cursor:pointer" onclick="sortLeague('visits')">Visits <span id="lsort_visits"></span></th>
+              <th style="background:#2D3F5C;cursor:pointer" onclick="sortLeague('esc')">Escals <span id="lsort_esc"></span></th>
+              <th style="background:#0F6E56;cursor:pointer" onclick="sortLeague('sts')">STS &#163; <span id="lsort_sts"></span></th>
+              <th style="background:#854F0B;cursor:pointer" onclick="sortLeague('prod')">Prod <span id="lsort_prod"></span></th>
+              <th></th>
+            </tr></thead>
+            <tbody id="leagueBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTIVITY TAB -->
+    <div class="page" id="tab-productivity">
+      <!-- Pillar summary cards -->
+      <div id="prodPillars" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px"></div>
+      <!-- Charts row -->
+      <div style="margin-bottom:16px">
+        <div class="dash-card" style="margin-bottom:16px">
+          <div class="dash-card-title">Productivity index by SM</div>
+          <div style="height:300px"><canvas id="chartProd"></canvas></div>
+          <div style="margin-top:12px;padding:10px 14px;background:#F4F5F7;border-radius:8px;font-size:11px;color:#4B5563;line-height:1.6">
+            <strong style="color:#1A2B4A;font-size:12px">How the Productivity Index is calculated (max 100)</strong><br>
+            <span style="display:inline-block;margin-top:4px">
+              <span style="color:#0F6E56;font-weight:600">CF Time</span> <span style="color:#6B7280">(25 pts)</span> &mdash; % of working time spent with customers, target &ge;82%
+              &nbsp;&bull;&nbsp;
+              <span style="color:#0F6E56;font-weight:600">Health</span> <span style="color:#6B7280">(25 pts)</span> &mdash; avg account health score, target &ge;80
+              &nbsp;&bull;&nbsp;
+              <span style="color:#0F6E56;font-weight:600">CX</span> <span style="color:#6B7280">(20 pts)</span> &mdash; customer rating &amp; sentiment, targets &ge;9 rating (Promoter) &amp; &ge;7 sentiment
+              &nbsp;&bull;&nbsp;
+              <span style="color:#0F6E56;font-weight:600">Ops</span> <span style="color:#6B7280">(20 pts)</span> &mdash; SLA &amp; CSIP completion, targets &ge;97% SLA (40pts) &amp; &ge;80% CSIP (20/25pts)
+              &nbsp;&bull;&nbsp;
+              <span style="color:#0F6E56;font-weight:600">Revenue</span> <span style="color:#6B7280">(10 pts)</span> &mdash; STS &amp; leads passed, targets &ge;&pound;212k STS &amp; &ge;4 leads
+            </span>
+          </div>
+        </div>
+        <div class="dash-card"><div class="dash-card-title">CF Time % by SM <span style="font-size:11px;color:#6B7280">(target 82%)</span></div><div style="height:300px"><canvas id="chartCF"></canvas></div></div>
+      </div>
+      <!-- Detailed breakdown table -->
+      <div class="dash-card">
+        <div class="dash-card-title">Productivity breakdown by Service Manager</div>
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:#1A2B4A;color:#fff">
+              <th style="padding:8px 10px;text-align:left;white-space:nowrap">SM</th>
+              <th style="padding:8px 6px;text-align:center" title="Productivity Index">PI</th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">CF Time %<br><span style="font-weight:400;color:#9CB0D0">&ge;82%</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">Health<br><span style="font-weight:400;color:#9CB0D0">&ge;75</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">NPS Input<br><span style="font-weight:400;color:#9CB0D0">&ge;9 (Promoter)</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">Sentiment<br><span style="font-weight:400;color:#9CB0D0">&ge;7</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">SLA %<br><span style="font-weight:400;color:#9CB0D0">&ge;97%</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">CSIP %<br><span style="font-weight:400;color:#9CB0D0">&ge;80% (20/25)</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">Visits<br><span style="font-weight:400;color:#9CB0D0">&ge;6</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">Leads<br><span style="font-weight:400;color:#9CB0D0">&ge;4</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">STS &pound;<br><span style="font-weight:400;color:#9CB0D0">&ge;&pound;212k</span></th>
+              <th style="padding:8px 6px;text-align:center">Vertical</th>
+              <th style="padding:8px 6px;text-align:center">Status</th>
+            </tr>
+          </thead>
+          <tbody id="prodTable"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SM TAB -->
+    <div class="page" id="tab-sm">
+      <div style="margin-bottom:1rem">
+        <select id="smSelect" onchange="renderSM()" style="font-size:13px;padding:8px 12px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff;min-width:240px">
+          <option value="">Select a service manager&hellip;</option>
+        </select>
+      </div>
+      <div id="smDetail"><p style="color:#6B7280;font-size:13px">Select a service manager above.</p></div>
+    </div>
+
+    <!-- CUSTOMER TAB -->
+    <!-- COMMERCIAL TAB -->
+    <div class="page" id="tab-commercial">
+      <div id="commercialMetrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
+      <div class="dash-card">
+        <div class="dash-card-title">Commercial performance by Service Manager</div>
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:900px">
+          <thead>
+            <tr style="background:#1A2B4A;color:#fff">
+              <th style="padding:8px 10px;text-align:left;width:150px;white-space:nowrap">SM</th>
+              <th style="padding:8px 6px;text-align:right;white-space:nowrap">STS &pound;<br><span style="font-weight:400;color:#9CB0D0">Target &pound;212k</span></th>
+              <th style="padding:8px 6px;text-align:right;white-space:nowrap">Recovered &pound;<br><span style="font-weight:400;color:#9CB0D0">Target &pound;106k</span></th>
+              <th style="padding:8px 6px;text-align:right;white-space:nowrap">Total Aged Debt &pound;</th>
+              <th style="padding:8px 6px;text-align:right;white-space:nowrap">Aged Debt Cleared &pound;</th>
+              <th style="padding:8px 6px;text-align:right;white-space:nowrap">Service Credits &pound;<br><span style="font-weight:400;color:#9CB0D0">Lower is better</span></th>
+              <th style="padding:8px 6px;text-align:center;white-space:nowrap">Credits<br><span style="font-weight:400;color:#9CB0D0">Count</span></th>
+              <th style="padding:8px 6px;text-align:right;white-space:nowrap">Cost to Serve &pound;</th>
+              <th style="padding:8px 6px;text-align:center">Vertical</th>
+              <th style="padding:8px 6px;text-align:center">STS RAG</th>
+            </tr>
+          </thead>
+          <tbody id="commercialBody"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="tab-customer">
+      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+        <input type="text" id="custSearch" placeholder="Search customer&hellip;" oninput="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;width:200px;background:#fff">
+        <select id="custVertFilter" onchange="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff"><option value="">All verticals</option><option value="Enterprise">Enterprise</option><option value="Public Sector">Public Sector</option></select>
+        <select id="custSMFilter" onchange="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff">
+          <option value="">All SMs</option>
+        </select>
+        <div style="position:relative;display:inline-block">
+          <button id="healthFilterBtn" onclick="toggleHealthDropdown(event)" type="button"
+            style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff;cursor:pointer;min-width:130px;text-align:left;display:flex;align-items:center;gap:4px">
+            <span id="healthFilterLabel">All health</span><span style="margin-left:auto">&#9660;</span>
+          </button>
+          <div id="healthFilterMenu" style="display:none;position:absolute;top:110%;left:0;z-index:200;background:#fff;border:.5px solid #E2E4E9;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 10px;min-width:170px">
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:12px">
+              <input type="checkbox" id="hf_healthy" onchange="applyHealthFilter()" checked> Healthy
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:12px">
+              <input type="checkbox" id="hf_needs" onchange="applyHealthFilter()" checked> Needs attention
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:12px">
+              <input type="checkbox" id="hf_risk" onchange="applyHealthFilter()" checked> At Risk
+            </label>
+            <hr style="border:none;border-top:.5px solid #E2E4E9;margin:6px 0">
+            <div style="display:flex;gap:6px">
+              <button onclick="setAllHealth(true)" type="button" style="font-size:11px;background:none;border:.5px solid #E2E4E9;border-radius:4px;cursor:pointer;color:#6B7280;padding:3px 8px">All</button>
+              <button onclick="setAllHealth(false)" type="button" style="font-size:11px;background:none;border:.5px solid #E2E4E9;border-radius:4px;cursor:pointer;color:#6B7280;padding:3px 8px">None</button>
+            </div>
+          </div>
+        </div>
+        <select id="custSort" onchange="renderCustomers()" style="font-size:12px;padding:7px 10px;border:.5px solid #E2E4E9;border-radius:8px;background:#fff"><option value="health_desc">Health: High → Low</option><option value="health_asc">Health: Low → High</option><option value="name_asc">Name: A → Z</option><option value="name_desc">Name: Z → A</option><option value="sm_asc">Service Manager: A → Z</option><option value="sentiment_asc">Sentiment: Low → High</option><option value="sla_asc">SLA: Low → High</option></select>
+        <span id="custCount" style="font-size:12px;color:#6B7280;align-self:center"></span>
+      </div>
+      <div class="dash-card" style="padding:0">
+        <div style="overflow:auto;max-height:70vh">
+        <table class="dash-table" style="min-width:1400px">
+          <thead style="position:sticky;top:0;z-index:5">
+              <tr style="background:#1A2B4A;color:#fff;font-size:12px">
+                <th style="padding:8px 10px;text-align:left;min-width:160px;position:sticky;left:0;background:#1A2B4A;z-index:6">Customer</th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap;min-width:130px">Status</th>
+                <th style="padding:10px 8px;text-align:left;white-space:nowrap">Service Manager</th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Vertical</th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Account Type</th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Health Score<br><span style="font-weight:400;color:#9CB0D0">&ge;75</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">VoC Score<br><span style="font-weight:400;color:#9CB0D0">/100</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Ops Score<br><span style="font-weight:400;color:#9CB0D0">/100</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">NPS Input<br><span style="font-weight:400;color:#9CB0D0">&ge;9 (Promoter)</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Sentiment<br><span style="font-weight:400;color:#9CB0D0">&ge;7</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Service Reviews<br><span style="font-weight:400;color:#9CB0D0">&ge;1</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">SLA %<br><span style="font-weight:400;color:#9CB0D0">&ge;97%</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">P1/P2 Incidents<br><span style="font-weight:400;color:#9CB0D0">&le;2</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Open Faults<br><span style="font-weight:400;color:#9CB0D0">0</span></th>
+                <th style="padding:10px 8px;text-align:center;white-space:nowrap">CSIP %<br><span style="font-weight:400;color:#9CB0D0">&ge;80% (20/25)</span></th>
+              </tr>
+            </thead>
+          <tbody id="custBody"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+    <!-- ESCALATIONS TAB -->
+    <div class="page" id="tab-escalations">
+      <!-- Summary cards -->
+      <div id="escSummaryCards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
+      <!-- Category breakdown -->
+      <div class="dash-g2" style="margin-bottom:16px">
+        <div class="dash-card">
+          <div class="dash-card-title">Escalations by category</div>
+          <div id="escByCat" style="padding:4px 0"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Escalations by Service Manager</div>
+          <div id="escBySM" style="padding:4px 0"></div>
+        </div>
+      </div>
+      <!-- Detail table -->
+      <div id="escDrillPanel" style="display:none;margin-bottom:16px"><div class="dash-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="dash-card-title" style="margin:0;color:#A32D2D">&#9888; <span id="escDrillTitle"></span> escalations</div><button onclick="document.getElementById('escDrillPanel').style.display='none'" type="button" style="background:none;border:.5px solid #E2E4E9;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;color:#6B7280">&#215; Close</button></div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#1A2B4A;color:#fff"><th style="padding:8px 10px;text-align:left;min-width:160px">Customer</th><th style="padding:8px 8px;text-align:left">Service Manager</th><th style="padding:8px 8px;text-align:center">Health</th><th style="padding:8px 8px;text-align:center">Status</th><th style="padding:8px 8px;text-align:left">All categories on this account</th></tr></thead><tbody id="escDrillBody"></tbody></table></div></div></div>
+<div class="dash-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="dash-card-title" style="margin:0">Escalation detail by account</div>
+          <div style="display:flex;gap:8px">
+            <select id="escSMFilter" onchange="renderEscalations()" style="font-size:12px;padding:6px 10px;border:.5px solid #E2E4E9;border-radius:7px;background:#fff">
+              <option value="">All SMs</option>
+            </select>
+            <select id="escCatFilter" onchange="renderEscalations()" style="font-size:12px;padding:6px 10px;border:.5px solid #E2E4E9;border-radius:7px;background:#fff">
+              <option value="">All categories</option>
+              <option>Billing</option>
+              <option>BAU Order</option>
+              <option>Delivery</option>
+              <option>Incident Management</option>
+              <option>Change Management</option>
+              <option>Mobile Core</option>
+              <option>Fixed Core</option>
+              <option>Quotes Response</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px">
+          <thead>
+            <tr style="background:#1A2B4A;color:#fff;font-size:11px">
+              <th style="padding:8px 10px;text-align:left;min-width:160px">Customer</th>
+              <th style="padding:8px 8px;text-align:left">SM</th>
+              <th style="padding:8px 8px;text-align:center">Vertical</th>
+              <th style="padding:8px 8px;text-align:center">Type</th>
+              <th style="padding:8px 8px;text-align:center;white-space:nowrap">Total<br>Escalations</th>
+              <th style="padding:8px 8px;text-align:left">Categories</th>
+              <th style="padding:8px 8px;text-align:center;white-space:nowrap">Health</th>
+              <th style="padding:8px 8px;text-align:center">Status</th>
+            </tr>
+          </thead>
+          <tbody id="escBody"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- EXEC SUMMARY TAB -->
+    <div class="page" id="tab-exec">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px" class="no-print">
+        <div>
+          <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:.5px">Board Report</div>
+          <div id="execPeriodLabel" style="font-size:13px;font-weight:600;color:#1A2B4A"></div>
+        </div>
+        <button onclick="window.print()" type="button"
+          style="background:#1A2B4A;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">
+          &#128438; Print / Save PDF
+        </button>
+      </div>
+
       <!-- Print header (only shows when printing) -->
       <div class="print-only" style="display:none;margin-bottom:20px;border-bottom:2px solid #1A2B4A;padding-bottom:12px">
         <div style="font-size:22px;font-weight:700;color:#1A2B4A">SM Performance Hub</div>
