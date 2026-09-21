@@ -869,6 +869,26 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
       <!-- Headline KPIs -->
       <div id="execKPIs" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
 
+      <!-- Trend (if multi-month data) -->
+      <div class="dash-card" id="execTrendCard" style="margin-bottom:16px;display:none">
+        <div class="dash-card-title">&#8593; Trends (month on month)</div>
+        <div id="execTrend" style="font-size:12px"></div>
+      </div>
+
+      <!-- Escalation sections -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <!-- Top 3 escalation causes -->
+        <div class="dash-card" style="border-left:4px solid #A32D2D">
+          <div class="dash-card-title">&#9650; Top Escalation Categories</div>
+          <div id="execEscCats" style="font-size:12px"></div>
+        </div>
+        <!-- Repeat escalations -->
+        <div class="dash-card" style="border-left:4px solid #854F0B">
+          <div class="dash-card-title">&#8635; Repeat Escalations (multiple months)</div>
+          <div id="execEscRepeat" style="font-size:12px"></div>
+        </div>
+      </div>
+
       <!-- Risk RAG strip -->
       <div class="dash-card" style="margin-bottom:16px">
         <div class="dash-card-title">Portfolio Health Overview</div>
@@ -908,25 +928,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
         <div id="execFocus" style="font-size:12px"></div>
       </div>
 
-      <!-- Trend (if multi-month data) -->
-      <div class="dash-card" id="execTrendCard" style="margin-bottom:16px;display:none">
-        <div class="dash-card-title">&#8593; Trends (month on month)</div>
-        <div id="execTrend" style="font-size:12px"></div>
-      </div>
 
-      <!-- Escalation sections -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-        <!-- Top 3 escalation causes -->
-        <div class="dash-card" style="border-left:4px solid #A32D2D">
-          <div class="dash-card-title">&#9650; Top Escalation Categories</div>
-          <div id="execEscCats" style="font-size:12px"></div>
-        </div>
-        <!-- Repeat escalations -->
-        <div class="dash-card" style="border-left:4px solid #854F0B">
-          <div class="dash-card-title">&#8635; Repeat Escalations (multiple months)</div>
-          <div id="execEscRepeat" style="font-size:12px"></div>
-        </div>
-      </div>
 
       <!-- Footer -->
       <div style="font-size:10px;color:#9CA3AF;text-align:center;margin-top:8px" class="print-only" id="execFooter"></div>
