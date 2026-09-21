@@ -437,7 +437,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
   <div class="card">
     <div class="card-title">Account portfolio</div>
     <div class="g4">
-      <div class="fg"><label>Total accounts managed</label><input type="number" id="totalAccts" placeholder="e.g. 12" min="1" max="30" oninput="syncCustomerCount()"></div>
+      <div class="fg"><label>Total accounts managed <span style="color:#A32D2D">*</span></label><input type="number" id="totalAccts" placeholder="e.g. 12" min="1" max="30" oninput="syncCustomerCount()"></div>
       <div class="fg"><label>Directed accounts</label><input type="number" id="directedAccts" placeholder="e.g. 2" min="0"><div class="sub">Strategic — highest touch</div></div>
       <div class="fg"><label>Governed accounts</label><input type="number" id="govAccts" placeholder="e.g. 3" min="0"><div class="sub">Structured governance</div></div>
       <div class="fg"><label>Maintained accounts</label><input type="number" id="maintAccts" placeholder="e.g. 2" min="0"><div class="sub">Standard service</div></div>
@@ -1260,6 +1260,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2003,8 +2004,47 @@ function goTo(n){ if(n===3) syncCustomerCount();
 }
 
 function next(from){
-  if(from===1 && !req(["smName","smEmail","repMonth"])) return;
-  if(from===3 && !document.getElementById("custList").children.length){toast("Add at least one customer");return;}
+  if(from===1){
+    // Step 1: name, email, month, vertical, total accounts
+    if(!req(["smName","smEmail","repMonth"])) return;
+    var v=document.getElementById("smVertical");
+    if(v&&!v.value){v.classList.add("bad");toast("Please select your vertical");return;}
+    var ta=document.getElementById("totalAccts");
+    if(!ta||!ta.value||+ta.value<1){if(ta)ta.classList.add("bad");toast("Please enter total number of accounts");return;}
+    if(v) v.classList.remove("bad");
+    if(ta) ta.classList.remove("bad");
+  }
+  if(from===2){
+    // Step 2: at least one CF week must be > 0
+    var cf=[1,2,3,4,5].map(function(n){return +(document.getElementById("cf"+n)||{value:0}).value||0;});
+    if(cf.reduce(function(a,b){return a+b;},0)===0){
+      toast("Please enter at least one week of customer activity hours");
+      return;
+    }
+  }
+  if(from===3){
+    // Step 3: at least one customer, and all customers need SLA + CSIP
+    var list=document.getElementById("custList");
+    if(!list||!list.children.length){toast("Add at least one customer");return;}
+    var incomplete=[];
+    Array.from(list.children).forEach(function(div){
+      var id=div.id;
+      var nm=(document.getElementById("name_"+id)||{value:""}).value||"";
+      var sla=(document.getElementById("sla_"+id)||{value:""}).value;
+      var csip=(document.getElementById("csipQ_"+id)||{value:""}).value;
+      var sent=+(document.getElementById("sent_"+id)||{value:1}).value||1;
+      if(!sla||!csip||sent<=1){
+        incomplete.push(nm||"Customer "+(Array.from(list.children).indexOf(div)+1));
+        if(!sla&&document.getElementById("sla_"+id)) document.getElementById("sla_"+id).classList.add("bad");
+        if(!csip&&document.getElementById("csipQ_"+id)) document.getElementById("csipQ_"+id).classList.add("bad");
+        if(sent<=1&&document.getElementById("sent_"+id)) document.getElementById("sent_"+id).style.outline="2px solid #A32D2D";
+      }
+    });
+    if(incomplete.length){
+      toast("⚠️ Please complete SLA, CSIP and Sentiment for: "+incomplete.slice(0,3).join(", ")+(incomplete.length>3?" and "+(incomplete.length-3)+" more":""));
+      return;
+    }
+  }
   goTo(from+1);
 }
 
@@ -3486,6 +3526,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
