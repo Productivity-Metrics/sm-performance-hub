@@ -2211,6 +2211,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3846,7 +3847,7 @@ function saveProgress(){
             name:document.getElementById('name_'+id)?.value||'',
             type:document.getElementById('type_'+id)?.value||'Maintained',
             renewal:document.getElementById('renewal_'+id)?.value||'',
-            ret:document.getElementById('ret_'+id)?.value||'0.95',
+            ret:document.getElementById('ret_'+id)?.value||'95',
             npsRaw:document.getElementById('npsRaw_'+id)?.value??'',
             sent:document.getElementById('sent_'+id)?.value||'1',
             rev:document.getElementById('rev_'+id)?.value||'0',
@@ -3899,7 +3900,7 @@ function restoreProgress(){
         custCount=0;
         draft.customers.forEach(function(c){
           addCust({name:c.name,type:c.type,renewal:c.renewal,
-            ret:+c.ret||0.95,
+            ret:(+c.ret>1?Math.round(+c.ret*100):+c.ret)||95,
             npsRaw:(c.npsRaw!==undefined&&c.npsRaw!==null&&c.npsRaw!=='')?+c.npsRaw:null,
             sent:(c.sent!==undefined&&c.sent!==''&&c.sent!==null)?+c.sent:1,
             rev:+c.rev||0,
@@ -4011,7 +4012,7 @@ function editSubmission(smName){
           name:    c.name||'',
           type:    c.type||'Maintained',
           renewal: c.renewal||'',
-          ret:     c.retention||0.95,
+          ret:     c.retention?(c.retention>1?Math.round(c.retention*100):Math.round(c.retention*100)):95,
           npsRaw:  c.npsRaw!==undefined&&c.npsRaw!==null?c.npsRaw:'',
           sent:    c.sentiment||7,
           rev:     c.serviceReviews||0,
@@ -4632,6 +4633,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
