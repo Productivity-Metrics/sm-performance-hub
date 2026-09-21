@@ -1158,6 +1158,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2101,6 +2102,19 @@ function recalc(id){
   chip.className="health-chip hc-"+cl;
   const bdEl=document.getElementById("breakdown_"+id);
   if(bdEl&&s.breakdown) renderBreakdownPanel(bdEl,s.breakdown,s.health);
+  // Show warning on accordion header if key fields are blank/default
+  var _slaEl=document.getElementById("sla_"+id);
+  var _sentEl=document.getElementById("sent_"+id);
+  var _csipEl=document.getElementById("csipQ_"+id);
+  var _incomplete=(!_slaEl||!_slaEl.value)||(!_csipEl||!_csipEl.value)||(!_sentEl||+_sentEl.value<=1);
+  var _chip=document.getElementById("hchip_"+id);
+  if(_chip){
+    var _warn=_chip.parentElement.querySelector(".cust-warn-"+id);
+    if(!_warn){_warn=document.createElement("span");_warn.className="cust-warn-"+id;
+      _warn.style.cssText="font-size:10px;background:#FEF2F2;color:#991B1B;border-radius:4px;padding:1px 6px;margin-left:8px;font-weight:600";
+      _chip.parentElement.appendChild(_warn);}
+    _warn.textContent=_incomplete?"\u26a0\ufe0f Incomplete":"";
+  }
 }
 
 function collectData(){
@@ -3035,6 +3049,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
