@@ -1261,6 +1261,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3431,122 +3432,100 @@ function renderExec(){
       +focus.map(function(s){return '<li style="color:#374151;margin-bottom:4px">'+s+'</li>';}).join('')+'</ul>';
   }
 
-  // ── Trends (if multi-month data) ───────────────────────────────────────
+  // ── Trends (full multi-month analysis) ──────────────────────────────
   var trendCard = document.getElementById('execTrendCard');
   var trendEl   = document.getElementById('execTrend');
-  // Find SMs with multiple months
-  var smMonths = {};
+  var MONTH_ORDER = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function mOrd(s){ var idx=MONTH_ORDER.indexOf(s.month||''); return (+(s.year||0))*12+(idx>=0?idx:0); }
+
+  var smAllSubs = {};
   submissions.forEach(function(s){
-    var nm = (s.smName||'').trim();
-    if(!smMonths[nm]) smMonths[nm] = [];
-    smMonths[nm].push({month:s.month, year:s.year,
-      customers: (s.customers||[]).map(function(c){return c.healthScore||c.health||0;})
+    var nm=(s.smName||'').trim(); if(!nm) return;
+    if(!smAllSubs[nm]) smAllSubs[nm]=[];
+    smAllSubs[nm].push(s);
+  });
+  Object.keys(smAllSubs).forEach(function(nm){ smAllSubs[nm].sort(function(a,b){return mOrd(a)-mOrd(b);}); });
+  var multiMonth = Object.keys(smAllSubs).filter(function(nm){return smAllSubs[nm].length>1;});
+
+  if(trendCard) trendCard.style.display='block';
+  if(!trendEl) return;
+
+  if(!multiMonth.length){
+    trendEl.innerHTML='<div style="color:#6B7280;padding:8px 0">Trend analysis will appear once SMs have submitted data for more than one month.</div>';
+    return;
+  }
+
+  var html='';
+
+  // ── 1. SM health movement ────────────────────────────────────────────
+  var healthTrends=[]; var stableCount=0;
+  multiMonth.forEach(function(nm){
+    var subs=smAllSubs[nm];
+    var prev=subs[subs.length-2]; var curr=subs[subs.length-1];
+    function avgH(s){ var cs=s.customers||[]; return cs.length?cs.reduce(function(t,c){return t+(c.healthScore||c.health||0);},0)/cs.length:0; }
+    var ph=avgH(prev); var ch=avgH(curr); var diff=ch-ph;
+    healthTrends.push({nm:nm,diff:diff,currH:ch,prevH:ph,from:prev.month+' '+prev.year,to:curr.month+' '+curr.year});
+    if(Math.abs(diff)<2) stableCount++;
+  });
+  healthTrends.sort(function(a,b){return a.diff-b.diff;});
+  var declining=healthTrends.filter(function(t){return t.diff<=-2;});
+  var improving=healthTrends.filter(function(t){return t.diff>=2;});
+
+  html+='<div style="margin-bottom:16px"><div style="font-weight:700;color:#1A2B4A;font-size:12px;margin-bottom:8px;border-bottom:.5px solid #E2E4E9;padding-bottom:6px">SM Portfolio Health Movement ('+multiMonth.length+' SMs with multiple months)</div>';
+  if(declining.length){
+    html+='<div style="font-weight:600;color:#A32D2D;font-size:11px;margin-bottom:6px">&#8595; Declining</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;margin-bottom:10px">'
+      +declining.map(function(t){return '<div style="background:#FEF2F2;border:.5px solid #FECACA;border-radius:6px;padding:7px 10px"><div style="font-weight:600;font-size:11px;color:#991B1B">'+t.nm+'</div><div style="font-size:14px;font-weight:700;color:#A32D2D">'+t.diff.toFixed(1)+' pts</div><div style="font-size:10px;color:#6B7280">'+t.prevH.toFixed(0)+' \u2192 '+t.currH.toFixed(0)+' ('+t.from+' \u2192 '+t.to+')</div></div>';}).join('')+'</div>';
+  }
+  if(improving.length){
+    html+='<div style="font-weight:600;color:#3B6D11;font-size:11px;margin-bottom:6px">&#8593; Improving</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;margin-bottom:10px">'
+      +improving.map(function(t){return '<div style="background:#F0FDF4;border:.5px solid #BBF7D0;border-radius:6px;padding:7px 10px"><div style="font-weight:600;font-size:11px;color:#166534">'+t.nm+'</div><div style="font-size:14px;font-weight:700;color:#3B6D11">+'+t.diff.toFixed(1)+' pts</div><div style="font-size:10px;color:#6B7280">'+t.prevH.toFixed(0)+' \u2192 '+t.currH.toFixed(0)+' ('+t.from+' \u2192 '+t.to+')</div></div>';}).join('')+'</div>';
+  }
+  if(stableCount) html+='<div style="font-size:11px;color:#6B7280">'+stableCount+' SM'+(stableCount!==1?'s':'')+' stable (change &lt;2 pts)</div>';
+  html+='</div>';
+
+  // ── 2. At Risk count movement month on month ─────────────────────────
+  var riskByMonth={};
+  submissions.forEach(function(s){
+    var key=(s.month||'')+'|||'+(s.year||'');
+    if(!riskByMonth[key]) riskByMonth[key]={atRisk:0,needsAttn:0,total:0,label:(s.month||'')+' '+(s.year||''),ord:mOrd(s)};
+    (s.customers||[]).forEach(function(c){
+      var h=c.healthScore||c.health||0; riskByMonth[key].total++;
+      if(h<60) riskByMonth[key].atRisk++;
+      else if(h<75) riskByMonth[key].needsAttn++;
     });
   });
-  var multiMonth = Object.keys(smMonths).filter(function(nm){return smMonths[nm].length>1;});
-  if(multiMonth.length && trendCard && trendEl){
-    trendCard.style.display='block';
-    var trends = [];
-    multiMonth.forEach(function(nm){
-      var months = smMonths[nm].sort(function(a,b){
-        return (a.year+'-'+a.month) < (b.year+'-'+b.month)?-1:1;
-      });
-      if(months.length>=2){
-        var prev = months[months.length-2];
-        var curr = months[months.length-1];
-        var prevAvg = prev.customers.length ? prev.customers.reduce(function(t,v){return t+v;},0)/prev.customers.length : 0;
-        var currAvg = curr.customers.length ? curr.customers.reduce(function(t,v){return t+v;},0)/curr.customers.length : 0;
-        var diff = currAvg - prevAvg;
-        if(Math.abs(diff)>=2) trends.push({nm:nm, diff:diff, curr:currAvg, prev:prevAvg,
-          from:prev.month+' '+prev.year, to:curr.month+' '+curr.year});
-      }
-    });
-    trends.sort(function(a,b){return a.diff-b.diff;});
-    if(trends.length){
-      var improving = trends.filter(function(t){return t.diff>0;});
-      var declining = trends.filter(function(t){return t.diff<0;});
-      var html = '';
-      if(declining.length){
-        html += '<div style="font-weight:600;color:#A32D2D;margin-bottom:6px">&#8595; Declining portfolios:</div>'
-          +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">'
-          +declining.map(function(t){
-            return '<div style="background:#FEF2F2;border:.5px solid #FECACA;border-radius:6px;padding:5px 10px;font-size:11px">'
-              +'<strong>'+t.nm+'</strong> '+(t.diff>0?'+':'')+t.diff.toFixed(1)+' pts ('+t.from+' \u2192 '+t.to+')</div>';
-          }).join('')+'</div>';
-      }
-      if(improving.length){
-        html += '<div style="font-weight:600;color:#3B6D11;margin-bottom:6px">&#8593; Improving portfolios:</div>'
-          +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
-          +improving.map(function(t){
-            return '<div style="background:#F0FDF4;border:.5px solid #BBF7D0;border-radius:6px;padding:5px 10px;font-size:11px">'
-              +'<strong>'+t.nm+'</strong> +'+t.diff.toFixed(1)+' pts ('+t.from+' \u2192 '+t.to+')</div>';
-          }).join('')+'</div>';
-      }
-      trendEl.innerHTML = html || '<div style="color:#6B7280">Insufficient month-on-month change to report trends.</div>';
-    } else {
-      trendEl.innerHTML = '<div style="color:#6B7280">Trends will appear once sufficient month-on-month data is available.</div>';
-    }
+  var riskMonths=Object.values(riskByMonth).sort(function(a,b){return a.ord-b.ord;});
+  if(riskMonths.length>=2){
+    var lr=riskMonths[riskMonths.length-1]; var pr=riskMonths[riskMonths.length-2];
+    var rd=lr.atRisk-pr.atRisk; var ad=lr.needsAttn-pr.needsAttn;
+    html+='<div style="margin-bottom:16px"><div style="font-weight:700;color:#1A2B4A;font-size:12px;margin-bottom:8px;border-bottom:.5px solid #E2E4E9;padding-bottom:6px">Risk Profile ('+pr.label+' \u2192 '+lr.label+')</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      +'<div style="background:#FEF2F2;border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#6B7280;text-transform:uppercase">At Risk</div><div style="font-size:26px;font-weight:700;color:#A32D2D">'+lr.atRisk+'</div><div style="font-size:11px;color:'+(rd>0?'#A32D2D':rd<0?'#3B6D11':'#6B7280')+'">'+(rd>0?'\u2191 +'+rd:rd<0?'\u2193 '+rd:'No change')+' vs '+pr.label+'</div></div>'
+      +'<div style="background:#FEF9F0;border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#6B7280;text-transform:uppercase">Needs Attention</div><div style="font-size:26px;font-weight:700;color:#854F0B">'+lr.needsAttn+'</div><div style="font-size:11px;color:'+(ad>0?'#A32D2D':ad<0?'#3B6D11':'#6B7280')+'">'+(ad>0?'\u2191 +'+ad:ad<0?'\u2193 '+ad:'No change')+' vs '+pr.label+'</div></div>'
+      +'</div></div>';
   }
-}
-window.addEventListener('load', function(){
-  loadStore();
-  updateDraftBanner();
-  // Auto-save draft every 2 minutes - but ONLY after SM has deliberately
-  // saved or resumed, not on fresh page load (avoids overwriting saved draft)
-  setInterval(function(){
-    if(!window._draftEnabled) return;  // only auto-save if SM has started saving
-    var formVisible = document.getElementById('formView');
-    if(formVisible && formVisible.style.display !== 'none'){
-      var name = document.getElementById('smName')?.value||'';
-      if(name.trim()) saveProgress();
-    }
-  }, 120000);
-  if(!submissions.length) seedDemo();
-  calcCF();
-  // If a saved draft exists, auto-restore it so SM never loses their work
-  // They'll see a toast confirming what was restored
-  var _existingDraft = null;
-  try{ _existingDraft = localStorage.getItem('smHub_draft') || sessionStorage.getItem('smHub_draft'); }catch(e){}
-  if(_existingDraft){
-    try{
-      var _pd = JSON.parse(_existingDraft);
-      if(_pd && _pd.smName){
-        // Auto-restore the draft silently
-        restoreProgress();
-        window._draftEnabled = true;
-        showToast('\u21ba Draft restored for ' + _pd.smName + ' \u2014 last saved ' +
-          new Date(_pd.savedAt).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}) +
-          ' at ' + new Date(_pd.savedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
-        updateDraftBanner();
-        return;  // skip adding blank customer - we have real customers from draft
-      }
-    }catch(e){}
+
+  // ── 3. Sentiment trend ────────────────────────────────────────────────
+  var sentByMonth={};
+  submissions.forEach(function(s){
+    var key=(s.month||'')+'|||'+(s.year||'');
+    if(!sentByMonth[key]) sentByMonth[key]={total:0,count:0,label:(s.month||'')+' '+(s.year||''),ord:mOrd(s)};
+    (s.customers||[]).forEach(function(c){ if(c.sentiment){sentByMonth[key].total+=(+c.sentiment||0);sentByMonth[key].count++;} });
+  });
+  var sentMonths=Object.values(sentByMonth).filter(function(m){return m.count>0;}).sort(function(a,b){return a.ord-b.ord;});
+  if(sentMonths.length>=2){
+    var sc=sentMonths[sentMonths.length-1]; var sp=sentMonths[sentMonths.length-2];
+    var scA=sc.total/sc.count; var spA=sp.total/sp.count; var sd=scA-spA;
+    html+='<div style="margin-bottom:8px"><div style="font-weight:700;color:#1A2B4A;font-size:12px;margin-bottom:8px;border-bottom:.5px solid #E2E4E9;padding-bottom:6px">Average Sentiment Trend</div>'
+      +'<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">'
+      +'<div style="text-align:center;padding:10px 20px;background:#F8FAFC;border-radius:8px"><div style="font-size:10px;color:#6B7280">'+sp.label+'</div><div style="font-size:26px;font-weight:700;color:#374151">'+spA.toFixed(1)+'</div></div>'
+      +'<div style="font-size:24px;color:'+(sd>=0?'#3B6D11':'#A32D2D')+'">'+(sd>=0?'\u2197':'\u2198')+'</div>'
+      +'<div style="text-align:center;padding:10px 20px;background:#F8FAFC;border-radius:8px"><div style="font-size:10px;color:#6B7280">'+sc.label+'</div><div style="font-size:26px;font-weight:700;color:'+(scA<6?'#A32D2D':scA<7?'#854F0B':'#3B6D11')+'">'+scA.toFixed(1)+'</div></div>'
+      +'<div style="font-size:13px;font-weight:600;color:'+(sd>=0?'#3B6D11':'#A32D2D')+'">'+(sd>=0?'+':'')+sd.toFixed(2)+' pts month on month</div>'
+      +'</div></div>';
   }
-  // No draft - start with 1 blank customer
-  addCust();
-  updateCustBadge();
-});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  trendEl.innerHTML = html || '<div style="color:#6B7280">No trend data available yet.</div>';
 
 </script>
 <!-- rebuild -->
