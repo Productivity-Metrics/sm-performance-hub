@@ -1159,6 +1159,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2675,6 +2676,7 @@ function localStorageWorks(){
 }
 
 function saveProgress(){
+  window._draftEnabled = true;  // mark that SM has started saving
   if(!localStorageWorks()){
     showToast('\u26a0\ufe0f Your browser does not support saving drafts. Please submit before closing this tab.');
     return;
@@ -2754,6 +2756,7 @@ function saveProgress(){
 }
 
 function restoreProgress(){
+  window._draftEnabled = true;  // mark as active after resume
   try{
     var raw=localStorage.getItem(DRAFT_KEY);
     if(!raw){ try{ raw=sessionStorage.getItem(DRAFT_KEY); }catch(e){} }
@@ -3035,20 +3038,42 @@ function drillEscCategory(cat){
 window.addEventListener('load', function(){
   loadStore();
   updateDraftBanner();
-  // Auto-save draft every 2 minutes while SM is filling in the form
+  // Auto-save draft every 2 minutes - but ONLY after SM has deliberately
+  // saved or resumed, not on fresh page load (avoids overwriting saved draft)
   setInterval(function(){
+    if(!window._draftEnabled) return;  // only auto-save if SM has started saving
     var formVisible = document.getElementById('formView');
     if(formVisible && formVisible.style.display !== 'none'){
       var name = document.getElementById('smName')?.value||'';
-      if(name.trim()) saveProgress();  // only auto-save if name is entered
+      if(name.trim()) saveProgress();
     }
   }, 120000);
   if(!submissions.length) seedDemo();
   calcCF();
-  // Start with 1 blank customer; SM can add more or use Load last month
+  // If a saved draft exists, auto-restore it so SM never loses their work
+  // They'll see a toast confirming what was restored
+  var _existingDraft = null;
+  try{ _existingDraft = localStorage.getItem('smHub_draft') || sessionStorage.getItem('smHub_draft'); }catch(e){}
+  if(_existingDraft){
+    try{
+      var _pd = JSON.parse(_existingDraft);
+      if(_pd && _pd.smName){
+        // Auto-restore the draft silently
+        restoreProgress();
+        window._draftEnabled = true;
+        showToast('\u21ba Draft restored for ' + _pd.smName + ' \u2014 last saved ' +
+          new Date(_pd.savedAt).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}) +
+          ' at ' + new Date(_pd.savedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+        updateDraftBanner();
+        return;  // skip adding blank customer - we have real customers from draft
+      }
+    }catch(e){}
+  }
+  // No draft - start with 1 blank customer
   addCust();
   updateCustBadge();
 });
+
 
 
 
