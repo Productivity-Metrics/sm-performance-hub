@@ -2199,6 +2199,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2544,7 +2545,12 @@ function renderMetrics(){
     m('Avg retention',(aR*100).toFixed(1)+'%','Target \u226595%',aR>=.95?'#3B6D11':'#854F0B')+
     m('SLA compliance',aSLA.toFixed(1)+'%','Target \u226597%',aSLA>=97?'#3B6D11':'#854F0B')+
     m('CSIP completion',aCSIP.toFixed(0)+'%','Target \u226580%',aCSIP>=80?'#3B6D11':'#854F0B')+
+    // NPS response rate
+    var totC=_agg.custs.length;
+    var npsResp=_agg.custs.filter(function(c){return c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!=='';}).length;
+    var npsRR=totC?Math.round(npsResp/totC*100):0;
     m('Avg NPS Input',Math.round(aNPS/10),'Target \u22659 (Promoter)',aNPS>=90?'#534AB7':'#854F0B')+
+    m('NPS Response Rate',npsRR+'%',npsResp+' of '+totC+' accounts responded',npsRR>=80?'#3B6D11':npsRR>=60?'#854F0B':'#A32D2D')+
     m('Team STS','\u00a3'+(tSTS/1000).toFixed(0)+'k','Target \u00a310m',tSTS>=10000000?'#3B6D11':'#185FA5')+
     m('Recovered rev','\u00a3'+(tRec/1000).toFixed(0)+'k','Target \u00a35m',tRec>=5000000?'#3B6D11':'#185FA5');
 }
@@ -4525,6 +4531,7 @@ function autoFillWorkingDays(){
     showToast('Working days auto-set to '+days+' for '+month+' '+year+' (excl. UK bank holidays)');
   }
 }
+
 
 
 
