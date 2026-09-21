@@ -2198,6 +2198,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2736,7 +2737,10 @@ function renderCustomers(){
     if(bd) return {voc:c.voc||0, ops:c.ops||0, bd:bd};
     var nps=c.nps||0, sent=c.sentiment||0, rev=c.serviceReviews||0;
     var sla=c.sla||0, p12=c.p12||0, faults=c.faults||0, csipQ=c.csipQ||0;
-    var voc=Math.round((((nps/100)*30)+((sent/10)*35)+(Math.min(rev,1)*35))*10)/10;
+    // If no NPS response, redistribute NPS weight (30pts) equally to sentiment and reviews
+    var voc=nps!==null&&nps!==undefined
+      ?Math.round((((nps/100)*30)+((sent/10)*35)+(Math.min(rev,1)*35))*10)/10
+      :Math.round((((sent/10)*50)+(Math.min(rev,1)*50))*10)/10;
     var ops=Math.round((((sla/100)*40)+(Math.max(0,(10-p12)/10)*20)+(Math.max(0,(10-faults)/10)*15)+(Math.min(csipQ,100)/100*25))*10)/10;
     return {voc:voc, ops:ops, bd:null};
   }
@@ -4521,6 +4525,7 @@ function autoFillWorkingDays(){
     showToast('Working days auto-set to '+days+' for '+month+' '+year+' (excl. UK bank holidays)');
   }
 }
+
 
 
 
