@@ -2197,6 +2197,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3159,7 +3160,7 @@ function updateCustBadge(){
 
 function recalc(id){
   const nps=+document.getElementById("nps_"+id).value||0;
-    const npsRaw=+(document.getElementById("npsRaw_"+id)||{value:9}).value||0;
+    const npsRawEl=document.getElementById("npsRaw_"+id); const npsRaw=npsRawEl&&npsRawEl.value!==''?+npsRawEl.value:null;
   const sent=+document.getElementById("sent_"+id).value||0;
   const rev=+document.getElementById("rev_"+id).value||0;
   const sla=+document.getElementById("sla_"+id).value||0;
@@ -3634,6 +3635,7 @@ function renderEscalations(){
 }
 
 function npsToScore(raw){
+  if(raw===''||raw===null||raw===undefined) return null; // No response
   var v = +raw;
   if(v >= 9) return 100;   // Promoter
   if(v >= 7) return 50;    // Passive
@@ -3807,7 +3809,7 @@ function saveProgress(){
             type:document.getElementById('type_'+id)?.value||'Maintained',
             renewal:document.getElementById('renewal_'+id)?.value||'',
             ret:document.getElementById('ret_'+id)?.value||'0.95',
-            npsRaw:document.getElementById('npsRaw_'+id)?.value||'9',
+            npsRaw:document.getElementById('npsRaw_'+id)?.value??'',
             sent:document.getElementById('sent_'+id)?.value||'7',
             rev:document.getElementById('rev_'+id)?.value||'0',
             sla:document.getElementById('sla_'+id)?.value||'',
@@ -3859,7 +3861,7 @@ function restoreProgress(){
         custCount=0;
         draft.customers.forEach(function(c){
           addCust({name:c.name,type:c.type,renewal:c.renewal,
-            ret:+c.ret||0.95,npsRaw:+c.npsRaw||9,sent:+c.sent||7,
+            ret:+c.ret||0.95,npsRaw:c.npsRaw!==undefined&&c.npsRaw!==null&&c.npsRaw!==''?+c.npsRaw:null,sent:+c.sent||7,
             rev:+c.rev||0,sla:c.sla!==''?+c.sla:undefined,
             p12:+c.p12||0,p12base:+c.p12base||0,
             faults:+c.flt||0,csipQ:+c.csipQ||0,
@@ -3968,7 +3970,7 @@ function editSubmission(smName){
           type:    c.type||'Maintained',
           renewal: c.renewal||'',
           ret:     c.retention||0.95,
-          npsRaw:  c.npsRaw||9,
+          npsRaw:  c.npsRaw!==undefined&&c.npsRaw!==null?c.npsRaw:'',
           sent:    c.sentiment||7,
           rev:     c.serviceReviews||0,
           sla:     c.sla||0,
@@ -4519,6 +4521,7 @@ function autoFillWorkingDays(){
     showToast('Working days auto-set to '+days+' for '+month+' '+year+' (excl. UK bank holidays)');
   }
 }
+
 
 
 </script>
