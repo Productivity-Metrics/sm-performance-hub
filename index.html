@@ -3112,7 +3112,8 @@ function addCust(d){
       <div class="g3 gap">
         <div class="fg"><label>Customer rating <span class="tgt">(0–10, target ≥9 = Promoter)</span></label>
         <select id="npsRaw_${id}" onchange="document.getElementById('nps_${id}').value=npsToScore(this.value);recalc('${id}')" style="width:100%;padding:8px 10px;border:.5px solid #E2E4E9;border-radius:7px;font-size:14px;background:#fff">
-          ${[10,9,8,7,6,5,4,3,2,1,0].map(v=>`<option value="${v}"${(data.npsRaw!==undefined?data.npsRaw:9)==v?' selected':''}>${v} — ${v>=9?'Promoter':v>=7?'Passive':'Detractor'}</option>`).join('')}
+          <option value=""${(data.npsRaw===undefined||data.npsRaw===null||data.npsRaw==='')?' selected':''}>No response this month</option>
+          ${[10,9,8,7,6,5,4,3,2,1,0].map(v=>`<option value="${v}"${(data.npsRaw!==undefined&&data.npsRaw!==null&&data.npsRaw!==''&&+data.npsRaw===v)?' selected':''}>${v} — ${v>=9?'Promoter':v>=7?'Passive':'Detractor'}</option>`).join('')}
         </select>
         <input type="hidden" id="nps_${id}" value="${data.nps!==undefined?data.nps:npsToScore(data.npsRaw!==undefined?data.npsRaw:9)}">
         <div class="sub">How would this customer rate us 0–10? 9–10 = Promoter, 7–8 = Passive, 0–6 = Detractor</div>
