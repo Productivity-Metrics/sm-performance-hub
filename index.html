@@ -2213,6 +2213,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3513,7 +3514,9 @@ function buildEscRows(id, count){
   if(!container) return;
   // Read existing selections before rebuild
   var existing = [];
+  var existingOther = [];
   container.querySelectorAll('select').forEach(function(sel){ existing.push(sel.value); });
+  container.querySelectorAll('input[type="text"]').forEach(function(inp){ existingOther.push(inp.value); });
   // Build new rows
   var html = '';
   if(n > 0){
@@ -3521,13 +3524,20 @@ function buildEscRows(id, count){
       +'<div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:8px">Escalation categories:</div>';
     for(var i=0; i<n; i++){
       var prev = existing[i] || '';
-      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+      var prevOther = existingOther[i] || '';
+      html += '<div style="margin-bottom:6px">'
+        +'<div style="display:flex;align-items:center;gap:8px">'
         +'<span style="font-size:11px;color:#6B7280;min-width:80px">Escalation '+(i+1)+'</span>'
-        +'<select id="escCat_'+id+'_'+i+'" style="flex:1;font-size:12px;padding:5px 8px;border:.5px solid #E2E4E9;border-radius:6px;background:#fff">'
+        +'<select id="escCat_'+id+'_'+i+'" onchange="toggleOtherText(\''+id+'\','+i+')" style="flex:1;font-size:12px;padding:5px 8px;border:.5px solid #E2E4E9;border-radius:6px;background:#fff">'
         +ESC_CATS.map(function(c){
           return '<option value="'+c+'"'+(c===prev?' selected':'')+'>'+c+'</option>';
         }).join('')
-        +'</select></div>';
+        +'</select></div>'
+        +'<div id="otherText_'+id+'_'+i+'" style="display:'+(prev==='Other'?'block':'none')+';margin-top:4px;padding-left:88px">'
+        +'<input type="text" id="escOther_'+id+'_'+i+'" value="'+prevOther.replace(/"/g,'&quot;')+'" placeholder="Please describe the escalation reason..." '
+        +'style="width:100%;font-size:12px;padding:5px 8px;border:.5px solid #E2E4E9;border-radius:6px">'
+        +'</div>'
+        +'</div>';
     }
     html += '</div>';
   }
@@ -3858,6 +3868,14 @@ function saveProgress(){
             flt:document.getElementById('flt_'+id)?.value||'0',
             csipQ:document.getElementById('csipQ_'+id)?.value||'0',
             esc:document.getElementById('esc_'+id)?.value||'0',
+            escOthers:(function(){
+              var others={};
+              var container=document.getElementById('escRows_'+id);
+              if(container) container.querySelectorAll('input[type="text"]').forEach(function(inp,i){
+                if(inp.value.trim()) others[i]=inp.value.trim();
+              });
+              return others;
+            })(),
             sv:document.getElementById('sv_'+id)?.value||'1',
             leads:document.getElementById('leads_'+id)?.value||'0',
             sts:document.getElementById('sts_'+id)?.value||'0',
@@ -4597,6 +4615,12 @@ function getNPSConsecutiveNonResponse(smName, custName){
   return consecutive;
 }
 
+
+function toggleOtherText(id, i){
+  var sel = document.getElementById('escCat_'+id+'_'+i);
+  var box = document.getElementById('otherText_'+id+'_'+i);
+  if(box) box.style.display = (sel && sel.value==='Other') ? 'block' : 'none';
+}
 window.addEventListener('load', function(){
   loadStore();
   updateDraftBanner();
@@ -4634,6 +4658,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
