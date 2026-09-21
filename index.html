@@ -2207,6 +2207,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3211,7 +3212,7 @@ function recalc(id){
   stEl.textContent=hLabel(s.health);
   stEl.className="score-status ss-"+cl;
   const chip=document.getElementById("hchip_"+id);
-  chip.textContent=s.health.toFixed(0)+" · "+hLabel(s.health);
+  chip.textContent=_adjHealth.toFixed(0)+" · "+hLabel(_adjHealth);
   chip.className="health-chip hc-"+cl;
   const bdEl=document.getElementById("breakdown_"+id);
   if(bdEl&&s.breakdown) renderBreakdownPanel(bdEl,s.breakdown,s.health);
@@ -4585,6 +4586,7 @@ function getNPSConsecutiveNonResponse(smName, custName){
   }
   return consecutive;
 }
+
 
 
 
