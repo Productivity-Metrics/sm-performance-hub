@@ -418,17 +418,17 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
     </div>
     <div class="g4">
       <div class="fg"><label>Reporting month <span style="color:var(--red-d)">*</span></label>
-        <select id="repMonth" onchange="updatePeriod()">
+        <select id="repMonth" onchange="updatePeriod();autoFillWorkingDays()">
           <option value="">Select…</option>
           <option>January</option><option>February</option><option>March</option><option>April</option>
           <option>May</option><option>June</option><option>July</option><option>August</option>
           <option>September</option><option>October</option><option>November</option><option>December</option>
         </select></div>
       <div class="fg"><label>Year <span style="color:var(--red-d)">*</span></label>
-        <select id="repYear" onchange="updatePeriod()">
+        <select id="repYear" onchange="updatePeriod();autoFillWorkingDays()">
           <option>2025</option><option selected>2026</option><option>2027</option>
         </select></div>
-      <div class="fg"><label>Working days in month</label><input type="number" id="workDays" value="20" min="1" max="31" oninput="calcCF()"></div>
+      <div class="fg"><label>Working days in month <span class="tgt" style="font-weight:400">(auto-filled from month)</span></label><input type="number" id="workDays" value="20" min="1" max="31" oninput="calcCF()"><div class="sub">Auto-calculated excluding weekends &amp; UK bank holidays. Adjust if needed.</div></div>
       <div class="fg"><label>Contracted hours per week <span class="tgt">(e.g. 37.5 or 40)</span></label><input type="number" id="contractedHrs" value="37.5" min="10" max="60" step="0.5" oninput="calcCF()"><div class="sub">Your standard contracted working hours per week</div></div>
       <div class="fg"><label>Annual leave taken (hrs) <span class="tgt">this month</span></label><input type="number" id="annualLeaveHrs" value="0" min="0" max="200" step="0.5" oninput="calcCF()"><div class="sub">Available hours = (contracted hrs ÷ 5 × work days) − annual leave</div></div>
       <div class="fg"><label>SM utilisation % <span class="tgt">(target 86%)</span></label><input type="number" id="smUtil" placeholder="e.g. 88" min="0" max="100" step="0.1"></div>
@@ -2170,6 +2170,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 </script>
 <script>
+
 
 
 
@@ -4470,6 +4471,55 @@ function renderExec(){
 
   trendEl.innerHTML=html;
 }
+
+// UK bank holidays (England & Wales) - extend as needed
+var UK_BANK_HOLIDAYS = [
+  // 2025
+  '2025-01-01','2025-04-18','2025-04-21','2025-05-05','2025-05-26',
+  '2025-08-25','2025-12-25','2025-12-26',
+  // 2026
+  '2026-01-01','2026-04-03','2026-04-06','2026-05-04','2026-05-25',
+  '2026-08-31','2026-12-25','2026-12-28',
+  // 2027
+  '2027-01-01','2027-03-26','2027-03-29','2027-05-03','2027-05-31',
+  '2027-08-30','2027-12-27','2027-12-28'
+];
+
+function calcWorkingDays(month, year){
+  // month = 'January', 'February' etc; year = '2026' etc
+  var MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+  var mIdx = MONTHS.indexOf(month);
+  if(mIdx < 0 || !year) return null;
+  var yr = +year;
+  var daysInMonth = new Date(yr, mIdx+1, 0).getDate();
+  var count = 0;
+  for(var d=1; d<=daysInMonth; d++){
+    var date = new Date(yr, mIdx, d);
+    var dow = date.getDay(); // 0=Sun, 6=Sat
+    if(dow === 0 || dow === 6) continue; // skip weekends
+    // Format as YYYY-MM-DD for bank holiday check
+    var ds = yr+'-'+String(mIdx+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    if(UK_BANK_HOLIDAYS.indexOf(ds) >= 0) continue; // skip bank holidays
+    count++;
+  }
+  return count;
+}
+
+function autoFillWorkingDays(){
+  var month = (document.getElementById('repMonth')||{value:''}).value||'';
+  var year  = (document.getElementById('repYear')||{value:''}).value||'';
+  if(!month || !year) return;
+  var days = calcWorkingDays(month, year);
+  if(!days) return;
+  var wdEl = document.getElementById('workDays');
+  if(wdEl){
+    wdEl.value = days;
+    calcCF(); // recalculate CF% with new working days
+    showToast('Working days auto-set to '+days+' for '+month+' '+year+' (excl. UK bank holidays)');
+  }
+}
+
 
 </script>
 <!-- rebuild -->
