@@ -2202,6 +2202,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2438,7 +2439,16 @@ function aggregate(){
         faults: c.openFaults||0, csipQ: c.csipQuality||0
       });
       custRows.push({name:c.name,sm:name,siIdx:idx,type:c.type,vertical:ss.length>0?(ss[ss.length-1].smVertical||'Enterprise'):'Enterprise',
-        health:liveScore.health,retention:c.retention,nps:c.nps,npsRaw:c.npsRaw,sentiment:c.sentiment||0,
+        // NPS non-response penalty
+        npsNoResp:(c.npsRaw===null||c.npsRaw===undefined||c.npsRaw===''),
+        npsConsecNoResp:getNPSConsecutiveNonResponse(name,c.name),
+        health:(function(){
+          var h=liveScore.health;
+          var noResp=(c.npsRaw===null||c.npsRaw===undefined||c.npsRaw==='');
+          if(noResp) h=Math.max(0,h-3); // -3pts for no NPS this month
+          return Math.round(h*10)/10;
+        })(),
+        retention:c.retention,nps:c.nps,npsRaw:c.npsRaw,sentiment:c.sentiment||0,
         sla:c.sla,csip:c.csipPct,sts:c.sts||0,aged:c.agedDebt||c.aged||0,
         recovered:c.recovered||0,p12:c.p12Incidents||0,faults:c.openFaults||0,
         scoreBreakdown:liveScore.breakdown,voc:liveScore.voc,ops:liveScore.ops,
@@ -2789,7 +2799,7 @@ function renderCustomers(){
       +'<td style="text-align:center;padding:8px 6px">'+mbar(c.health,100,hCol(c.health))+'</td>'
       +'<td style="text-align:center;padding:8px 6px;font-size:12px;color:#534AB7;font-weight:600">'+vo.voc.toFixed(1)+'</td>'
       +'<td style="text-align:center;padding:8px 6px;font-size:12px;color:#0F6E56;font-weight:600">'+vo.ops.toFixed(1)+'</td>'
-      +cell(c.npsRaw!==undefined&&c.npsRaw!==null?c.npsRaw:Math.round((c.nps||0)/10), 9, 'gte', null)
+      +cell(c.npsRaw!==undefined&&c.npsRaw!==null&&c.npsRaw!==''?c.npsRaw:'—', 9, 'gte', null)+((c.npsConsecNoResp>=3)?'<td style="padding:6px 8px"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px">NPS Disengaged</span></td>':'<td></td>')
       +cell(c.sentiment||0, 7, 'gte', function(v){return v.toFixed(1);})
       +cell(c.serviceReviews||0, 1, 'gte', null)
       +cell(c.sla||0, 97, 'gte', function(v){return v.toFixed(1)+'%';})
@@ -4331,6 +4341,8 @@ function renderExec(){
     var lowCF=latestSubs.filter(function(s){return (+(s.cfPct||0))<82;});
     if(lowCF.length) focs.push('<strong>'+lowCF.length+' SM'+(lowCF.length!==1?'s':'')+' below 82% customer activity target</strong>: '+lowCF.slice(0,3).map(function(s){return s.smName+' ('+Math.round(+(s.cfPct||0))+'%)';}).join(', ')+(lowCF.length>3?' and others':''));
     var escTotal=allCusts.reduce(function(t,c){return t+c.esc;},0);
+    var npsDisengaged=_agg ? (_agg.custs||allCusts).filter(function(c){return (c.npsConsecNoResp||0)>=3;}) : [];
+    if(npsDisengaged.length) focs.push('<strong>'+npsDisengaged.length+' account'+(npsDisengaged.length!==1?'s':'')+' NPS Disengaged</strong> — no NPS response for 3+ consecutive months: '+npsDisengaged.slice(0,3).map(function(c){return c.name;}).join(', ')+(npsDisengaged.length>3?' and others':''));
     if(escTotal>0) focs.push('<strong>'+escTotal+' escalation'+(escTotal!==1?'s':'')+' recorded</strong> this period \u2014 review escalation breakdown below');
     if(!focs.length) focs.push('No significant areas of concern identified this period.');
     focEl.innerHTML='<ul style="margin:0;padding-left:18px;line-height:1.8">'+focs.map(function(s){return '<li style="margin-bottom:4px">'+s+'</li>';}).join('')+'</ul>';
@@ -4541,6 +4553,30 @@ function autoFillWorkingDays(){
 
 
 
+
+
+function getNPSConsecutiveNonResponse(smName, custName){
+  // Find all submissions for this SM, sorted newest first
+  var MONTHS=['January','February','March','April','May','June',
+              'July','August','September','October','November','December'];
+  function mOrd(s){ var i=MONTHS.indexOf(s.month||''); return (+(s.year||0))*12+(i>=0?i:0); }
+  var smSubs = submissions
+    .filter(function(s){ return (s.smName||'').trim()===(smName||'').trim(); })
+    .sort(function(a,b){ return mOrd(b)-mOrd(a); }); // newest first
+  if(smSubs.length===0) return 0;
+  // Count consecutive months (from latest) where this customer had no NPS
+  var consecutive=0;
+  for(var i=0;i<smSubs.length;i++){
+    var cust=(smSubs[i].customers||[]).find(function(c){
+      return (c.name||'').trim()===(custName||'').trim();
+    });
+    if(!cust) break; // customer not in this submission
+    var hasNPS = cust.npsRaw!==null && cust.npsRaw!==undefined && cust.npsRaw!=='';
+    if(hasNPS) break; // had a response this month — stop counting
+    consecutive++;
+  }
+  return consecutive;
+}
 
 
 </script>
