@@ -350,6 +350,16 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 #dashView .page{display:none;opacity:1!important;animation:none!important}
 #dashView .page.active{display:block!important;opacity:1!important}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .no-print, #topbar, #dashTabs, .period-bar, #dashTabs { display: none !important; }
+  .print-only { display: block !important; }
+  .page { display: block !important; }
+  .page:not(#tab-exec) { display: none !important; }
+  .dash-card { break-inside: avoid; box-shadow: none; border: 1px solid #E2E4E9; }
+  #tab-exec { padding: 0; }
+}
 </style>
 </head>
 <body>
@@ -374,6 +384,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
       <button class="nav-tab" onclick="showTab('sm',this)">Service Manager</button>
       <button class="nav-tab" onclick="showTab('customer',this)">Customer</button>
       <button class="nav-tab" onclick="showTab('escalations',this)">Escalations</button>
+      <button class="nav-tab" onclick="showTab('exec',this)">Exec Summary</button>
     </nav>
   </div>
 </div>
@@ -835,6 +846,77 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
       </div>
     </div>
 
+
+    <!-- EXEC SUMMARY TAB -->
+    <div class="page" id="tab-exec">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px" class="no-print">
+        <div>
+          <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:.5px">Board Report</div>
+          <div id="execPeriodLabel" style="font-size:13px;font-weight:600;color:#1A2B4A"></div>
+        </div>
+        <button onclick="window.print()" type="button"
+          style="background:#1A2B4A;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer">
+          &#128438; Print / Save PDF
+        </button>
+      </div>
+
+      <!-- Print header (only shows when printing) -->
+      <div class="print-only" style="display:none;margin-bottom:20px;border-bottom:2px solid #1A2B4A;padding-bottom:12px">
+        <div style="font-size:22px;font-weight:700;color:#1A2B4A">SM Performance Hub</div>
+        <div style="font-size:14px;color:#6B7280" id="execPrintDate"></div>
+      </div>
+
+      <!-- Headline KPIs -->
+      <div id="execKPIs" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
+
+      <!-- Risk RAG strip -->
+      <div class="dash-card" style="margin-bottom:16px">
+        <div class="dash-card-title">Portfolio Health Overview</div>
+        <div id="execRAGStrip" style="display:flex;gap:0;border-radius:8px;overflow:hidden;height:32px;margin:10px 0 8px"></div>
+        <div id="execRAGLegend" style="display:flex;gap:16px;font-size:11px;color:#6B7280"></div>
+      </div>
+
+      <!-- Two column: At Risk + Needs Attention -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <!-- At Risk -->
+        <div class="dash-card" style="border-left:4px solid #A32D2D">
+          <div class="dash-card-title" style="color:#A32D2D">&#9888; At Risk Accounts</div>
+          <div id="execAtRisk" style="font-size:12px"></div>
+        </div>
+        <!-- Needs Attention -->
+        <div class="dash-card" style="border-left:4px solid #854F0B">
+          <div class="dash-card-title" style="color:#854F0B">&#9651; Needs Attention</div>
+          <div id="execNeedsAttn" style="font-size:12px"></div>
+        </div>
+      </div>
+
+      <!-- Sentiment concerns -->
+      <div class="dash-card" style="margin-bottom:16px">
+        <div class="dash-card-title">&#128172; Sentiment Concerns (score &lt; 6)</div>
+        <div id="execSentiment" style="font-size:12px"></div>
+      </div>
+
+      <!-- Strengths -->
+      <div class="dash-card" style="margin-bottom:16px;border-left:4px solid #3B6D11">
+        <div class="dash-card-title" style="color:#3B6D11">&#10003; Strengths</div>
+        <div id="execStrengths" style="font-size:12px"></div>
+      </div>
+
+      <!-- Areas of focus -->
+      <div class="dash-card" style="margin-bottom:16px">
+        <div class="dash-card-title">&#128269; Areas of Focus</div>
+        <div id="execFocus" style="font-size:12px"></div>
+      </div>
+
+      <!-- Trend (if multi-month data) -->
+      <div class="dash-card" id="execTrendCard" style="margin-bottom:16px;display:none">
+        <div class="dash-card-title">&#8593; Trends (month on month)</div>
+        <div id="execTrend" style="font-size:12px"></div>
+      </div>
+
+      <!-- Footer -->
+      <div style="font-size:10px;color:#9CA3AF;text-align:center;margin-top:8px" class="print-only" id="execFooter"></div>
+    </div>
 </div><!-- /dashView -->
 
 <div class="toast" id="toast"></div>
@@ -1160,6 +1242,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -1457,6 +1540,7 @@ function refreshDash(){
   renderProdGrid();
   renderCommercial();
   renderEscalations();
+  if(document.getElementById('tab-exec')?.classList.contains('active')) renderExec();
   populateSMDropdown();
   populateServiceLeadFilter();
   renderCustomers();
@@ -1797,6 +1881,7 @@ function showTab(id,btn){
   if(id==='sm') renderSM();
   if(id==='commercial') renderCommercial();
   if(id==='escalations') renderEscalations();
+  if(id==='exec') renderExec();
   if(id==='customer') renderCustomers();
 }
 
@@ -3035,6 +3120,233 @@ function drillEscCategory(cat){
   var panel=document.getElementById('escDrillPanel');
   if(panel){panel.style.display='block';panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
+
+function renderExec(){
+  var custs = _agg.custs;
+  var sms   = _agg.sms;
+  if(!custs.length) return;
+
+  // Period label
+  var period = (document.getElementById('periodDisplay')||{textContent:''}).textContent||'Latest';
+  var el = document.getElementById('execPeriodLabel');
+  if(el) el.textContent = period;
+  var pf = document.getElementById('execPrintDate');
+  if(pf) pf.textContent = 'Generated: ' + new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  var ef = document.getElementById('execFooter');
+  if(ef) ef.textContent = 'SM Performance Hub \u00b7 Confidential \u00b7 ' + new Date().toLocaleDateString('en-GB');
+
+  // Categorise customers
+  var atRisk    = custs.filter(function(c){ return c.health < 60; }).sort(function(a,b){ return a.health-b.health; });
+  var needsAttn = custs.filter(function(c){ return c.health >= 60 && c.health < 75; }).sort(function(a,b){ return a.health-b.health; });
+  var healthy   = custs.filter(function(c){ return c.health >= 75; });
+  var sentIssue = custs.filter(function(c){ return (c.sentiment||0) < 6; }).sort(function(a,b){ return a.sentiment-b.sentiment; });
+
+  // ── KPI cards ─────────────────────────────────────────────────────────
+  var totalC = custs.length;
+  var pctHealthy = totalC ? Math.round(healthy.length/totalC*100) : 0;
+  var avgHealth  = totalC ? (custs.reduce(function(t,c){return t+c.health;},0)/totalC) : 0;
+  var avgSLA     = totalC ? (custs.reduce(function(t,c){return t+(c.sla||0);},0)/totalC) : 0;
+  var avgSent    = totalC ? (custs.reduce(function(t,c){return t+(c.sentiment||0);},0)/totalC) : 0;
+
+  var kpiEl = document.getElementById('execKPIs');
+  if(kpiEl){
+    var kpis = [
+      {lb:'Accounts Monitored', val:totalC, sub:sms.length+' Service Managers', col:'#1A2B4A'},
+      {lb:'Healthy Accounts',   val:pctHealthy+'%', sub:healthy.length+' of '+totalC+' accounts', col:'#3B6D11'},
+      {lb:'Requiring Attention',val:atRisk.length+needsAttn.length, sub:atRisk.length+' At Risk, '+needsAttn.length+' Needs Attention', col:atRisk.length>0?'#A32D2D':'#854F0B'},
+      {lb:'Avg Team Sentiment', val:avgSent.toFixed(1)+'/10', sub:sentIssue.length+' accounts below threshold', col:avgSent<6?'#A32D2D':avgSent<7?'#854F0B':'#3B6D11'},
+    ];
+    kpiEl.innerHTML = kpis.map(function(k){
+      return '<div style="background:#fff;border:.5px solid #E2E4E9;border-radius:10px;padding:16px;border-top:3px solid '+k.col+'">'
+        +'<div style="font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">'+k.lb+'</div>'
+        +'<div style="font-size:28px;font-weight:700;color:'+k.col+'">'+k.val+'</div>'
+        +'<div style="font-size:11px;color:#6B7280;margin-top:4px">'+k.sub+'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  // ── RAG strip ──────────────────────────────────────────────────────────
+  var ragEl = document.getElementById('execRAGStrip');
+  if(ragEl && totalC){
+    var pR = atRisk.length/totalC*100;
+    var pA = needsAttn.length/totalC*100;
+    var pH = healthy.length/totalC*100;
+    ragEl.innerHTML =
+      '<div style="width:'+pH+'%;background:#3B6D11;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">'+(pH>8?healthy.length+'':'')+'</div>'
+      +'<div style="width:'+pA+'%;background:#D97706;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">'+(pA>8?needsAttn.length+'':'')+'</div>'
+      +'<div style="width:'+pR+'%;background:#A32D2D;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">'+(pR>8?atRisk.length+'':'')+'</div>';
+    var legEl = document.getElementById('execRAGLegend');
+    if(legEl) legEl.innerHTML =
+      '<span><span style="display:inline-block;width:10px;height:10px;background:#3B6D11;border-radius:2px;margin-right:4px"></span>Healthy ('+healthy.length+')</span>'
+      +'<span><span style="display:inline-block;width:10px;height:10px;background:#D97706;border-radius:2px;margin-right:4px"></span>Needs Attention ('+needsAttn.length+')</span>'
+      +'<span><span style="display:inline-block;width:10px;height:10px;background:#A32D2D;border-radius:2px;margin-right:4px"></span>At Risk ('+atRisk.length+')</span>';
+  }
+
+  // ── At Risk list ───────────────────────────────────────────────────────
+  var arEl = document.getElementById('execAtRisk');
+  if(arEl){
+    if(!atRisk.length){
+      arEl.innerHTML = '<div style="color:#3B6D11;padding:8px 0">\u2714 No accounts currently At Risk</div>';
+    } else {
+      arEl.innerHTML = '<table style="width:100%;border-collapse:collapse">'
+        +'<tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9">'
+        +'<td style="padding:4px 0">Account</td><td style="padding:4px 0">SM</td>'
+        +'<td style="padding:4px 4px;text-align:center">Score</td>'
+        +'<td style="padding:4px 4px;text-align:center">Sentiment</td><td style="padding:4px 0">Key issue</td></tr>'
+        + atRisk.map(function(c){
+          var issue = c.health < 60 && (c.sentiment||0) < 4 ? 'Very low sentiment'
+            : (c.sla||0) < 95 ? 'SLA below target'
+            : (c.p12||0) > 3 ? 'High P1/P2 incidents'
+            : (c.sentiment||0) < 6 ? 'Low sentiment'
+            : 'Multiple factors';
+          return '<tr style="border-bottom:.5px solid #F0F0F0">'
+            +'<td style="padding:5px 0;font-weight:500">'+c.name+'</td>'
+            +'<td style="padding:5px 0;color:#6B7280;font-size:11px">'+c.sm+'</td>'
+            +'<td style="padding:5px 4px;text-align:center;font-weight:700;color:#A32D2D">'+c.health.toFixed(0)+'</td>'
+            +'<td style="padding:5px 4px;text-align:center;color:'+((c.sentiment||0)<6?'#A32D2D':'#374151')+'">'+((c.sentiment||0)||'-')+'</td>'
+            +'<td style="padding:5px 0;font-size:11px;color:#6B7280">'+issue+'</td>'
+            +'</tr>';
+        }).join('')+'</table>';
+    }
+  }
+
+  // ── Needs Attention list ───────────────────────────────────────────────
+  var naEl = document.getElementById('execNeedsAttn');
+  if(naEl){
+    if(!needsAttn.length){
+      naEl.innerHTML = '<div style="color:#3B6D11;padding:8px 0">\u2714 No accounts in Needs Attention</div>';
+    } else {
+      naEl.innerHTML = '<table style="width:100%;border-collapse:collapse">'
+        +'<tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9">'
+        +'<td style="padding:4px 0">Account</td><td style="padding:4px 0">SM</td>'
+        +'<td style="padding:4px 4px;text-align:center">Score</td><td style="padding:4px 0">Key issue</td></tr>'
+        + needsAttn.slice(0,10).map(function(c){
+          var issue = (c.sentiment||0) < 6 ? 'Sentiment capped'
+            : (c.sla||0) < 97 ? 'SLA below target'
+            : (c.p12||0) > 2 ? 'P1/P2 incidents'
+            : 'Score below threshold';
+          return '<tr style="border-bottom:.5px solid #F0F0F0">'
+            +'<td style="padding:5px 0;font-weight:500">'+c.name+'</td>'
+            +'<td style="padding:5px 0;color:#6B7280;font-size:11px">'+c.sm+'</td>'
+            +'<td style="padding:5px 4px;text-align:center;font-weight:700;color:#854F0B">'+c.health.toFixed(0)+'</td>'
+            +'<td style="padding:5px 0;font-size:11px;color:#6B7280">'+issue+'</td>'
+            +'</tr>';
+        }).join('')
+        +(needsAttn.length>10?'<tr><td colspan="4" style="padding:5px 0;font-size:11px;color:#6B7280">...and '+(needsAttn.length-10)+' more</td></tr>':'')
+        +'</table>';
+    }
+  }
+
+  // ── Sentiment concerns ─────────────────────────────────────────────────
+  var sentEl = document.getElementById('execSentiment');
+  if(sentEl){
+    if(!sentIssue.length){
+      sentEl.innerHTML = '<div style="color:#3B6D11;padding:8px 0">\u2714 No accounts with sentiment below threshold</div>';
+    } else {
+      sentEl.innerHTML = '<div style="color:#6B7280;font-size:11px;margin-bottom:8px">'
+        +sentIssue.length+' account'+(sentIssue.length!==1?'s':'')+' with sentiment below 6 \u2014 these customers have expressed dissatisfaction regardless of operational metrics.</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
+        + sentIssue.map(function(c){
+          var col = (c.sentiment||0)<4?'#A32D2D':'#854F0B';
+          return '<div style="background:#FEF2F2;border:.5px solid #FECACA;border-radius:6px;padding:6px 10px;font-size:11px">'
+            +'<div style="font-weight:600;color:'+col+'">'+c.name+'</div>'
+            +'<div style="color:#6B7280">'+c.sm+' \u00b7 Sentiment: <strong style="color:'+col+'">'+((c.sentiment||0))+'/10</strong></div>'
+            +'</div>';
+        }).join('')+'</div>';
+    }
+  }
+
+  // ── Strengths ──────────────────────────────────────────────────────────
+  var strEl = document.getElementById('execStrengths');
+  if(strEl){
+    var strengths = [];
+    if(pctHealthy >= 80) strengths.push(pctHealthy+'% of the portfolio is Healthy \u2014 '+healthy.length+' accounts meeting or exceeding all targets');
+    if(avgSLA >= 98)     strengths.push('Average SLA compliance of '+avgSLA.toFixed(1)+'% across the team, above the 97% target');
+    if(avgSent >= 7)     strengths.push('Team average sentiment of '+avgSent.toFixed(1)+'/10 indicates strong customer relationships');
+    var highHealthSMs = sms.filter(function(s){return (s.health||0)>=80;});
+    if(highHealthSMs.length) strengths.push(highHealthSMs.length+' Service Manager'+(highHealthSMs.length!==1?'s':'')+' with average portfolio health \u226580: '
+      +highHealthSMs.slice(0,3).map(function(s){return s.name;}).join(', ')+(highHealthSMs.length>3?' and others':''));
+    var noEscSMs = sms.filter(function(s){return !(s.esc||0);});
+    if(noEscSMs.length >= sms.length*0.5) strengths.push(noEscSMs.length+' of '+sms.length+' SMs reported zero escalations this period');
+    if(!strengths.length) strengths.push('Data being gathered \u2014 strengths analysis will populate as more SMs submit.');
+    strEl.innerHTML = '<ul style="margin:0;padding-left:18px;line-height:1.8">'
+      +strengths.map(function(s){return '<li style="color:#374151">'+s+'</li>';}).join('')+'</ul>';
+  }
+
+  // ── Areas of Focus ─────────────────────────────────────────────────────
+  var focEl = document.getElementById('execFocus');
+  if(focEl){
+    var focus = [];
+    if(atRisk.length)    focus.push('<strong>'+atRisk.length+' account'+(atRisk.length!==1?'s':'')+' At Risk</strong> \u2014 immediate SM engagement required: '
+      +atRisk.slice(0,3).map(function(c){return c.name+' ('+c.sm+')';}).join(', ')+(atRisk.length>3?' and '+(atRisk.length-3)+' more':''));
+    if(sentIssue.length) focus.push('<strong>'+sentIssue.length+' account'+(sentIssue.length!==1?'s':'')+' with low sentiment</strong> \u2014 customer dissatisfaction risk regardless of SLA performance');
+    var lowCF = sms.filter(function(s){return (s.cfPct||0)<82;});
+    if(lowCF.length)     focus.push('<strong>'+lowCF.length+' SM'+(lowCF.length!==1?'s':'')+' below 82% customer activity target</strong>: '
+      +lowCF.slice(0,3).map(function(s){return s.name+' ('+Math.round(s.cfPct||0)+'%)';}).join(', ')+(lowCF.length>3?' and others':''));
+    var escTotal = sms.reduce(function(t,s){return t+(s.esc||0);},0);
+    if(escTotal>0) focus.push('<strong>'+escTotal+' escalation'+(escTotal!==1?'s':'')+' recorded</strong> this period \u2014 review Escalations tab for category breakdown');
+    if(!focus.length) focus.push('No significant areas of concern identified this period.');
+    focEl.innerHTML = '<ul style="margin:0;padding-left:18px;line-height:1.8">'
+      +focus.map(function(s){return '<li style="color:#374151;margin-bottom:4px">'+s+'</li>';}).join('')+'</ul>';
+  }
+
+  // ── Trends (if multi-month data) ───────────────────────────────────────
+  var trendCard = document.getElementById('execTrendCard');
+  var trendEl   = document.getElementById('execTrend');
+  // Find SMs with multiple months
+  var smMonths = {};
+  submissions.forEach(function(s){
+    var nm = (s.smName||'').trim();
+    if(!smMonths[nm]) smMonths[nm] = [];
+    smMonths[nm].push({month:s.month, year:s.year,
+      customers: (s.customers||[]).map(function(c){return c.healthScore||c.health||0;})
+    });
+  });
+  var multiMonth = Object.keys(smMonths).filter(function(nm){return smMonths[nm].length>1;});
+  if(multiMonth.length && trendCard && trendEl){
+    trendCard.style.display='block';
+    var trends = [];
+    multiMonth.forEach(function(nm){
+      var months = smMonths[nm].sort(function(a,b){
+        return (a.year+'-'+a.month) < (b.year+'-'+b.month)?-1:1;
+      });
+      if(months.length>=2){
+        var prev = months[months.length-2];
+        var curr = months[months.length-1];
+        var prevAvg = prev.customers.length ? prev.customers.reduce(function(t,v){return t+v;},0)/prev.customers.length : 0;
+        var currAvg = curr.customers.length ? curr.customers.reduce(function(t,v){return t+v;},0)/curr.customers.length : 0;
+        var diff = currAvg - prevAvg;
+        if(Math.abs(diff)>=2) trends.push({nm:nm, diff:diff, curr:currAvg, prev:prevAvg,
+          from:prev.month+' '+prev.year, to:curr.month+' '+curr.year});
+      }
+    });
+    trends.sort(function(a,b){return a.diff-b.diff;});
+    if(trends.length){
+      var improving = trends.filter(function(t){return t.diff>0;});
+      var declining = trends.filter(function(t){return t.diff<0;});
+      var html = '';
+      if(declining.length){
+        html += '<div style="font-weight:600;color:#A32D2D;margin-bottom:6px">&#8595; Declining portfolios:</div>'
+          +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">'
+          +declining.map(function(t){
+            return '<div style="background:#FEF2F2;border:.5px solid #FECACA;border-radius:6px;padding:5px 10px;font-size:11px">'
+              +'<strong>'+t.nm+'</strong> '+(t.diff>0?'+':'')+t.diff.toFixed(1)+' pts ('+t.from+' \u2192 '+t.to+')</div>';
+          }).join('')+'</div>';
+      }
+      if(improving.length){
+        html += '<div style="font-weight:600;color:#3B6D11;margin-bottom:6px">&#8593; Improving portfolios:</div>'
+          +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
+          +improving.map(function(t){
+            return '<div style="background:#F0FDF4;border:.5px solid #BBF7D0;border-radius:6px;padding:5px 10px;font-size:11px">'
+              +'<strong>'+t.nm+'</strong> +'+t.diff.toFixed(1)+' pts ('+t.from+' \u2192 '+t.to+')</div>';
+          }).join('')+'</div>';
+      }
+      trendEl.innerHTML = html || '<div style="color:#6B7280">Insufficient month-on-month change to report trends.</div>';
+    } else {
+      trendEl.innerHTML = '<div style="color:#6B7280">Trends will appear once sufficient month-on-month data is available.</div>';
+    }
+  }
+}
 window.addEventListener('load', function(){
   loadStore();
   updateDraftBanner();
@@ -3073,6 +3385,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
