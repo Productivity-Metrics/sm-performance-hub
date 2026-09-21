@@ -2208,6 +2208,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -4587,11 +4588,43 @@ function getNPSConsecutiveNonResponse(smName, custName){
   return consecutive;
 }
 
+window.addEventListener('load', function(){
+  loadStore();
+  updateDraftBanner();
+  populateServiceLeadFilter();
 
+  // Auto-save every 2 minutes only after SM has started saving
+  setInterval(function(){
+    if(!window._draftEnabled) return;
+    var fv = document.getElementById('formView');
+    if(fv && fv.style.display !== 'none'){
+      var nm = (document.getElementById('smName')||{value:''}).value||'';
+      if(nm.trim()) saveProgress();
+    }
+  }, 120000);
 
-
-
-
+  // Auto-restore draft on page load if one exists
+  var _existingDraft = null;
+  try{ _existingDraft = localStorage.getItem('smHub_draft') || sessionStorage.getItem('smHub_draft'); }catch(e){}
+  if(_existingDraft){
+    try{
+      var _pd = JSON.parse(_existingDraft);
+      if(_pd && _pd.smName){
+        restoreProgress();
+        window._draftEnabled = true;
+        var _dt = new Date(_pd.savedAt);
+        showToast('\u21ba Draft restored for '+_pd.smName+' \u2014 last saved '
+          +_dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})
+          +' at '+_dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+        updateDraftBanner();
+        return;
+      }
+    }catch(e){}
+  }
+  // No draft - start with 1 blank customer
+  addCust();
+  updateCustBadge();
+});
 
 </script>
 <!-- rebuild -->
