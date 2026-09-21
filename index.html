@@ -2214,6 +2214,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3549,7 +3550,16 @@ function getEscCategories(id){
   var cats = [];
   for(var i=0; i<count; i++){
     var sel = document.getElementById('escCat_'+id+'_'+i);
-    if(sel) cats.push(sel.value);
+    if(sel){
+      if(sel.value === 'Other'){
+        var otherEl = document.getElementById('escOther_'+id+'_'+i);
+        var reason = otherEl && otherEl.value.trim() ? otherEl.value.trim() : '';
+        // Store as "Other: reason" so we can track what Other means
+        cats.push(reason ? 'Other: '+reason : 'Other');
+      } else {
+        cats.push(sel.value);
+      }
+    }
   }
   return cats;
 }
@@ -3604,7 +3614,7 @@ function renderEscalations(){
     var allCats=['Billing','BAU Order','Delivery','Incident Management','Change Management','Mobile Core','Fixed Core','Quotes Response','Other'];
     var catCount={};
     allCats.forEach(function(c){catCount[c]=0;});
-    cats.forEach(function(c){if(catCount[c]!==undefined)catCount[c]++;else catCount['Other']++;});
+    cats.forEach(function(c){var k=c.startsWith('Other:')?'Other':c;if(catCount[k]!==undefined)catCount[k]++;else catCount['Other']++;});
     var maxC=Math.max(1,Math.max.apply(null,allCats.map(function(c){return catCount[c];})));
     catEl.innerHTML=allCats.filter(function(c){return catCount[c]>0;}).map(function(cat){
       var pct=Math.round(catCount[cat]/maxC*100);
@@ -4174,7 +4184,29 @@ function getHealthFilter(){
             +'</div>'
             +'</div>';
         }).join('')
-        +(sortedCats.length>3?'<div style="font-size:11px;color:#6B7280;margin-top:4px">Plus '+(sortedCats.length-3)+' other categor'+(sortedCats.length-3===1?'y':'ies')+'</div>':'');
+        +(sortedCats.length>3?'<div style="font-size:11px;color:#6B7280;margin-top:4px">Plus '+(sortedCats.length-3)+' other categor'+(sortedCats.length-3===1?'y':'ies')+'</div>':'')+(function(){
+  // Show breakdown of 'Other' reasons
+  var otherReasons={};
+  submissions.forEach(function(sub){
+    (sub.customers||[]).forEach(function(c){
+      (c.escCategories||[]).forEach(function(cat){
+        if(cat.startsWith('Other:')){
+          var r=cat.substring(7).trim();
+          otherReasons[r]=(otherReasons[r]||0)+1;
+        }
+      });
+    });
+  });
+  var reasons=Object.keys(otherReasons).sort(function(a,b){return otherReasons[b]-otherReasons[a];});
+  if(!reasons.length) return '';
+  return '<div style="margin-top:10px;padding-top:8px;border-top:.5px solid #E2E4E9">'
+    +'<div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:6px">\'Other\' breakdown:</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:4px">'
+    +reasons.map(function(r){
+      return '<span style="background:#F3F4F6;border-radius:10px;padding:2px 8px;font-size:11px">'
+        +r+' ('+otherReasons[r]+')</span>';
+    }).join('')+'</div></div>';
+})();
     }
   }
 
@@ -4658,6 +4690,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
