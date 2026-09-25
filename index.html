@@ -925,6 +925,16 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
         </div>
       </div>
 
+      <!-- Exec drill panel -->
+      <div id="execDrillPanel" style="display:none;position:fixed;top:0;right:0;width:480px;max-width:95vw;height:100vh;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,0.15);z-index:1000;overflow-y:auto;flex-direction:column">
+        <div style="padding:16px 20px;border-bottom:.5px solid #E2E4E9;display:flex;align-items:center;justify-content:space-between;background:#1A2B4A;color:#fff">
+          <div id="execDrillTitle" style="font-weight:700;font-size:14px"></div>
+          <button onclick="closeExecDrill()" type="button" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1">&times;</button>
+        </div>
+        <div id="execDrillBody" style="padding:16px 20px;font-size:13px"></div>
+      </div>
+      <div id="execDrillOverlay" onclick="closeExecDrill()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:999"></div>
+
       <!-- Footer -->
       <div style="font-size:10px;color:#9CA3AF;text-align:center;margin-top:8px" class="print-only" id="execFooter"></div>
     </div><!-- /dashView -->en">
@@ -2171,6 +2181,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 </script>
 <script>
+
 
 
 
@@ -4377,14 +4388,14 @@ function renderExec(){
   var arEl=document.getElementById('execAtRisk');
   if(arEl){
     if(!atRisk.length){arEl.innerHTML='<div style="color:#3B6D11;padding:8px 0">\u2714 No accounts currently At Risk</div>';}
-    else{arEl.innerHTML='<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9"><td style="padding:4px 0">Account</td><td style="padding:4px 0">SM</td><td style="padding:4px 4px;text-align:center">Score</td><td style="padding:4px 4px;text-align:center">Sent</td><td style="padding:4px 0">Key issue</td></tr>'+atRisk.map(function(c){var issue=c.sentiment<4?'Very low sentiment':c.sla<95?'SLA below target':c.p12>3?'High incidents':c.sentiment<6?'Low sentiment':'Multiple factors';return '<tr style="border-bottom:.5px solid #F0F0F0"><td style="padding:5px 0;font-weight:500">'+c.name+'</td><td style="padding:5px 0;color:#6B7280;font-size:11px">'+c.sm+'</td><td style="padding:5px 4px;text-align:center;font-weight:700;color:#A32D2D">'+c.health.toFixed(0)+'</td><td style="padding:5px 4px;text-align:center;color:'+(c.sentiment<6?'#A32D2D':'#374151')+'">'+c.sentiment+'</td><td style="padding:5px 0;font-size:11px;color:#6B7280">'+issue+'</td></tr>';}).join('')+'</table>';}
+    else{arEl.innerHTML='<div style="font-size:11px;color:#6B7280;margin-bottom:8px">Click any account for full detail</div><table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9"><td style="padding:4px 0">Account</td><td style="padding:4px 0">SM</td><td style="padding:4px 4px;text-align:center">Score</td><td style="padding:4px 4px;text-align:center">Sent</td><td style="padding:4px 0">Key issue</td></tr>'+atRisk.map(function(c){var issue=c.sentiment<4?'Very low sentiment':c.sla<95?'SLA below target':c.p12>3?'High incidents':c.sentiment<6?'Low sentiment':'Multiple factors';return '<tr style="border-bottom:.5px solid #F0F0F0;cursor:pointer" onclick="execDrillCustomer(\''+c.name.replace(/\'/g,"\\\\'")+"\',\'"+c.sm.replace(/\'/g,"\\\\'")+'\')">'  +'<td style="padding:6px 0;font-weight:500;min-width:160px">'+c.name+'</td><td style="padding:6px 0;color:#6B7280;font-size:11px;min-width:120px">'+c.sm+'</td><td style="padding:6px 4px;text-align:center;font-weight:700;color:#A32D2D">'+c.health.toFixed(0)+'</td><td style="padding:6px 4px;text-align:center;color:'+(c.sentiment<6?'#A32D2D':'#374151')+'">'+c.sentiment+'</td><td style="padding:6px 0;font-size:11px;color:#6B7280">'+issue+'</td></tr>';}).join('')+'</table>';}
   }
 
   // ── Needs Attention ─────────────────────────────────────────────────────
   var naEl=document.getElementById('execNeedsAttn');
   if(naEl){
     if(!needsAttn.length){naEl.innerHTML='<div style="color:#3B6D11;padding:8px 0">\u2714 No accounts in Needs Attention</div>';}
-    else{naEl.innerHTML='<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9"><td style="padding:4px 0">Account</td><td style="padding:4px 0">SM</td><td style="padding:4px 4px;text-align:center">Score</td><td style="padding:4px 0">Key issue</td></tr>'+needsAttn.slice(0,10).map(function(c){var issue=c.sentiment<6?'Sentiment capped':c.sla<97?'SLA below target':c.p12>2?'P1/P2 incidents':'Score below threshold';return '<tr style="border-bottom:.5px solid #F0F0F0"><td style="padding:5px 0;font-weight:500">'+c.name+'</td><td style="padding:5px 0;color:#6B7280;font-size:11px">'+c.sm+'</td><td style="padding:5px 4px;text-align:center;font-weight:700;color:#854F0B">'+c.health.toFixed(0)+'</td><td style="padding:5px 0;font-size:11px;color:#6B7280">'+issue+'</td></tr>';}).join('')+(needsAttn.length>10?'<tr><td colspan="4" style="padding:5px 0;font-size:11px;color:#6B7280">...and '+(needsAttn.length-10)+' more</td></tr>':'')+'</table>';}
+    else{naEl.innerHTML='<div style="font-size:11px;color:#6B7280;margin-bottom:8px">Click any account for full detail</div><table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9"><td style="padding:4px 0">Account</td><td style="padding:4px 0">SM</td><td style="padding:4px 4px;text-align:center">Score</td><td style="padding:4px 0">Key issue</td></tr>'+needsAttn.map(function(c){var issue=c.sentiment<6?'Sentiment capped':c.sla<97?'SLA below target':c.p12>2?'P1/P2 incidents':'Score below threshold';return '<tr style="border-bottom:.5px solid #F0F0F0;cursor:pointer" onclick="execDrillCustomer(\''+c.name.replace(/\'/g,"\\\\'")+"\',\'"+c.sm.replace(/\'/g,"\\\\'")+'\')">'  +'<td style="padding:6px 0;font-weight:500;min-width:160px">'+c.name+'</td><td style="padding:6px 0;color:#6B7280;font-size:11px;min-width:120px">'+c.sm+'</td><td style="padding:6px 4px;text-align:center;font-weight:700;color:#854F0B">'+c.health.toFixed(0)+'</td><td style="padding:6px 0;font-size:11px;color:#6B7280">'+issue+'</td></tr>';}).join('')+'</table>';}
   }
 
   // ── Sentiment concerns ──────────────────────────────────────────────────
@@ -4446,7 +4457,7 @@ function renderExec(){
       catEl.innerHTML='<div style="color:#6B7280;font-size:11px;margin-bottom:10px">'+totalEsc+' total escalation'+(totalEsc!==1?'s':'')+' across '+accsWithEsc+' accounts</div>'
         +top3.map(function(cat,i){
           var pct=Math.round(catCount[cat]/maxV*100);
-          return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-weight:600;color:#374151">'+['①','②','③'][i]+' '+cat+'</span><span style="font-weight:700;color:#A32D2D">'+catCount[cat]+' case'+(catCount[cat]!==1?'s':'')+'</span></div><div style="background:#F3F4F6;border-radius:4px;height:10px;overflow:hidden"><div style="background:#A32D2D;height:10px;width:'+pct+'%;border-radius:4px"></div></div></div>';
+          var _cat=cat;return '<div style="margin-bottom:10px;cursor:pointer" onclick="execDrillEscCategory(\''+_cat.replace(/\'/g,"\\\'")+\'\',null)"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-weight:600;color:#374151">'+['①','②','③'][i]+' '+cat+'</span><span style="font-weight:700;color:#A32D2D">'+catCount[cat]+' case'+(catCount[cat]!==1?'s':'')+' &#8250;</span></div><div style="background:#F3F4F6;border-radius:4px;height:10px;overflow:hidden"><div style="background:#A32D2D;height:10px;width:'+pct+'%;border-radius:4px"></div></div></div>';
         }).join('')
         +(sortedCats.length>3?'<div style="font-size:11px;color:#6B7280;margin-top:4px">Plus '+(sortedCats.length-3)+' other categor'+(sortedCats.length-3===1?'y':'ies')+'</div>':'');
     }
@@ -4659,6 +4670,131 @@ function toggleOtherText(id, i){
   var box = document.getElementById('otherText_'+id+'_'+i);
   if(box) box.style.display = (sel && sel.value==='Other') ? 'block' : 'none';
 }
+
+function openExecDrill(title, html){
+  var p = document.getElementById('execDrillPanel');
+  var o = document.getElementById('execDrillOverlay');
+  var t = document.getElementById('execDrillTitle');
+  var b = document.getElementById('execDrillBody');
+  if(!p) return;
+  t.textContent = title;
+  b.innerHTML = html;
+  p.style.display = 'flex';
+  o.style.display = 'block';
+}
+
+function closeExecDrill(){
+  var p = document.getElementById('execDrillPanel');
+  var o = document.getElementById('execDrillOverlay');
+  if(p) p.style.display = 'none';
+  if(o) o.style.display = 'none';
+}
+
+function execDrillCustomer(custName, smName){
+  // Find customer in _agg.custs
+  var c = (_agg.custs||[]).find(function(x){ return x.name===custName && x.sm===smName; });
+  if(!c){ openExecDrill(custName, '<div style="color:#6B7280">No detail available.</div>'); return; }
+
+  var hCol = c.health>=75?'#3B6D11':c.health>=60?'#854F0B':'#A32D2D';
+  var bd = c.scoreBreakdown || {};
+  var npsDisp = (c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!=='')?c.npsRaw:'No response';
+  var npsBand = (c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!=='')?
+    (+c.npsRaw>=9?'Promoter':+c.npsRaw>=7?'Passive':'Detractor'):'—';
+
+  var html = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:.5px solid #E2E4E9">'
+    +'<div style="text-align:center;min-width:70px;background:'+hCol+';color:#fff;border-radius:10px;padding:10px 0">'
+    +'<div style="font-size:24px;font-weight:700">'+c.health.toFixed(0)+'</div>'
+    +'<div style="font-size:10px;opacity:.9">Health</div></div>'
+    +'<div>'
+    +'<div style="font-weight:700;font-size:15px;color:#1A2B4A">'+c.name+'</div>'
+    +'<div style="color:#6B7280;font-size:12px;margin-top:2px">'+c.sm+' &middot; '+(c.vertical||'Enterprise')+'</div>'
+    +'<div style="font-size:11px;margin-top:4px"><span style="background:#F3F4F6;padding:2px 8px;border-radius:8px">'+c.type+'</span></div>'
+    +'</div></div>'
+
+  // Score breakdown bars
+  +'<div style="margin-bottom:14px"><div style="font-weight:600;color:#374151;font-size:12px;margin-bottom:8px">Score Breakdown</div>'
+  +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+  +[{lb:'VoC Score',val:c.voc,max:100,tgt:70,col:'#534AB7'},{lb:'Ops Score',val:c.ops,max:100,tgt:70,col:'#0F6E56'}]
+  .map(function(m){
+    var pct=Math.round((m.val||0)/m.max*100);
+    return '<div style="background:#F8FAFC;border-radius:8px;padding:10px">'
+      +'<div style="font-size:10px;color:#6B7280;margin-bottom:4px">'+m.lb+'</div>'
+      +'<div style="font-size:20px;font-weight:700;color:'+m.col+'">'+((m.val||0)).toFixed(1)+'</div>'
+      +'<div style="background:#E2E4E9;border-radius:3px;height:6px;margin-top:6px">'
+      +'<div style="background:'+m.col+';height:6px;width:'+pct+'%;border-radius:3px"></div></div>'
+      +'</div>';
+  }).join('')+'</div></div>'
+
+  // Metric detail
+  +'<div style="margin-bottom:14px"><div style="font-weight:600;color:#374151;font-size:12px;margin-bottom:8px">Metrics</div>'
+  +'<table style="width:100%;border-collapse:collapse">'
+  +[
+    {lb:'NPS',val:npsDisp+' ('+npsBand+')',ok:(c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!==''&&+c.npsRaw>=9)},
+    {lb:'Sentiment',val:(c.sentiment||0)+'/10',ok:(c.sentiment||0)>=7},
+    {lb:'SLA %',val:(c.sla||0)+'%',ok:(c.sla||0)>=97},
+    {lb:'P1/P2 Incidents',val:(c.p12||0),ok:(c.p12||0)<=2},
+    {lb:'Open Faults',val:(c.faults||0),ok:(c.faults||0)===0},
+    {lb:'CSIP %',val:(c.csip||0)+'%',ok:(c.csip||0)>=80},
+    {lb:'Retention',val:((c.retention||0)*100).toFixed(1)+'%',ok:(c.retention||0)>=0.95},
+    {lb:'Escalations',val:(c.esc||0),ok:(c.esc||0)===0},
+  ].map(function(m){
+    return '<tr style="border-bottom:.5px solid #F3F4F6">'
+      +'<td style="padding:6px 0;color:#6B7280;font-size:12px">'+m.lb+'</td>'
+      +'<td style="padding:6px 0;font-weight:600;font-size:12px;text-align:right;color:'+(m.ok?'#3B6D11':'#A32D2D')+'">'+m.val+'</td>'
+      +'</tr>';
+  }).join('')+'</table></div>'
+
+  // NPS disengaged flag
+  +((c.npsConsecNoResp>=3)?'<div style="background:#EDE9FE;border-radius:8px;padding:10px 12px;font-size:12px;color:#5B21B6;margin-bottom:10px">'
+    +'&#9888; NPS Disengaged — no response for '+c.npsConsecNoResp+' consecutive months</div>':'');
+
+  openExecDrill(c.name, html);
+}
+
+function execDrillEscCategory(cat, allCusts){
+  // Find all customers with this escalation category
+  var matches = [];
+  submissions.forEach(function(sub){
+    (sub.customers||[]).forEach(function(c){
+      var cats = c.escCategories||[];
+      var match = cats.some(function(ec){ return cat==='Other'?(ec==='Other'||ec.startsWith('Other:')):ec===cat; });
+      if(match){
+        var reason = '';
+        if(cat==='Other'){
+          var otherCat = cats.find(function(ec){ return ec.startsWith('Other:'); });
+          if(otherCat) reason = otherCat.substring(7).trim();
+        }
+        matches.push({name:c.name||'?', sm:(sub.smName||'').trim(), reason:reason,
+          health:+(c.healthScore||c.health||0), month:(sub.month||'')+' '+(sub.year||'')});
+      }
+    });
+  });
+  // Deduplicate by customer name (show unique customers, list months)
+  var byName={};
+  matches.forEach(function(m){
+    if(!byName[m.name]) byName[m.name]={name:m.name,sm:m.sm,health:m.health,months:[],reasons:[]};
+    if(byName[m.name].months.indexOf(m.month)<0) byName[m.name].months.push(m.month);
+    if(m.reason&&byName[m.name].reasons.indexOf(m.reason)<0) byName[m.name].reasons.push(m.reason);
+  });
+  var list=Object.values(byName).sort(function(a,b){return a.health-b.health;});
+
+  var html='<div style="color:#6B7280;font-size:11px;margin-bottom:12px">'+list.length+' account'+(list.length!==1?'s':'')+' with this escalation type</div>'
+    +'<table style="width:100%;border-collapse:collapse">'
+    +'<tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9"><td style="padding:4px 0">Account</td><td style="padding:4px 0">SM</td><td style="padding:4px 4px;text-align:center">Health</td><td style="padding:4px 0">Months</td></tr>'
+    +list.map(function(m){
+      var hcol=m.health>=75?'#3B6D11':m.health>=60?'#854F0B':'#A32D2D';
+      return '<tr style="border-bottom:.5px solid #F3F4F6;cursor:pointer" onclick="execDrillCustomer(\''+m.name.replace(/'/g,"\\'")+"','"+m.sm.replace(/'/g,"\\'")+'\''+')">'
+        +'<td style="padding:6px 0"><div style="font-weight:500">'+m.name+'</div>'
+        +(m.reasons.length?'<div style="font-size:10px;color:#854F0B">'+m.reasons.join('; ')+'</div>':'')
+        +'</td>'
+        +'<td style="padding:6px 0;font-size:11px;color:#6B7280">'+m.sm+'</td>'
+        +'<td style="padding:6px 4px;text-align:center;font-weight:700;color:'+hcol+'">'+m.health.toFixed(0)+'</td>'
+        +'<td style="padding:6px 0;font-size:10px;color:#6B7280">'+m.months.join(', ')+'</td>'
+        +'</tr>';
+    }).join('')+'</table>';
+
+  openExecDrill((cat==='Other'?'Other Escalations':cat+' Escalations'), html);
+}
 window.addEventListener('load', function(){
   loadStore();
   updateDraftBanner();
@@ -4696,6 +4832,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
