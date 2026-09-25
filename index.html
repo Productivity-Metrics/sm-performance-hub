@@ -2215,6 +2215,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2732,7 +2733,7 @@ function renderSM(){
     +'</div>'
     +'<div class="dash-card"><div class="dash-card-title">Customers ('+custs.length+')</div>'
     +'<div style="overflow-x:auto"><table class="dash-table"><thead><tr>'
-    +'<th class="t-left">Customer</th><th>Type</th><th style="background:#0F6E56">Health</th><th style="background:#0F6E56">Retention</th><th style="background:#534AB7">NPS Input</th><th style="background:#1A2B4A">SLA%</th><th style="background:#1A2B4A">CSIP%</th><th style="background:#0F6E56">STS</th><th>Status</th>'
+    +'<th class="t-left">Customer</th><th>Type</th><th style="background:#0F6E56">Health</th><th style="background:#0F6E56">Retention</th><th style="background:#534AB7">NPS Input</th><th style="background:#534AB7">NPS Status</th><th style="background:#1A2B4A">SLA%</th><th style="background:#1A2B4A">CSIP%</th><th style="background:#0F6E56">STS</th><th>Status</th>'
     +'</tr></thead><tbody>'
     +custs.map(function(c,ci){
       var rid='smbr'+ci, hasBd=!!(c.scoreBreakdown);
@@ -4318,9 +4319,12 @@ function renderExec(){
   var allCusts=[];
   latestSubs.forEach(function(s){
     (s.customers||[]).forEach(function(c){
+      var _rawH=+(c.healthScore||c.health||0);
+      var _noNPS=(c.npsRaw===null||c.npsRaw===undefined||c.npsRaw==='');
+      var _adjH=_noNPS?Math.max(0,Math.round((_rawH-3)*10)/10):_rawH;
       allCusts.push({
         name:c.name||'', sm:(s.smName||'').trim(),
-        health:+(c.healthScore||c.health||0),
+        health:_adjH,
         sentiment:+(c.sentiment||0),
         sla:+(c.sla||0), p12:+(c.p12Incidents||0),
         esc:+(c.escalations||0),
@@ -4690,6 +4694,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
