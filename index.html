@@ -3121,7 +3121,7 @@ function addCust(d){
         <div class="fg"><label>Contract renewal date</label><input type="date" id="renewal_${id}" value="${data.renewal||""}"></div>
       </div>
       <div class="g4 gap">
-        <div class="fg"><label>Retention % <span class="tgt">(target ≥95%)</span></label><input type="number" id="ret_${id}" value="${data.ret||0.95}" min="0" max="1" step="0.01" oninput="recalc('${id}')"><div class="sub">Enter as decimal: 0.97 = 97%</div></div>
+        <div class="fg"><label>Retention % <span class="tgt">(target ≥95%)</span></label><input type="number" id="ret_${id}" value="${data.ret!==undefined&&data.ret!==null&&data.ret!==''?data.ret:''}" min="0" max="100" step="1" oninput="recalc('${id}')" placeholder="e.g. 95"><div class="sub">Enter as decimal: 0.97 = 97%</div></div>
         <div class="fg" style="grid-column:1/-1">
           <label>Escalations this month</label>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
@@ -3130,7 +3130,7 @@ function addCust(d){
           </div>
           <div id="escRows_${id}"></div>
         </div>
-        <div class="fg"><label>Site visits <span class="tgt">(target ≥1)</span></label><input type="number" id="sv_${id}" value="${data.sv||1}" min="0" oninput="recalc('${id}')"></div>
+        <div class="fg"><label>Site visits <span class="tgt">(target ≥1)</span></label><input type="number" id="sv_${id}" value="${data.sv!==undefined&&data.sv!==null&&data.sv!==''?data.sv:''}" min="0" oninput="recalc('${id}')" placeholder="0"></div>
         <div class="fg"><label>Leads passed</label><input type="number" id="leads_${id}" value="${data.leads||0}" min="0" oninput="recalc('${id}')"></div>
       </div>
 
@@ -3161,8 +3161,8 @@ function addCust(d){
         <div class="fg"><label>Open faults &gt;5 days <span class="tgt">(target 0)</span></label><input type="number" id="flt_${id}" value="${data.faults||0}" min="0" oninput="recalc('${id}')"></div>
       </div>
       <div class="g3 gap">
-        <div class="fg"><label>CSIP total open actions</label><input type="number" id="csipA_${id}" value="${data.csipActions||5}" min="0"></div>
-        <div class="fg"><label>CSIP % complete <span class="tgt">(target ≥80%)</span></label><input type="number" id="csipP_${id}" value="${data.csipPct||80}" min="0" max="100" oninput="recalc('${id}')"></div>
+        <div class="fg"><label>CSIP total open actions</label><input type="number" id="csipA_${id}" value="${data.csipActions!==undefined&&data.csipActions!==null&&data.csipActions!==''?data.csipActions:''}" min="0" placeholder="e.g. 3"></div>
+        <div class="fg"><label>CSIP % complete <span class="tgt">(target ≥80%)</span></label><input type="number" id="csipP_${id}" value="${data.csipPct!==undefined&&data.csipPct!==null&&data.csipPct!==''?data.csipPct:''}" min="0" max="100" oninput="recalc('${id}')" placeholder="e.g. 75"></div>
         <div class="fg"><label>CSIP quality score <span class="tgt">(0–25, target ≥20)</span></label><input type="number" id="csipQ_${id}" value="${data.csipQ!==undefined&&data.csipQ!==null&&data.csipQ!==''?data.csipQ:''}" min="0" max="25" step="1" oninput="recalc('${id}')"><div class="sub">AI agent score: 25=Excellent · 20=Target (minimum) · 0=Not completed</div></div>
       </div>
 
