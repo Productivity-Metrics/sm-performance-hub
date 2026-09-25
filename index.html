@@ -2217,6 +2217,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2734,7 +2735,7 @@ function renderSM(){
     +'</div>'
     +'<div class="dash-card"><div class="dash-card-title">Customers ('+custs.length+')</div>'
     +'<div style="overflow-x:auto"><table class="dash-table"><thead><tr>'
-    +'<th class="t-left">Customer</th><th>Type</th><th style="background:#0F6E56">Health</th><th style="background:#0F6E56">Retention</th><th style="background:#534AB7">NPS Input</th><th style="background:#534AB7">NPS Status</th><th style="background:#1A2B4A">SLA%</th><th style="background:#1A2B4A">CSIP%</th><th style="background:#0F6E56">STS</th><th>Status</th>'
+    +'<th class="t-left">Customer</th><th>Type</th><th style="background:#0F6E56">Health</th><th style="background:#0F6E56">Retention</th><th style="background:#534AB7">NPS Input</th><th style="background:#1A2B4A">SLA%</th><th style="background:#1A2B4A">CSIP%</th><th style="background:#0F6E56">STS</th><th>Status</th>'
     +'</tr></thead><tbody>'
     +custs.map(function(c,ci){
       var rid='smbr'+ci, hasBd=!!(c.scoreBreakdown);
@@ -4491,7 +4492,7 @@ function renderExec(){
     var ord=MO.indexOf(s.month||'')+(+(s.year||0))*12;
     if(!byPeriod[key]) byPeriod[key]={label:s.month+' '+s.year,ord:ord,subs:[],custs:[]};
     byPeriod[key].subs.push(s);
-    (s.customers||[]).forEach(function(c){ byPeriod[key].custs.push({health:+(c.healthScore||c.health||0),sentiment:+(c.sentiment||0),sla:+(c.sla||0),atRisk:+(c.healthScore||c.health||0)<60,needsAttn:+(c.healthScore||c.health||0)>=60&&+(c.healthScore||c.health||0)<75}); });
+    (s.customers||[]).forEach(function(c){ var _bh=+(c.healthScore||c.health||0); var _bnoNPS=(c.npsRaw===null||c.npsRaw===undefined||c.npsRaw===''); var _badj=_bnoNPS?Math.max(0,Math.round((_bh-3)*10)/10):_bh; byPeriod[key].custs.push({health:_badj,sentiment:+(c.sentiment||0),sla:+(c.sla||0),atRisk:+(c.healthScore||c.health||0)<60,needsAttn:+(c.healthScore||c.health||0)>=60&&+(c.healthScore||c.health||0)<75}); });
   });
   var periods=Object.values(byPeriod).sort(function(a,b){return a.ord-b.ord;});
 
@@ -4695,6 +4696,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
