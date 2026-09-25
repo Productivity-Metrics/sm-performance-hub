@@ -14,27 +14,27 @@
   "availableHrs": 127.5,
   "utilisation": 54,
   "cfWeeks": [
-    30,
-    30,
-    15.5,
-    30,
+    0,
+    0,
+    0,
+    0,
     0
   ],
-  "cfTotal": 105.5,
-  "cfPct": 82.7,
+  "cfTotal": 0,
+  "cfPct": 0,
   "siteVisits": 0,
-  "serviceReviews": 28,
+  "serviceReviews": 0,
   "leads": 1,
   "qbrs": 0,
   "directedAccts": 0,
   "govAccts": 0,
   "maintAccts": 0,
-  "baseAccts": 0,
-  "totalEscalations": 20,
+  "baseAccts": 27,
+  "totalEscalations": 33,
   "totalHoursWorked": 105,
   "travelHrs": 0,
   "internalHrs": 2,
-  "csipHrs": 1,
+  "csipHrs": 0,
   "totalSTS": 0,
   "totalRecovered": 0,
   "totalAgedDebt": 0,
@@ -52,14 +52,14 @@
       "escalations": 2,
       "escCategories": [
         "Billing",
-        "Other"
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
       "sentiment": 9,
-      "serviceReviews": 0,
+      "serviceReviews": 1,
       "sla": 98,
       "p12Incidents": 0,
       "p12Baseline": 0,
@@ -67,7 +67,7 @@
       "scoreBreakdown": {
         "nps": 30,
         "sent": 31.5,
-        "rev": 0,
+        "rev": 35,
         "sla": 39.2,
         "p12": 20,
         "faults": 15,
@@ -82,9 +82,9 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 61.5,
+      "vocScore": 96.5,
       "opsScore": 94.2,
-      "healthScore": 76.2,
+      "healthScore": 95.5,
       "status": "Healthy"
     },
     {
@@ -96,7 +96,7 @@
       "escCategories": [
         "Billing",
         "Billing",
-        "Other"
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -120,7 +120,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 0,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -136,8 +136,10 @@
       "type": "Base Enhanced",
       "renewal": "",
       "retention": 0.95,
-      "escalations": 0,
-      "escCategories": [],
+      "escalations": 1,
+      "escCategories": [
+        "Other"
+      ],
       "siteVisits": 0,
       "leads": 0,
       "nps": 100,
@@ -261,7 +263,7 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Incident Management"
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -305,9 +307,9 @@
       "escCategories": [
         "Billing",
         "Billing",
-        "Other",
-        "Other",
-        "Quotes Response"
+        "Billing",
+        "Billing",
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 1,
@@ -349,8 +351,8 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Mobile Core",
-        "Billing"
+        "Billing",
+        "Mobile Core"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -432,7 +434,7 @@
       "retention": 0.95,
       "escalations": 1,
       "escCategories": [
-        "Incident Management"
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -599,13 +601,13 @@
       "escalations": 8,
       "escCategories": [
         "Billing",
+        "Other: soft cease request- issues",
+        "Other: disconnection issues",
         "Billing",
-        "Fixed Core",
-        "Other",
-        "Other",
-        "Other",
-        "Other",
-        "Other"
+        "Other: disconnection issues",
+        "Other: disconnection queries",
+        "Other: operational queries",
+        "Billing"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -645,9 +647,10 @@
       "type": "Base Enhanced",
       "renewal": "",
       "retention": 0.95,
-      "escalations": 1,
+      "escalations": 2,
       "escCategories": [
-        "Incident Management"
+        "Incident Management",
+        "Other: portal issues"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -671,7 +674,7 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 1,
+      "csipActions": 0,
       "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
@@ -689,8 +692,8 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Mobile Core",
-        "Other"
+        "Other: Boostbox contract /returns support",
+        "Other: MVR support"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -709,20 +712,20 @@
         "sla": 39.2,
         "p12": 20,
         "faults": 15,
-        "csipQ": 20,
+        "csipQ": 25,
         "p12excess": 0,
         "p12baseline": 0,
         "sentimentCapped": false
       },
       "csipActions": 1,
       "csipPct": 80,
-      "csipQuality": 20,
+      "csipQuality": 25,
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
       "vocScore": 81.5,
-      "opsScore": 94.2,
-      "healthScore": 87.2,
+      "opsScore": 99.2,
+      "healthScore": 89.5,
       "status": "Healthy"
     },
     {
@@ -814,7 +817,7 @@
       "retention": 0.95,
       "escalations": 2,
       "escCategories": [
-        "Incident Management",
+        "Billing",
         "Incident Management"
       ],
       "siteVisits": 0,
@@ -895,9 +898,10 @@
       "type": "Base Enhanced",
       "renewal": "",
       "retention": 0.95,
-      "escalations": 1,
+      "escalations": 2,
       "escCategories": [
-        "Billing"
+        "Billing",
+        "Other: order support"
       ],
       "siteVisits": 0,
       "leads": 0,
@@ -979,10 +983,8 @@
       "type": "Base Enhanced",
       "renewal": "",
       "retention": 0.95,
-      "escalations": 1,
-      "escCategories": [
-        "Other"
-      ],
+      "escalations": 0,
+      "escCategories": [],
       "siteVisits": 0,
       "leads": 0,
       "nps": 100,
@@ -1217,5 +1219,5 @@
       "status": "Healthy"
     }
   ],
-  "submittedAt": "2026-09-01T12:28:30.809Z"
+  "submittedAt": "2026-09-25T10:23:29.196Z"
 }
