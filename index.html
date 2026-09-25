@@ -3150,7 +3150,7 @@ function addCust(d){
             <div class="slider-ends"><span>Very negative</span><span>Very positive</span></div>
           </div>
         </div>
-        <div class="fg"><label>Service reviews this month <span class="tgt">(target ≥1)</span></label><input type="number" id="rev_${id}" value="${data.rev||1}" min="0" max="4" oninput="recalc('${id}')"></div>
+        <div class="fg"><label>Service reviews this month <span class="tgt">(target ≥1)</span></label><input type="number" id="rev_${id}" value="${data.rev!==undefined&&data.rev!==null&&data.rev!==''?data.rev:''}" min="0" max="4" oninput="recalc('${id}')" placeholder="0"></div>
       </div>
 
       <div class="sec-div sd-ops">Service, ops &amp; CSIP</div>
