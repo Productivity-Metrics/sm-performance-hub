@@ -2233,6 +2233,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2305,14 +2306,18 @@ async function loadStore(){
 async function saveStore(sub){
   if(sub){
     submissions=submissions.filter(function(s){
-      return (s.smName||'').trim().toLowerCase()!==(sub.smName||'').trim().toLowerCase();
+      // Only replace same SM + same month + same year
+      return !((s.smName||'').trim().toLowerCase()===(sub.smName||'').trim().toLowerCase()
+        && (s.month||'')===(sub.month||'') && (s.year||'')===(sub.year||''));
     });
     submissions.push(sub);
   }
   try{localStorage.setItem(STORE_KEY,JSON.stringify(submissions));}catch(e){}
   if(!sub) return true;
   var safeName=(sub.smName||'unknown').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-  var filePath=GH_CONFIG.path+'/sm_'+safeName+'.json';
+  var safeMonth=(sub.month||'unknown').toLowerCase().replace(/[^a-z]+/g,'_');
+  var safeYear=(sub.year||'unknown').toString();
+  var filePath=GH_CONFIG.path+'/sm_'+safeName+'_'+safeMonth+'_'+safeYear+'.json';
   var content=btoa(unescape(encodeURIComponent(JSON.stringify(sub,null,2))));
   var sha=null;
   try{
@@ -4847,6 +4852,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
