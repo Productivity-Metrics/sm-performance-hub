@@ -2236,6 +2236,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -4502,8 +4503,8 @@ function renderExec(){
     } else {
       repEl.innerHTML='<div style="color:#6B7280;font-size:11px;margin-bottom:10px">'+repeats.length+' persistent escalation'+(repeats.length!==1?'s':'')+' identified</div>'
         +'<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;color:#6B7280;border-bottom:.5px solid #E2E4E9"><td style="padding:3px 0">Customer</td><td style="padding:3px 4px">Category</td><td style="padding:3px 0">SM</td><td style="padding:3px 4px;text-align:center">Months</td></tr>'
-        +repeats.slice(0,8).map(function(r){return '<tr style="border-bottom:.5px solid #F0F0F0"><td style="padding:5px 0;font-weight:500">'+r.name+'</td><td style="padding:5px 4px"><span style="background:#FEE2E2;color:#991B1B;font-size:10px;font-weight:600;padding:2px 6px;border-radius:8px">'+r.cat+'</span></td><td style="padding:5px 0;font-size:11px;color:#6B7280">'+r.sm+'</td><td style="padding:5px 4px;text-align:center;font-weight:700;color:#854F0B">'+r.months.length+'</td></tr>';}).join('')
-        +(repeats.length>8?'<tr><td colspan="4" style="padding:5px 0;font-size:11px;color:#6B7280">...and '+(repeats.length-8)+' more</td></tr>':'')
+        +repeats.map(function(r){return '<tr style="border-bottom:.5px solid #F0F0F0"><td style="padding:5px 0;font-weight:500">'+r.name+'</td><td style="padding:5px 4px"><span style="background:#FEE2E2;color:#991B1B;font-size:10px;font-weight:600;padding:2px 6px;border-radius:8px">'+r.cat+'</span></td><td style="padding:5px 0;font-size:11px;color:#6B7280">'+r.sm+'</td><td style="padding:5px 4px;text-align:center;font-weight:700;color:#854F0B">'+r.months.length+'</td></tr>';}).join('')
+        
         +'</table>';
     }
   }
@@ -4854,6 +4855,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
