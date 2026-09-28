@@ -2237,6 +2237,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2536,6 +2537,8 @@ function mkChart(id,cfg){
    REFRESH DASHBOARD
 ===================================================================== */
 var _agg={sms:[],custs:[]};
+var _execRendered=false;
+var _execDirty=true;
 
 function refreshDash(){
   _agg=aggregate();
@@ -2899,7 +2902,7 @@ function showTab(id,btn){
   if(id==='sm') renderSM();
   if(id==='commercial') renderCommercial();
   if(id==='escalations') renderEscalations();
-  if(id==='exec') renderExec();
+  if(id==='exec'){ if(!_execDirty&&_execRendered) return; renderExec(); _execRendered=true; _execDirty=false; }
   if(id==='customer') renderCustomers();
 }
 
@@ -4405,6 +4408,13 @@ function renderExec(){
   }
 
   // ── At Risk ────────────────────────────────────────────────────────────
+  // Show loading state on first render
+  if(!_execRendered){
+    ['execKPIs','execTrend','execAtRisk','execNeedsAttn','execSentiment','execEscCats','execEscRepeat'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el&&!el.innerHTML) el.innerHTML='<div style="color:#6B7280;font-size:12px;padding:8px 0">Loading…</div>';
+    });
+  }
   var arEl=document.getElementById('execAtRisk');
   if(arEl){
     if(!atRisk.length){arEl.innerHTML='<div style="color:#3B6D11;padding:8px 0">\u2714 No accounts currently At Risk</div>';}
@@ -4664,27 +4674,47 @@ function autoFillWorkingDays(){
 
 
 
-function getNPSConsecutiveNonResponse(smName, custName){
-  // Find all submissions for this SM, sorted newest first
+// NPS lookup cache — built once per aggregate(), keyed smName|custName -> consecutiveNoResponse
+var _npsLookup = {};
+function buildNPSLookup(){
   var MONTHS=['January','February','March','April','May','June',
               'July','August','September','October','November','December'];
   function mOrd(s){ var i=MONTHS.indexOf(s.month||''); return (+(s.year||0))*12+(i>=0?i:0); }
-  var smSubs = submissions
-    .filter(function(s){ return (s.smName||'').trim()===(smName||'').trim(); })
-    .sort(function(a,b){ return mOrd(b)-mOrd(a); }); // newest first
-  if(smSubs.length===0) return 0;
-  // Count consecutive months (from latest) where this customer had no NPS
-  var consecutive=0;
-  for(var i=0;i<smSubs.length;i++){
-    var cust=(smSubs[i].customers||[]).find(function(c){
-      return (c.name||'').trim()===(custName||'').trim();
+  // Group submissions by SM, sorted newest first
+  var bySM = {};
+  submissions.forEach(function(s){
+    var nm=(s.smName||'').trim();
+    if(!bySM[nm]) bySM[nm]=[];
+    bySM[nm].push(s);
+  });
+  Object.keys(bySM).forEach(function(nm){
+    bySM[nm].sort(function(a,b){return mOrd(b)-mOrd(a);});
+  });
+  _npsLookup = {};
+  Object.keys(bySM).forEach(function(nm){
+    var subs = bySM[nm];
+    // Get all unique customer names for this SM
+    var custNames = {};
+    subs.forEach(function(s){
+      (s.customers||[]).forEach(function(c){ custNames[(c.name||'').trim()]=true; });
     });
-    if(!cust) break; // customer not in this submission
-    var hasNPS = cust.npsRaw!==null && cust.npsRaw!==undefined && cust.npsRaw!=='';
-    if(hasNPS) break; // had a response this month — stop counting
-    consecutive++;
-  }
-  return consecutive;
+    Object.keys(custNames).forEach(function(custNm){
+      var consecutive=0;
+      for(var i=0;i<subs.length;i++){
+        var cust=(subs[i].customers||[]).find(function(c){
+          return (c.name||'').trim()===custNm;
+        });
+        if(!cust) break;
+        var hasNPS=cust.npsRaw!==null&&cust.npsRaw!==undefined&&cust.npsRaw!=='';
+        if(hasNPS) break;
+        consecutive++;
+      }
+      _npsLookup[nm+'|||'+custNm]=consecutive;
+    });
+  });
+}
+function getNPSConsecutiveNonResponse(smName, custName){
+  return _npsLookup[(smName||'').trim()+'|||'+(custName||'').trim()]||0;
 }
 
 
@@ -4855,6 +4885,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
