@@ -2235,6 +2235,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -4273,7 +4274,7 @@ function getHealthFilter(){
         +'<td style="padding:3px 4px">Category</td>'
         +'<td style="padding:3px 0">SM</td>'
         +'<td style="padding:3px 4px;text-align:center">Months</td></tr>'
-        + repeats.slice(0,8).map(function(r){
+        + repeats.map(function(r){
           return '<tr style="border-bottom:.5px solid #F0F0F0">'
             +'<td style="padding:5px 0;font-weight:500">'+r.name+'</td>'
             +'<td style="padding:5px 4px"><span style="background:#FEE2E2;color:#991B1B;font-size:10px;font-weight:600;padding:2px 6px;border-radius:8px">'+r.cat+'</span></td>'
@@ -4281,7 +4282,7 @@ function getHealthFilter(){
             +'<td style="padding:5px 4px;text-align:center;font-weight:700;color:#854F0B">'+r.months.length+'</td>'
             +'</tr>';
         }).join('')
-        +(repeats.length>8?'<tr><td colspan="4" style="padding:5px 0;font-size:11px;color:#6B7280">...and '+(repeats.length-8)+' more</td></tr>':'')
+        
         +'</table>';
     }
   }
@@ -4853,6 +4854,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
