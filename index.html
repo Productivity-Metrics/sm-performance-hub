@@ -638,27 +638,38 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
     <div class="page" id="tab-productivity">
       <!-- Pillar summary cards -->
       <div id="prodPillars" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px"></div>
-      <!-- Charts row -->
-      <div style="margin-bottom:16px">
-        <div class="dash-card" style="margin-bottom:16px">
-          <div class="dash-card-title">Productivity index by SM</div>
-          <div style="height:300px"><canvas id="chartProd"></canvas></div>
-          <div style="margin-top:12px;padding:10px 14px;background:#F4F5F7;border-radius:8px;font-size:11px;color:#4B5563;line-height:1.6">
-            <strong style="color:#1A2B4A;font-size:12px">How the Productivity Index is calculated (max 100)</strong><br>
-            <span style="display:inline-block;margin-top:4px">
-              <span style="color:#0F6E56;font-weight:600">CF Time</span> <span style="color:#6B7280">(25 pts)</span> &mdash; % of working time spent with customers, target &ge;82%
-              &nbsp;&bull;&nbsp;
-              <span style="color:#0F6E56;font-weight:600">Health</span> <span style="color:#6B7280">(25 pts)</span> &mdash; avg account health score, target &ge;80
-              &nbsp;&bull;&nbsp;
-              <span style="color:#0F6E56;font-weight:600">CX</span> <span style="color:#6B7280">(20 pts)</span> &mdash; customer rating &amp; sentiment, targets &ge;9 rating (Promoter) &amp; &ge;7 sentiment
-              &nbsp;&bull;&nbsp;
-              <span style="color:#0F6E56;font-weight:600">Ops</span> <span style="color:#6B7280">(20 pts)</span> &mdash; SLA &amp; CSIP completion, targets &ge;97% SLA (40pts) &amp; &ge;80% CSIP (20/25pts)
-              &nbsp;&bull;&nbsp;
-              <span style="color:#0F6E56;font-weight:600">Revenue</span> <span style="color:#6B7280">(10 pts)</span> &mdash; STS &amp; leads passed, targets &ge;&pound;212k STS &amp; &ge;4 leads
-            </span>
-          </div>
+      <!-- Charts row: 3 charts side by side -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+        <!-- Productivity Index -->
+        <div class="dash-card">
+          <div class="dash-card-title">Productivity Index by SM</div>
+          <div id="chartProdWrap" style="height:300px"><canvas id="chartProd"></canvas></div>
         </div>
-        <div class="dash-card"><div class="dash-card-title">CF Time % by SM <span style="font-size:11px;color:#6B7280">(target 82%)</span></div><div style="height:300px"><canvas id="chartCF"></canvas></div></div>
+        <!-- CF Time -->
+        <div class="dash-card">
+          <div class="dash-card-title">CF Time % by SM <span style="font-size:11px;color:#6B7280">(target 82%)</span></div>
+          <div id="chartCFWrap" style="height:300px"><canvas id="chartCF"></canvas></div>
+        </div>
+        <!-- STS Revenue -->
+        <div class="dash-card">
+          <div class="dash-card-title">STS Revenue by SM</div>
+          <div id="chartSTSWrap" style="height:300px"><canvas id="chartSTS"></canvas></div>
+        </div>
+      </div>
+      <!-- Productivity index explainer -->
+      <div style="padding:10px 14px;background:#F4F5F7;border-radius:8px;font-size:11px;color:#4B5563;line-height:1.6;margin-bottom:16px">
+        <strong style="color:#1A2B4A;font-size:12px">How the Productivity Index is calculated (max 100)</strong><br>
+        <span style="display:inline-block;margin-top:4px">
+          <span style="color:#0F6E56;font-weight:600">CF Time</span> <span style="color:#6B7280">(25 pts)</span> &mdash; % of working time spent with customers, target &ge;82%
+          &nbsp;&bull;&nbsp;
+          <span style="color:#0F6E56;font-weight:600">Health</span> <span style="color:#6B7280">(25 pts)</span> &mdash; avg account health score, target &ge;80
+          &nbsp;&bull;&nbsp;
+          <span style="color:#0F6E56;font-weight:600">CX</span> <span style="color:#6B7280">(20 pts)</span> &mdash; customer rating &amp; sentiment, targets &ge;9 rating (Promoter) &amp; &ge;7 sentiment
+          &nbsp;&bull;&nbsp;
+          <span style="color:#0F6E56;font-weight:600">Ops</span> <span style="color:#6B7280">(20 pts)</span> &mdash; SLA &amp; CSIP completion, targets &ge;97% SLA (40pts) &amp; &ge;80% CSIP (20/25pts)
+          &nbsp;&bull;&nbsp;
+          <span style="color:#0F6E56;font-weight:600">Revenue</span> <span style="color:#6B7280">(10 pts)</span> &mdash; STS &amp; leads passed, targets &ge;&pound;212k STS &amp; &ge;4 leads
+        </span>
       </div>
       <!-- Detailed breakdown table -->
       <div class="dash-card">
@@ -2239,6 +2250,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2655,8 +2667,8 @@ function renderCharts(){try{
   ['chartHealth'].forEach(function(id){
     var c=document.getElementById(id); if(c&&c.parentElement) c.parentElement.style.height=colH+'px';
   });
-  ['chartProd','chartCF'].forEach(function(id){
-    var c=document.getElementById(id); if(c&&c.parentElement) c.parentElement.style.height=barH+'px';
+  ['chartProdWrap','chartCFWrap','chartSTSWrap'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.style.height=barH+'px';
   });
   ['chartRadar'].forEach(function(id){
     var c=document.getElementById(id); if(c&&c.parentElement) c.parentElement.style.height='260px';
@@ -4899,6 +4911,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
