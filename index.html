@@ -2238,6 +2238,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -2647,12 +2648,25 @@ function renderCharts(){try{
   var sms=_agg.sms, custs=_agg.custs;
   if(!sms.length) return;
   var names=sms.map(function(s){return s.name.length>10?s.name.split(' ')[0]:s.name;});
+  // Set dynamic heights based on number of SMs
+  var n=sms.length;
+  var barH=Math.max(300, n*28);  // horizontal bars: 28px per SM, min 300
+  var colH=Math.max(220, n*18);  // vertical bars: 18px per SM, min 220
+  ['chartHealth'].forEach(function(id){
+    var c=document.getElementById(id); if(c&&c.parentElement) c.parentElement.style.height=colH+'px';
+  });
+  ['chartProd','chartCF'].forEach(function(id){
+    var c=document.getElementById(id); if(c&&c.parentElement) c.parentElement.style.height=barH+'px';
+  });
+  ['chartRadar'].forEach(function(id){
+    var c=document.getElementById(id); if(c&&c.parentElement) c.parentElement.style.height='260px';
+  });
   // health dist
   mkChart('chartHealth',{type:'bar',data:{labels:names,datasets:[
     {label:'Healthy',data:sms.map(function(s){return custs.filter(function(c){return c.sm===s.name&&c.health>=75;}).length;}),backgroundColor:'#3B6D11'},
     {label:'Needs attention',data:sms.map(function(s){return custs.filter(function(c){return c.sm===s.name&&c.health>=60&&c.health<75;}).length;}),backgroundColor:'#EF9F27'},
     {label:'At risk',data:sms.map(function(s){return custs.filter(function(c){return c.sm===s.name&&c.health<60;}).length;}),backgroundColor:'#E24B4A'}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{font:{size:10}}},y:{stacked:true,ticks:{font:{size:10}}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{font:{size:9},maxRotation:45,minRotation:30}},y:{stacked:true,ticks:{font:{size:10}}}}}});
   // radar
   function av(fn){ return sms.reduce(function(t,s){return t+fn(s);},0)/sms.length; }
   mkChart('chartRadar',{type:'radar',data:{labels:['CF Time','Health','NPS','SLA','CSIP','Retention'],datasets:[
@@ -2661,12 +2675,12 @@ function renderCharts(){try{
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:120,ticks:{display:false},pointLabels:{font:{size:10}}}}}});
   // prod bar
   var sorted=sms.slice().sort(function(a,b){return prodIdx(a)-prodIdx(b);});
-  mkChart('chartProd',{type:'bar',data:{labels:sorted.map(function(s){return s.name;}),datasets:[{data:sorted.map(prodIdx),backgroundColor:sorted.map(function(s){var p=prodIdx(s);return p>=80?'#3B6D11':p>=65?'#EF9F27':'#E24B4A';}),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:100,ticks:{font:{size:10}}},y:{ticks:{font:{size:10}}}}}});
+  mkChart('chartProd',{type:'bar',data:{labels:sorted.map(function(s){return s.name;}),datasets:[{data:sorted.map(prodIdx),backgroundColor:sorted.map(function(s){var p=prodIdx(s);return p>=80?'#3B6D11':p>=65?'#EF9F27':'#E24B4A';}),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{left:0,right:10}},plugins:{legend:{display:false}},scales:{x:{min:0,max:100,ticks:{font:{size:10}}},y:{ticks:{font:{size:9},crossAlign:'far'}}}}});
   // STS bar
   mkChart('chartSTS',{type:'bar',data:{labels:names,datasets:[{data:sms.map(function(s){return s.sts||0;}),backgroundColor:'#378ADD',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:10},callback:function(v){return v>=1000?'\u00a3'+(v/1000).toFixed(0)+'k':'\u00a3'+v;}}},x:{ticks:{font:{size:10}}}}}});
   // CF Time % bar — sorted high to low, coloured vs 75% target
   var cfSorted=sms.slice().sort(function(a,b){return (b.cfPct||0)-(a.cfPct||0);});
-  mkChart('chartCF',{type:'bar',data:{labels:cfSorted.map(function(s){return s.name;}),datasets:[{data:cfSorted.map(function(s){return s.cfPct||0;}),backgroundColor:cfSorted.map(function(s){return (s.cfPct||0)>=82?'#3B6D11':'#E24B4A';}),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},annotation:{annotations:{line1:{type:'line',xMin:82,xMax:82,borderColor:'rgba(0,0,0,0.3)',borderWidth:1,borderDash:[4,4]}}}},scales:{x:{min:0,max:100,ticks:{font:{size:10},callback:function(v){return v+'%';}}},y:{ticks:{font:{size:10}}}}}});
+  mkChart('chartCF',{type:'bar',data:{labels:cfSorted.map(function(s){return s.name;}),datasets:[{data:cfSorted.map(function(s){return s.cfPct||0;}),backgroundColor:cfSorted.map(function(s){return (s.cfPct||0)>=82?'#3B6D11':'#E24B4A';}),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},annotation:{annotations:{line1:{type:'line',xMin:82,xMax:82,borderColor:'rgba(0,0,0,0.3)',borderWidth:1,borderDash:[4,4]}}}},scales:{x:{min:0,max:100,ticks:{font:{size:10},callback:function(v){return v+'%';}}},y:{ticks:{font:{size:9},crossAlign:'far'}}}}});
 } catch(e){ console.warn("Chart render failed:", e.message); }}
 
 function renderProdGrid(){
@@ -4885,6 +4899,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
