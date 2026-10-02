@@ -2253,6 +2253,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3131,6 +3132,11 @@ function calcCF(){
 }
 
 function addCust(d){
+  d=d||{};
+  // Normalise draft restore aliases
+  if(d.csipA!==undefined&&d.csipActions===undefined) d.csipActions=d.csipA;
+  if(d.csipP!==undefined&&d.csipPct===undefined) d.csipPct=d.csipP;
+  if(d.faults!==undefined&&d.flt===undefined) d.flt=d.faults;
   custId++;
   const id="c"+custId;
   const n=document.getElementById("custList").children.length+1;
@@ -4981,6 +4987,7 @@ window.addEventListener('load', function(){
     }
   }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
