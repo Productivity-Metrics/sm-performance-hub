@@ -2251,6 +2251,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3934,12 +3935,14 @@ function saveProgress(){
             ret:document.getElementById('ret_'+id)?.value||'95',
             npsRaw:document.getElementById('npsRaw_'+id)?.value??'',
             sent:document.getElementById('sent_'+id)?.value||'1',
-            rev:document.getElementById('rev_'+id)?.value||'0',
+            rev:document.getElementById('rev_'+id)?.value??'',
             sla:document.getElementById('sla_'+id)?.value||'',
             p12:document.getElementById('p12_'+id)?.value||'0',
             p12base:document.getElementById('p12base_'+id)?.value||'0',
             flt:document.getElementById('flt_'+id)?.value||'0',
-            csipQ:document.getElementById('csipQ_'+id)?.value||'0',
+            csipA:document.getElementById('csipA_'+id)?.value??'',
+            csipP:document.getElementById('csipP_'+id)?.value??'',
+            csipQ:document.getElementById('csipQ_'+id)?.value??'',
             esc:document.getElementById('esc_'+id)?.value||'0',
             escOthers:(function(){
               var others={};
@@ -3949,7 +3952,7 @@ function saveProgress(){
               });
               return others;
             })(),
-            sv:document.getElementById('sv_'+id)?.value||'1',
+            sv:document.getElementById('sv_'+id)?.value??'',
             leads:document.getElementById('leads_'+id)?.value||'0',
             sts:document.getElementById('sts_'+id)?.value||'0',
             rec:document.getElementById('rec_'+id)?.value||'0',
@@ -3961,7 +3964,21 @@ function saveProgress(){
     };
     localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
     try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
-    showToast('Draft saved — you can close this browser and continue later');
+    // Also back up draft to GitHub so it survives browser cache clearing
+    var smKey=(draft.smName||'unknown').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    var draftPath=GH_CONFIG.path+'/draft_'+smKey+'.json';
+    var draftContent=btoa(unescape(encodeURIComponent(JSON.stringify(draft,null,2))));
+    fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
+      headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}
+    }).then(function(r){return r.ok?r.json():null;}).then(function(ex){
+      var body={message:'Draft: '+draft.smName,content:draftContent};
+      if(ex&&ex.sha) body.sha=ex.sha;
+      fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
+        method:'PUT',headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      });
+    }).catch(function(){});
+    showToast('\u2705 Draft saved — your data is safe, you can close this browser and return any time');
     updateDraftBanner();
   }catch(e){showToast('Could not save: '+e.message);}
 }
@@ -3991,17 +4008,31 @@ function restoreProgress(){
         while(list.firstChild) list.removeChild(list.firstChild);
         custCount=0;
         draft.customers.forEach(function(c){
-          addCust({name:c.name,type:c.type,renewal:c.renewal,
-            ret:(+c.ret>1?Math.round(+c.ret*100):+c.ret)||95,
+          // Helper: return saved value exactly, or undefined if absent/blank
+          function sv2(v){ return (v!==undefined&&v!==null&&v!=='')?+v:undefined; }
+          function sv2s(v){ return (v!==undefined&&v!==null)?v:''; }
+          addCust({
+            name:c.name||'',
+            type:c.type||'Maintained',
+            renewal:c.renewal||'',
+            ret:sv2(c.ret),
             npsRaw:(c.npsRaw!==undefined&&c.npsRaw!==null&&c.npsRaw!=='')?+c.npsRaw:null,
-            sent:(c.sent!==undefined&&c.sent!==''&&c.sent!==null)?+c.sent:1,
-            rev:+c.rev||0,
-            sla:(c.sla!==undefined&&c.sla!==''&&c.sla!==null)?+c.sla:undefined,
-            p12:+c.p12||0,p12base:+c.p12base||0,
-            faults:+c.flt||0,
-            csipQ:(c.csipQ!==undefined&&c.csipQ!==''&&c.csipQ!==null)?+c.csipQ:undefined,
-            esc:+c.esc||0,sv:+c.sv||1,leads:+c.leads||0,
-            sts:+c.sts||0,rec:+c.rec||0,aged:+c.aged||0});
+            sent:sv2(c.sent),
+            rev:sv2s(c.rev),
+            sla:sv2s(c.sla),
+            p12:sv2(c.p12)||0,
+            p12base:sv2(c.p12base)||0,
+            faults:sv2(c.flt)||0,
+            csipA:sv2s(c.csipA),
+            csipP:sv2s(c.csipP),
+            csipQ:sv2s(c.csipQ),
+            esc:sv2(c.esc)||0,
+            sv:sv2s(c.sv),
+            leads:sv2(c.leads)||0,
+            sts:sv2(c.sts)||0,
+            rec:sv2(c.rec)||0,
+            aged:sv2(c.aged)||0
+          });
         });
         updateCustBadge();
       }
@@ -4013,6 +4044,20 @@ function restoreProgress(){
 function clearDraft(){
   localStorage.removeItem(DRAFT_KEY);
   try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){}
+  // Also remove GitHub backup draft
+  var smName=(document.getElementById('smName')||{value:''}).value||'';
+  if(smName){
+    var smKey=smName.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    var draftPath=GH_CONFIG.path+'/draft_'+smKey+'.json';
+    fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
+      headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json'}
+    }).then(function(r){return r.ok?r.json():null;}).then(function(ex){
+      if(ex&&ex.sha) fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
+        method:'DELETE',headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify({message:'Clear draft: '+smName,sha:ex.sha})
+      });
+    }).catch(function(){});
+  }
   updateDraftBanner();
 }
 
@@ -4889,7 +4934,7 @@ window.addEventListener('load', function(){
     }
   }, 120000);
 
-  // Auto-restore draft on page load if one exists
+  // Auto-restore draft — check localStorage first, then GitHub backup
   var _existingDraft = null;
   try{ _existingDraft = localStorage.getItem('smHub_draft') || sessionStorage.getItem('smHub_draft'); }catch(e){}
   if(_existingDraft){
@@ -4907,10 +4952,35 @@ window.addEventListener('load', function(){
       }
     }catch(e){}
   }
-  // No draft - start with 1 blank customer
-  addCust();
-  updateCustBadge();
+  // No local draft — check GitHub for a backup draft
+  // (handles browser cache cleared, different device, etc.)
+  fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+GH_CONFIG.path,{
+    headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json'}
+  }).then(function(r){return r.json();}).then(function(files){
+    if(!Array.isArray(files)) throw new Error('not array');
+    var draftFiles=files.filter(function(f){return f.name.startsWith('draft_')&&f.name.endsWith('.json');});
+    if(!draftFiles.length){ addCust(); updateCustBadge(); return; }
+    // Sort by most recently updated
+    draftFiles.sort(function(a,b){return (b.size||0)-(a.size||0);});
+    // Prompt SM if multiple drafts found, or auto-load if just one
+    if(draftFiles.length===1){
+      fetch(draftFiles[0].download_url).then(function(r){return r.json();}).then(function(pd){
+        if(pd&&pd.smName){
+          try{localStorage.setItem('smHub_draft',JSON.stringify(pd));}catch(e){}
+          restoreProgress();
+          window._draftEnabled=true;
+          var dt=new Date(pd.savedAt);
+          showToast('\u21ba Draft restored for '+pd.smName+' from cloud backup \u2014 saved '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' at '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+          updateDraftBanner();
+        } else { addCust(); updateCustBadge(); }
+      }).catch(function(){ addCust(); updateCustBadge(); });
+    } else {
+      // Multiple drafts — just start fresh
+      addCust(); updateCustBadge();
+    }
+  }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
