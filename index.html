@@ -2256,6 +2256,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3266,8 +3267,11 @@ function updateCustBadge(){
 }
 
 function recalc(id){
-  const nps=+document.getElementById("nps_"+id).value||0;
-    const npsRawEl=document.getElementById("npsRaw_"+id); const npsRaw=npsRawEl&&npsRawEl.value!==''?+npsRawEl.value:null;
+  // Read NPS directly from the select — avoids null/0 confusion with hidden field
+  var _npsSelectEl=document.getElementById('npsRaw_'+id);
+  var _npsRawVal=_npsSelectEl?_npsSelectEl.value:'';
+  const npsRaw=(_npsRawVal!==''&&_npsRawVal!==null)?+_npsRawVal:null;
+  const nps=npsRaw!==null?npsToScore(npsRaw):null;
   const sent=+document.getElementById("sent_"+id).value||0;
   const rev=+document.getElementById("rev_"+id).value||0;
   const sla=+document.getElementById("sla_"+id).value||0;
@@ -3277,8 +3281,7 @@ function recalc(id){
   const csipQ=+document.getElementById("csipQ_"+id).value||0;
   const s=calcScore({nps:nps,sent:sent,rev:rev,sla:sla,p12:p12,p12base:p12base,faults:faults,csipQ:csipQ});
   // -3pt penalty if no NPS response this month
-  var _npsEl=document.getElementById('npsRaw_'+id);
-  var _npsBlank=!_npsEl||_npsEl.value===''||_npsEl.value===null||_npsEl.value===undefined;
+  var _npsBlank=(npsRaw===null);
   var _adjHealth=_npsBlank?Math.max(0,Math.round((s.health-3)*10)/10):s.health;
   const cl=hClass(_adjHealth);
   document.getElementById("svoc_"+id).textContent=s.voc.toFixed(1);
@@ -4990,6 +4993,7 @@ window.addEventListener('load', function(){
     }).catch(function(){ addCust(); updateCustBadge(); });
   }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
