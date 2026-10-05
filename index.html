@@ -2255,6 +2255,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -4158,16 +4159,17 @@ function editSubmission(smName){
           name:    c.name||'',
           type:    c.type||'Maintained',
           renewal: c.renewal||'',
-          ret:     c.retention?(c.retention>1?Math.round(c.retention*100):Math.round(c.retention*100)):95,
-          npsRaw:  c.npsRaw!==undefined&&c.npsRaw!==null?c.npsRaw:'',
-          sent:    c.sentiment||7,
-          rev:     c.serviceReviews||0,
-          sla:     c.sla||0,
+          ret:     (c.retention!==undefined&&c.retention!==null)?Math.round((c.retention>1?c.retention:c.retention*100)):'',
+
+          npsRaw:  (c.npsRaw!==undefined&&c.npsRaw!==null)?c.npsRaw:'',
+          sent:    (c.sentiment!==undefined&&c.sentiment!==null)?c.sentiment:1,
+          rev:     (c.serviceReviews!==undefined&&c.serviceReviews!==null)?c.serviceReviews:'',
+          sla:     (c.sla!==undefined&&c.sla!==null&&c.sla!=='')?c.sla:'',
           p12:     c.p12Incidents||0,
           p12base: c.p12Baseline||0,
           faults:  c.openFaults||0,
-          csipQ:   c.csipQuality||0,
-          csipP:   c.csipPct||0,
+          csipQ:   (c.csipQuality!==undefined&&c.csipQuality!==null&&c.csipQuality!=='')?c.csipQuality:'',
+          csipP:   (c.csipPct!==undefined&&c.csipPct!==null&&c.csipPct!=='')?c.csipPct:'',
           csipA:   c.csipActions||0,
           esc:     c.escalations||0,
           sv:      c.siteVisits||1,
@@ -4988,6 +4990,7 @@ window.addEventListener('load', function(){
     }).catch(function(){ addCust(); updateCustBadge(); });
   }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
