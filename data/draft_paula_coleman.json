@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-05T12:25:46.899Z",
+  "savedAt": "2026-10-05T12:27:47.689Z",
   "smName": "Paula Coleman",
   "smEmail": "paula.coleman1@virginmediao2,co.uk",
   "smVertical": "Public Sector",
@@ -51,7 +51,9 @@
       "csipP": "100",
       "csipQ": "20",
       "esc": "1",
-      "escOthers": {},
+      "escOthers": {
+        "0": "Service desk - mixed messaged on responses regarding device stock"
+      },
       "sv": "0",
       "leads": "0",
       "sts": "0",
@@ -110,7 +112,7 @@
       "id": "c23",
       "name": "London Borough of Enfield",
       "type": "Base Enhanced",
-      "renewal": "",
+      "renewal": "2025-11-05",
       "ret": "1",
       "npsRaw": "",
       "sent": "3",
