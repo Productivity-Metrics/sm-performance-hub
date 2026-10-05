@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-05T21:11:30.721Z",
+  "savedAt": "2026-10-05T21:11:52.963Z",
   "smName": "Katie Price",
   "smEmail": "katie.price@virginmediao2.co.uk",
   "smVertical": "Enterprise",
@@ -74,10 +74,8 @@
       "csipA": "",
       "csipP": "",
       "csipQ": "",
-      "esc": "1",
-      "escOthers": {
-        "0": "Poor signal issue"
-      },
+      "esc": "2",
+      "escOthers": {},
       "sv": "",
       "leads": "2",
       "sts": "0",
