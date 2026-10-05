@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-05T20:49:22.755Z",
+  "savedAt": "2026-10-05T20:51:13.948Z",
   "smName": "Katie Price",
   "smEmail": "katie.price@virginmediao2.co.uk",
   "smVertical": "Enterprise",
@@ -25,12 +25,12 @@
   "cf5": "0",
   "siteVisits": "0",
   "smUtil": "95",
-  "totalSTS": "17627",
+  "totalSTS": "0",
   "totalRecov": "0",
   "totalAgedDebt": "0",
-  "agedDebt": "2800",
+  "agedDebt": "0",
   "costToServe": "0",
-  "billingCredits": "63612",
+  "billingCredits": "0",
   "serviceCreditsValue": "0",
   "serviceCreditsCount": "0",
   "customers": [
