@@ -2254,6 +2254,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3972,7 +3973,8 @@ function saveProgress(){
     localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
     try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
     // Also back up draft to GitHub so it survives browser cache clearing
-    var smKey=(draft.smName||'unknown').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    var _draftName=(draft.smName||'').trim();
+    var smKey=_draftName.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'')||'unknown';
     var draftPath=GH_CONFIG.path+'/draft_'+smKey+'.json';
     var draftContent=btoa(unescape(encodeURIComponent(JSON.stringify(draft,null,2))));
     fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
@@ -4968,25 +4970,25 @@ window.addEventListener('load', function(){
     var draftFiles=files.filter(function(f){return f.name.startsWith('draft_')&&f.name.endsWith('.json');});
     if(!draftFiles.length){ addCust(); updateCustBadge(); return; }
     // Sort by most recently updated
-    draftFiles.sort(function(a,b){return (b.size||0)-(a.size||0);});
-    // Prompt SM if multiple drafts found, or auto-load if just one
-    if(draftFiles.length===1){
-      fetch(draftFiles[0].download_url).then(function(r){return r.json();}).then(function(pd){
-        if(pd&&pd.smName){
-          try{localStorage.setItem('smHub_draft',JSON.stringify(pd));}catch(e){}
-          restoreProgress();
-          window._draftEnabled=true;
-          var dt=new Date(pd.savedAt);
-          showToast('\u21ba Draft restored for '+pd.smName+' from cloud backup \u2014 saved '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' at '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
-          updateDraftBanner();
-        } else { addCust(); updateCustBadge(); }
-      }).catch(function(){ addCust(); updateCustBadge(); });
-    } else {
-      // Multiple drafts — just start fresh
-      addCust(); updateCustBadge();
-    }
+    // Fetch all draft files and pick the most recently saved
+    Promise.all(draftFiles.map(function(f){
+      return fetch(f.download_url).then(function(r){return r.json();}).catch(function(){return null;});
+    })).then(function(drafts){
+      var valid=drafts.filter(function(d){return d&&d.smName;});
+      if(!valid.length){ addCust(); updateCustBadge(); return; }
+      // Pick the most recently saved draft
+      valid.sort(function(a,b){ return (b.savedAt||'') > (a.savedAt||'') ? 1 : -1; });
+      var pd=valid[0];
+      try{localStorage.setItem('smHub_draft',JSON.stringify(pd));}catch(e){}
+      restoreProgress();
+      window._draftEnabled=true;
+      var dt=new Date(pd.savedAt);
+      showToast('\u21ba Draft restored for '+pd.smName+' \u2014 last saved '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' at '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+      updateDraftBanner();
+    }).catch(function(){ addCust(); updateCustBadge(); });
   }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
