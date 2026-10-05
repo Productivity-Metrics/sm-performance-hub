@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-05T20:53:13.936Z",
+  "savedAt": "2026-10-05T20:53:31.046Z",
   "smName": "Katie Price",
   "smEmail": "katie.price@virginmediao2.co.uk",
   "smVertical": "Enterprise",
@@ -7,7 +7,7 @@
   "smSL": "Gareth Stokes",
   "repMonth": "August",
   "repYear": "2026",
-  "totalAccts": "11",
+  "totalAccts": "10",
   "directedAccts": "",
   "maintainedAccts": "",
   "governedAccts": "",
@@ -25,12 +25,12 @@
   "cf5": "0",
   "siteVisits": "0",
   "smUtil": "95",
-  "totalSTS": "0",
+  "totalSTS": "17627",
   "totalRecov": "0",
   "totalAgedDebt": "0",
-  "agedDebt": "0",
+  "agedDebt": "2800",
   "costToServe": "0",
-  "billingCredits": "0",
+  "billingCredits": "63612",
   "serviceCreditsValue": "0",
   "serviceCreditsCount": "0",
   "customers": [
@@ -59,7 +59,7 @@
       "aged": "0"
     },
     {
-      "id": "c2",
+      "id": "c12",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -83,7 +83,7 @@
       "aged": "0"
     },
     {
-      "id": "c3",
+      "id": "c13",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -107,7 +107,7 @@
       "aged": "0"
     },
     {
-      "id": "c4",
+      "id": "c14",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -131,7 +131,7 @@
       "aged": "0"
     },
     {
-      "id": "c5",
+      "id": "c15",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -155,7 +155,7 @@
       "aged": "0"
     },
     {
-      "id": "c6",
+      "id": "c16",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -179,7 +179,7 @@
       "aged": "0"
     },
     {
-      "id": "c7",
+      "id": "c17",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -203,7 +203,7 @@
       "aged": "0"
     },
     {
-      "id": "c8",
+      "id": "c18",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -227,7 +227,7 @@
       "aged": "0"
     },
     {
-      "id": "c9",
+      "id": "c19",
       "name": "",
       "type": "Maintained",
       "renewal": "",
@@ -251,31 +251,7 @@
       "aged": "0"
     },
     {
-      "id": "c10",
-      "name": "",
-      "type": "Maintained",
-      "renewal": "",
-      "ret": "95",
-      "npsRaw": "",
-      "sent": "1",
-      "rev": "",
-      "sla": "",
-      "p12": "0",
-      "p12base": "0",
-      "flt": "0",
-      "csipA": "",
-      "csipP": "",
-      "csipQ": "",
-      "esc": "0",
-      "escOthers": {},
-      "sv": "",
-      "leads": "0",
-      "sts": "0",
-      "rec": "0",
-      "aged": "0"
-    },
-    {
-      "id": "c11",
+      "id": "c20",
       "name": "",
       "type": "Maintained",
       "renewal": "",
