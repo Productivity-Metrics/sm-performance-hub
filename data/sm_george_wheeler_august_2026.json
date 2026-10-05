@@ -14,23 +14,23 @@
   "availableHrs": 139,
   "utilisation": 48.63,
   "cfWeeks": [
-    36.5,
-    57.5,
-    44.5,
-    35.5,
+    0,
+    0,
+    0,
+    0,
     0
   ],
-  "cfTotal": 174,
-  "cfPct": 125.2,
+  "cfTotal": 0,
+  "cfPct": 0,
   "siteVisits": 1,
-  "serviceReviews": 3,
+  "serviceReviews": 0,
   "leads": 3,
   "qbrs": 0,
   "directedAccts": 0,
   "govAccts": 2,
   "maintAccts": 2,
   "baseAccts": 0,
-  "totalEscalations": 1,
+  "totalEscalations": 0,
   "totalHoursWorked": 194.75,
   "travelHrs": 4,
   "internalHrs": 1,
@@ -48,12 +48,12 @@
       "name": "Travelodge Hotels Limited",
       "type": "Governed",
       "renewal": "2029-12-31",
-      "retention": 0.95,
+      "retention": 1,
       "escalations": 1,
       "escCategories": [
-        "Incident Management"
+        "Billing"
       ],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 3,
       "nps": 100,
       "npsRaw": 9,
@@ -95,7 +95,7 @@
       "escCategories": [],
       "siteVisits": 1,
       "leads": 0,
-      "nps": 100,
+      "nps": 0,
       "npsRaw": 0,
       "sentiment": 9,
       "serviceReviews": 1,
@@ -104,7 +104,7 @@
       "p12Baseline": 5,
       "openFaults": 0,
       "scoreBreakdown": {
-        "nps": 30,
+        "nps": 0,
         "sent": 31.5,
         "rev": 35,
         "sla": 40,
@@ -121,10 +121,10 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 96.5,
+      "vocScore": 66.5,
       "opsScore": 69,
-      "healthScore": 84.1,
-      "status": "Healthy"
+      "healthScore": 67.6,
+      "status": "Needs attention"
     },
     {
       "name": "TUI",
@@ -133,9 +133,9 @@
       "retention": 0.2,
       "escalations": 0,
       "escCategories": [],
-      "siteVisits": 0,
+      "siteVisits": 1,
       "leads": 0,
-      "nps": 100,
+      "nps": 0,
       "npsRaw": 0,
       "sentiment": 8,
       "serviceReviews": 1,
@@ -144,7 +144,7 @@
       "p12Baseline": 0,
       "openFaults": 0,
       "scoreBreakdown": {
-        "nps": 30,
+        "nps": 0,
         "sent": 28,
         "rev": 35,
         "sla": 40,
@@ -161,10 +161,10 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 93,
+      "vocScore": 63,
       "opsScore": 75,
-      "healthScore": 84.9,
-      "status": "Healthy"
+      "healthScore": 68.4,
+      "status": "Needs attention"
     },
     {
       "name": "Greencore",
@@ -175,7 +175,7 @@
       "escCategories": [],
       "siteVisits": 1,
       "leads": 0,
-      "nps": 100,
+      "nps": 0,
       "npsRaw": 0,
       "sentiment": 8,
       "serviceReviews": 1,
@@ -184,7 +184,7 @@
       "p12Baseline": 4,
       "openFaults": 0,
       "scoreBreakdown": {
-        "nps": 30,
+        "nps": 0,
         "sent": 28,
         "rev": 35,
         "sla": 40,
@@ -201,11 +201,11 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 93,
+      "vocScore": 63,
       "opsScore": 67,
-      "healthScore": 81.3,
-      "status": "Healthy"
+      "healthScore": 64.8,
+      "status": "Needs attention"
     }
   ],
-  "submittedAt": "2026-10-01T17:07:47.377Z"
+  "submittedAt": "2026-10-05T15:13:25.400Z"
 }
