@@ -2283,6 +2283,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3345,8 +3346,11 @@ function recalc(id){
 function collectData(){
   const custs=Array.from(document.getElementById("custList").children).map(div=>{
     const id=div.id;
-    const nps=+document.getElementById("nps_"+id).value||0;
-    const npsRaw=+(document.getElementById("npsRaw_"+id)||{value:9}).value||0;
+      const nps=npsRaw!==null?npsToScore(npsRaw):null;
+      // NPS: read from select directly, null if no response selected
+      var _npsSelEl=document.getElementById("npsRaw_"+id);
+      var _npsRawVal=_npsSelEl&&_npsSelEl.value!==''?+_npsSelEl.value:null;
+      const npsRaw=_npsRawVal;
     const sent=+document.getElementById("sent_"+id).value||0;
     const rev=+document.getElementById("rev_"+id).value||0;
     const sla=+document.getElementById("sla_"+id).value||0;
@@ -5049,6 +5053,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
