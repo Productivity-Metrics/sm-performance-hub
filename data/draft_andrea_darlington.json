@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T10:02:56.426Z",
+  "savedAt": "2026-10-06T10:02:58.304Z",
   "smName": "Andrea Darlington",
   "smEmail": "andrea.darlington@virginmediao2.co.uk",
   "smVertical": "Enterprise",
@@ -18,10 +18,10 @@
   "totalHoursWorked": "157",
   "travelHrs": "0",
   "internalHrs": "0",
-  "cf1": "30.5",
-  "cf2": "40",
-  "cf3": "42.5",
-  "cf4": "36.5",
+  "cf1": "37",
+  "cf2": "30.5",
+  "cf3": "40",
+  "cf4": "42.5",
   "cf5": "0",
   "siteVisits": "0",
   "smUtil": "93",
@@ -35,7 +35,7 @@
   "serviceCreditsCount": "0",
   "customers": [
     {
-      "id": "c1",
+      "id": "c22",
       "name": "London Fire Brigade ",
       "type": "Base Enhanced",
       "renewal": "2027-01-23",
@@ -51,15 +51,6 @@
       "csipP": "",
       "csipQ": "80",
       "esc": "7",
-      "escCats": [
-        "Billing",
-        "Billing",
-        "Billing",
-        "Billing",
-        "Billing",
-        "Billing",
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -68,7 +59,7 @@
       "aged": "0"
     },
     {
-      "id": "c2",
+      "id": "c23",
       "name": "Heathrow Airport ",
       "type": "Base Enhanced",
       "renewal": "2026-03-03",
@@ -82,20 +73,17 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "1",
-      "escCats": [
-        "Billing"
-      ],
       "escOthers": {},
-      "sv": "1",
+      "sv": "0",
       "leads": "0",
       "sts": "0",
       "rec": "0",
       "aged": "0"
     },
     {
-      "id": "c3",
+      "id": "c24",
       "name": "Alstom Transport ",
       "type": "Base Enhanced",
       "renewal": "2027-01-07",
@@ -109,11 +97,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "1",
-      "escCats": [
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -122,7 +107,7 @@
       "aged": "7439"
     },
     {
-      "id": "c4",
+      "id": "c25",
       "name": "Scottish Water",
       "type": "Base Enhanced",
       "renewal": "2026-11-27",
@@ -136,9 +121,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -147,7 +131,7 @@
       "aged": "0"
     },
     {
-      "id": "c5",
+      "id": "c26",
       "name": "NORTHERN POWERGRID LIMITED",
       "type": "Base Enhanced",
       "renewal": "2028-01-01",
@@ -161,14 +145,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "4",
-      "escCats": [
-        "Billing",
-        "Billing",
-        "Billing",
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -177,7 +155,7 @@
       "aged": "0"
     },
     {
-      "id": "c6",
+      "id": "c27",
       "name": "Lanes Group ",
       "type": "Base Enhanced",
       "renewal": "2026-04-13",
@@ -193,10 +171,6 @@
       "csipP": "",
       "csipQ": "80",
       "esc": "2",
-      "escCats": [
-        "Billing",
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -205,7 +179,7 @@
       "aged": "0"
     },
     {
-      "id": "c7",
+      "id": "c28",
       "name": "ABB LTD",
       "type": "Base Enhanced",
       "renewal": "2028-10-15",
@@ -219,9 +193,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -230,7 +203,7 @@
       "aged": "0"
     },
     {
-      "id": "c8",
+      "id": "c29",
       "name": "Stantec ",
       "type": "Base Enhanced",
       "renewal": "2029-09-01",
@@ -244,12 +217,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "2",
-      "escCats": [
-        "Billing",
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -258,7 +227,7 @@
       "aged": "0"
     },
     {
-      "id": "c9",
+      "id": "c30",
       "name": "NORTHERN GAS NETWORKS LIMITED",
       "type": "Base Enhanced",
       "renewal": "2027-12-01",
@@ -272,11 +241,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "1",
-      "escCats": [
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -285,7 +251,7 @@
       "aged": "0"
     },
     {
-      "id": "c10",
+      "id": "c31",
       "name": "DHL LIMITED",
       "type": "Base Enhanced",
       "renewal": "2025-10-01",
@@ -299,11 +265,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "1",
-      "escCats": [
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -312,7 +275,7 @@
       "aged": "0"
     },
     {
-      "id": "c11",
+      "id": "c32",
       "name": "ALLIANCE MEDICAL LIMITED",
       "type": "Base Enhanced",
       "renewal": "2027-01-01",
@@ -326,11 +289,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "1",
-      "escCats": [
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "1",
       "leads": "0",
@@ -339,7 +299,7 @@
       "aged": "0"
     },
     {
-      "id": "c12",
+      "id": "c33",
       "name": "COUNTRYWIDE LIMITED",
       "type": "Base Enhanced",
       "renewal": "2025-12-31",
@@ -353,9 +313,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "80",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -364,7 +323,7 @@
       "aged": "0"
     },
     {
-      "id": "c13",
+      "id": "c34",
       "name": "Department of Health and Social Care ",
       "type": "Base Enhanced",
       "renewal": "2026-12-10",
@@ -378,12 +337,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "20",
+      "csipQ": "0",
       "esc": "2",
-      "escCats": [
-        "Billing",
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -392,7 +347,7 @@
       "aged": "0"
     },
     {
-      "id": "c14",
+      "id": "c35",
       "name": "Ambulance Radio Programme ",
       "type": "Base Enhanced",
       "renewal": "2026-12-10",
@@ -406,9 +361,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "20",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -417,7 +371,7 @@
       "aged": "0"
     },
     {
-      "id": "c15",
+      "id": "c36",
       "name": "Avon Sumerset Police ",
       "type": "Base Enhanced",
       "renewal": "2026-10-06",
@@ -431,13 +385,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "20",
+      "csipQ": "0",
       "esc": "3",
-      "escCats": [
-        "Billing",
-        "Billing",
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -446,7 +395,7 @@
       "aged": "0"
     },
     {
-      "id": "c16",
+      "id": "c37",
       "name": "Gartner UK Limited",
       "type": "Base Enhanced",
       "renewal": "2028-01-01",
@@ -462,7 +411,6 @@
       "csipP": "",
       "csipQ": "20",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -471,7 +419,7 @@
       "aged": "0"
     },
     {
-      "id": "c17",
+      "id": "c38",
       "name": "UK Powers Networks Limited ",
       "type": "Base Enhanced",
       "renewal": "",
@@ -485,9 +433,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "20",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -496,7 +443,7 @@
       "aged": "0"
     },
     {
-      "id": "c18",
+      "id": "c39",
       "name": "Tarmac Trading Limited ",
       "type": "Base Enhanced",
       "renewal": "",
@@ -510,9 +457,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "20",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -521,7 +467,7 @@
       "aged": "0"
     },
     {
-      "id": "c19",
+      "id": "c40",
       "name": "Gallagher Insurance",
       "type": "Base Enhanced",
       "renewal": "",
@@ -535,9 +481,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "20",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -546,7 +491,7 @@
       "aged": "0"
     },
     {
-      "id": "c20",
+      "id": "c41",
       "name": "London Brough Of Islington ",
       "type": "Base Enhanced",
       "renewal": "",
@@ -560,9 +505,8 @@
       "flt": "0",
       "csipA": "",
       "csipP": "",
-      "csipQ": "20",
+      "csipQ": "0",
       "esc": "0",
-      "escCats": [],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
@@ -571,7 +515,7 @@
       "aged": "0"
     },
     {
-      "id": "c21",
+      "id": "c42",
       "name": "AAH ",
       "type": "Base Enhanced",
       "renewal": "2027-01-07",
@@ -587,9 +531,6 @@
       "csipP": "",
       "csipQ": "20",
       "esc": "1",
-      "escCats": [
-        "Billing"
-      ],
       "escOthers": {},
       "sv": "0",
       "leads": "0",
