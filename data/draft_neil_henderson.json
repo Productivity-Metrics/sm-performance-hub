@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T07:41:53.092Z",
+  "savedAt": "2026-10-06T07:43:53.359Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -51,7 +51,13 @@
       "csipP": "4",
       "csipQ": "16",
       "esc": "10",
-      "escOthers": {},
+      "escOthers": {
+        "0": "ESIM",
+        "1": "Dara usage",
+        "2": "Transfer of ownership",
+        "3": "BI Reporting",
+        "4": "Customer Service Issues"
+      },
       "sv": "1",
       "leads": "0",
       "sts": "0",
