@@ -2262,6 +2262,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3992,24 +3993,7 @@ function saveProgress(){
     // Store SM name separately so cloud recovery only loads their own draft
     try{ localStorage.setItem('smHub_smName', draft.smName||''); }catch(e){}
     try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
-    // Also back up draft to GitHub so it survives browser cache clearing
-    var _draftName=(draft.smName||'').trim();
-    if(!_draftName){ console.log('Draft: skipping GitHub backup, no SM name yet'); }
-    else {
-    var smKey=_draftName.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-    var draftPath=GH_CONFIG.path+'/draft_'+smKey+'.json';
-    var draftContent=btoa(unescape(encodeURIComponent(JSON.stringify(draft,null,2))));
-    fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
-      headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}
-    }).then(function(r){return r.ok?r.json():null;}).then(function(ex){
-      var body={message:'Draft: '+draft.smName,content:draftContent};
-      if(ex&&ex.sha) body.sha=ex.sha;
-      fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
-        method:'PUT',headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-        body:JSON.stringify(body)
-      });
-    }).catch(function(){});
-    } // end if(_draftName)
+    // Draft saved to localStorage and sessionStorage only (no GitHub upload)
     showToast('\u2705 Draft saved — your data is safe, you can close this browser and return any time');
     updateDraftBanner();
   }catch(e){showToast('Could not save: '+e.message);}
@@ -4104,20 +4088,6 @@ function clearDraft(){
   localStorage.removeItem(DRAFT_KEY);
   try{ localStorage.removeItem('smHub_smName'); }catch(e){}
   try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){}
-  // Also remove GitHub backup draft
-  var smName=(document.getElementById('smName')||{value:''}).value||'';
-  if(smName){
-    var smKey=smName.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-    var draftPath=GH_CONFIG.path+'/draft_'+smKey+'.json';
-    fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
-      headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json'}
-    }).then(function(r){return r.ok?r.json():null;}).then(function(ex){
-      if(ex&&ex.sha) fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+draftPath,{
-        method:'DELETE',headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-        body:JSON.stringify({message:'Clear draft: '+smName,sha:ex.sha})
-      });
-    }).catch(function(){});
-  }
   updateDraftBanner();
 }
 
@@ -4991,76 +4961,50 @@ window.addEventListener('load', function(){
   updateDraftBanner();
   populateServiceLeadFilter();
 
-  // Auto-save every 2 minutes only after SM has started saving
+  // Auto-save every 2 minutes — only when on Step 3 with a name entered
   setInterval(function(){
     if(!window._draftEnabled) return;
     var fv = document.getElementById('formView');
     if(fv && fv.style.display !== 'none'){
       var nm = (document.getElementById('smName')||{value:''}).value||'';
-      // Only auto-save when SM is on Step 3 (customers) — avoids saving empty customers[]
       var pg3 = document.getElementById('pg3');
       var onStep3 = pg3 && pg3.style.display !== 'none';
       if(nm.trim() && onStep3) saveProgress();
     }
   }, 120000);
 
-  // Auto-restore draft — check localStorage first, then GitHub backup
-  var _existingDraft = null;
-  try{ _existingDraft = localStorage.getItem('smHub_draft') || sessionStorage.getItem('smHub_draft'); }catch(e){}
-  if(_existingDraft){
+  // Auto-restore: localStorage only — never load from GitHub on page load
+  // This prevents any possibility of loading another SM's data
+  var _raw = null;
+  try{ _raw = localStorage.getItem('smHub_draft'); }catch(e){}
+  if(!_raw){ try{ _raw = sessionStorage.getItem('smHub_draft'); }catch(e){} }
+
+  if(_raw){
     try{
-      var _pd = JSON.parse(_existingDraft);
-      // Verify draft belongs to this device's SM — prevents loading another SM's data
-      var _deviceName='';
-      try{ _deviceName=localStorage.getItem('smHub_smName')||''; }catch(e){}
-      var _draftOk = _pd && _pd.smName && (
-        !_deviceName ||  // no device name stored yet — trust the draft (first time)
-        _pd.smName.trim().toLowerCase()===_deviceName.trim().toLowerCase()
-      );
-      if(_draftOk){
-        // Store name from draft to lock this device to this SM
-        try{ localStorage.setItem('smHub_smName', _pd.smName); }catch(e){}
+      var _pd = JSON.parse(_raw);
+      if(_pd && _pd.smName){
+        // Safe: restore and show toast
         restoreProgress();
         window._draftEnabled = true;
+        try{ localStorage.setItem('smHub_smName', _pd.smName); }catch(e){}
         var _dt = new Date(_pd.savedAt);
-        showToast('\u21ba Draft restored for '+_pd.smName+' \u2014 last saved '
+        showToast('↺ Draft restored for '+_pd.smName+' — last saved '
           +_dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})
           +' at '+_dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
         updateDraftBanner();
         return;
-      } else if(_pd && _pd.smName && _deviceName && _pd.smName.trim().toLowerCase()!==_deviceName.trim().toLowerCase()){
-        // Draft belongs to a different SM — clear it and start fresh
-        try{ localStorage.removeItem('smHub_draft'); sessionStorage.removeItem('smHub_draft'); }catch(e){}
-        console.warn('Draft cleared: belonged to '+_pd.smName+', device is '+_deviceName);
       }
     }catch(e){}
+    // Corrupt/empty draft — clear it
+    try{ localStorage.removeItem('smHub_draft'); sessionStorage.removeItem('smHub_draft'); }catch(e){}
   }
-  // No local draft — check GitHub for a backup draft
-  // IMPORTANT: only load a draft that matches this SM's stored name
-  // to prevent loading another SM's draft on a shared/fresh browser
-  var _storedName='';
-  try{ _storedName=localStorage.getItem('smHub_smName')||''; }catch(e){}
-  if(!_storedName){
-    // No name stored on this device — can't safely identify whose draft to load
-    addCust(); updateCustBadge(); return;
-  }
-  var _safeStoredName=_storedName.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-  var _expectedDraft='draft_'+_safeStoredName+'.json';
-  fetch('https://raw.githubusercontent.com/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/main/'+GH_CONFIG.path+'/'+_expectedDraft,{
-    headers:{'Authorization':'token '+GH_CONFIG.token}
-  }).then(function(r){ if(!r.ok) throw new Error('no draft'); return r.json(); })
-  .then(function(pd){
-    if(!pd||!pd.smName) throw new Error('invalid draft');
-    // Double-check the draft belongs to this SM
-    if(pd.smName.trim().toLowerCase()!==_storedName.trim().toLowerCase()) throw new Error('name mismatch');
-    try{localStorage.setItem('smHub_draft',JSON.stringify(pd));}catch(e){}
-    restoreProgress();
-    window._draftEnabled=true;
-    var dt=new Date(pd.savedAt);
-    showToast('\u21ba Draft restored for '+pd.smName+' \u2014 last saved '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' at '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
-    updateDraftBanner();
-  }).catch(function(){ addCust(); updateCustBadge(); });
+
+  // No valid draft — start with one blank customer
+  addCust();
+  updateCustBadge();
 });
+
+
 
 
 
