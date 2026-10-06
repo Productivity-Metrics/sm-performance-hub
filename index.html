@@ -2259,6 +2259,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -4217,7 +4218,7 @@ function editSubmission(smName){
           csipP:   (c.csipPct!==undefined&&c.csipPct!==null&&c.csipPct!=='')?c.csipPct:'',
           csipA:   c.csipActions||0,
           esc:     c.escalations||0,
-          sv:      c.siteVisits||1,
+          sv:      (c.siteVisits!==undefined&&c.siteVisits!==null)?c.siteVisits:'',
           leads:   c.leads||0,
           sts:     c.sts||0,
           rec:     c.recovered||0,
@@ -4225,6 +4226,11 @@ function editSubmission(smName){
         });
       });
       updateCustBadge();
+      // Recalc health scores for all restored customers
+      setTimeout(function(){
+        var cl=document.getElementById('custList');
+        if(cl) Array.from(cl.children).forEach(function(div){ if(div.id) recalc(div.id); });
+      }, 300);
     }
 
     // Navigate to step 1 and show a banner
@@ -5037,6 +5043,7 @@ window.addEventListener('load', function(){
     updateDraftBanner();
   }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
