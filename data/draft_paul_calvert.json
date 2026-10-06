@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T10:36:36.456Z",
+  "savedAt": "2026-10-06T10:39:06.101Z",
   "smName": "Paul Calvert",
   "smEmail": "paul.calvert1@o2business.com",
   "smVertical": "Public Sector",
@@ -191,15 +191,15 @@
       "renewal": "",
       "ret": "100",
       "npsRaw": "",
-      "sent": "7",
+      "sent": "6",
       "rev": "0",
       "sla": "",
       "p12": "0",
       "p12base": "0",
       "flt": "0",
       "csipA": "0",
-      "csipP": "0",
-      "csipQ": "0",
+      "csipP": "100",
+      "csipQ": "25",
       "esc": "1",
       "escCats": [
         "Incident Management"
