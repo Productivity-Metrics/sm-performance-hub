@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T09:31:30.742Z",
+  "savedAt": "2026-10-06T09:33:10.906Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -102,15 +102,15 @@
       "renewal": "2025-11-20",
       "ret": "1",
       "npsRaw": "",
-      "sent": "1",
-      "rev": "",
-      "sla": "",
+      "sent": "6",
+      "rev": "1",
+      "sla": "100",
       "p12": "0",
       "p12base": "0",
       "flt": "0",
-      "csipA": "",
-      "csipP": "",
-      "csipQ": "",
+      "csipA": "0",
+      "csipP": "0",
+      "csipQ": "0",
       "esc": "11",
       "escCats": [
         "Billing",
@@ -121,9 +121,9 @@
         "Other",
         "Other",
         "Other",
-        "Billing",
-        "Billing",
-        "Billing"
+        "Other",
+        "Other",
+        "Other"
       ],
       "escOthers": {
         "1": "ESIM sync",
@@ -131,7 +131,11 @@
         "3": "IMEI bar",
         "4": "Transfer Of Ownership",
         "5": "BI reporting",
-        "6": "Data consumption usage error"
+        "6": "Data consumption usage error",
+        "7": "Customer Service Issues",
+        "8": "O2 Rental",
+        "9": "My O2 Business",
+        "10": "My O2 Business login"
       },
       "sv": "",
       "leads": "0",
