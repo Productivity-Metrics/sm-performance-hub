@@ -2263,6 +2263,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3994,7 +3995,7 @@ function saveProgress(){
     try{ localStorage.setItem('smHub_smName', draft.smName||''); }catch(e){}
     try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
     // Draft saved to localStorage and sessionStorage only (no GitHub upload)
-    showToast('\u2705 Draft saved — your data is safe, you can close this browser and return any time');
+    showToast('\u2705 Draft saved — use this same browser tomorrow to continue where you left off');
     updateDraftBanner();
   }catch(e){showToast('Could not save: '+e.message);}
 }
@@ -5003,6 +5004,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
