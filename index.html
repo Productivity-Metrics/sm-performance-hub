@@ -2264,6 +2264,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -4974,8 +4975,7 @@ window.addEventListener('load', function(){
     }
   }, 120000);
 
-  // Auto-restore: localStorage only — never load from GitHub on page load
-  // This prevents any possibility of loading another SM's data
+  // Check for a saved draft
   var _raw = null;
   try{ _raw = localStorage.getItem('smHub_draft'); }catch(e){}
   if(!_raw){ try{ _raw = sessionStorage.getItem('smHub_draft'); }catch(e){} }
@@ -4984,26 +4984,55 @@ window.addEventListener('load', function(){
     try{
       var _pd = JSON.parse(_raw);
       if(_pd && _pd.smName){
-        // Safe: restore and show toast
-        restoreProgress();
-        window._draftEnabled = true;
-        try{ localStorage.setItem('smHub_smName', _pd.smName); }catch(e){}
-        var _dt = new Date(_pd.savedAt);
-        showToast('↺ Draft restored for '+_pd.smName+' — last saved '
-          +_dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})
-          +' at '+_dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
-        updateDraftBanner();
-        return;
+        // Show confirmation modal — SM must confirm it's their data
+        var modal = document.getElementById('draftConfirmModal');
+        var nameEl = document.getElementById('draftConfirmName');
+        var dateEl = document.getElementById('draftConfirmDate');
+        if(modal && nameEl){
+          nameEl.textContent = _pd.smName;
+          if(_pd.savedAt){
+            var dt = new Date(_pd.savedAt);
+            dateEl.textContent = 'Last saved: '
+              + dt.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})
+              + ' at ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+          }
+          modal.style.display = 'flex';
+
+          document.getElementById('draftConfirmYes').onclick = function(){
+            modal.style.display = 'none';
+            restoreProgress();
+            window._draftEnabled = true;
+            try{ localStorage.setItem('smHub_smName', _pd.smName); }catch(e){}
+            showToast('\u21ba Draft restored for '+_pd.smName);
+            updateDraftBanner();
+          };
+
+          document.getElementById('draftConfirmNo').onclick = function(){
+            modal.style.display = 'none';
+            // Clear the draft — it belongs to someone else
+            try{
+              localStorage.removeItem('smHub_draft');
+              localStorage.removeItem('smHub_smName');
+              sessionStorage.removeItem('smHub_draft');
+            }catch(e){}
+            addCust();
+            updateCustBadge();
+            showToast('Draft cleared \u2014 starting fresh');
+          };
+          return; // Wait for SM to confirm
+        }
       }
     }catch(e){}
-    // Corrupt/empty draft — clear it
+    // Corrupt draft — clear and start fresh
     try{ localStorage.removeItem('smHub_draft'); sessionStorage.removeItem('smHub_draft'); }catch(e){}
   }
 
-  // No valid draft — start with one blank customer
+  // No draft found — start with one blank customer
   addCust();
   updateCustBadge();
 });
+
+
 
 
 
