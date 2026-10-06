@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T12:38:14.261Z",
+  "savedAt": "2026-10-06T12:38:57.342Z",
   "smName": "Hannah Hewett",
   "smEmail": "hannah.hewett@virginmediao2.co.uk",
   "smVertical": "Enterprise",
@@ -36,8 +36,8 @@
   "customers": [
     {
       "id": "c22",
-      "name": "",
-      "type": "Maintained",
+      "name": "McDonalds",
+      "type": "Directed",
       "renewal": "",
       "ret": "",
       "npsRaw": "",
