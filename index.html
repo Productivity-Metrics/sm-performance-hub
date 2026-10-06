@@ -2282,6 +2282,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3353,7 +3354,7 @@ function collectData(){
     const p12base=+(document.getElementById("p12base_"+id)||{value:0}).value||0;
     const faults=+document.getElementById("flt_"+id).value||0;
     const csipQ=+document.getElementById("csipQ_"+id).value||0;
-    const s=calcScore({nps,sent,rev,sla,p12,faults,csipQ});
+    const s=calcScore({nps:npsRaw!==null?npsToScore(npsRaw):null,sent,rev,sla,p12,faults,csipQ});
     return{
       name:document.getElementById("name_"+id).value||"(unnamed)",
       type:document.getElementById("type_"+id).value,
@@ -5048,6 +5049,7 @@ window.addEventListener('load', function(){
   addCust();
   updateCustBadge();
 });
+
 
 
 
