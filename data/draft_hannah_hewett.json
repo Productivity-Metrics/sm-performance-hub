@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T12:42:56.429Z",
+  "savedAt": "2026-10-06T12:44:56.421Z",
   "smName": "Hannah Hewett",
   "smEmail": "hannah.hewett@virginmediao2.co.uk",
   "smVertical": "Enterprise",
@@ -47,9 +47,9 @@
       "p12": "43",
       "p12base": "50",
       "flt": "0",
-      "csipA": "",
-      "csipP": "",
-      "csipQ": "",
+      "csipA": "5",
+      "csipP": "10",
+      "csipQ": "20",
       "esc": "6",
       "escCats": [
         "Billing",
@@ -62,7 +62,7 @@
       "escOthers": {},
       "sv": "1",
       "leads": "0",
-      "sts": "0",
+      "sts": "292800",
       "rec": "0",
       "aged": "0"
     },
