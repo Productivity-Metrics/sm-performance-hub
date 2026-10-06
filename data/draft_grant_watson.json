@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T13:46:31.122Z",
+  "savedAt": "2026-10-06T13:48:31.109Z",
   "smName": "Grant Watson",
   "smEmail": "grant.watson@o2business.com",
   "smVertical": "Public Sector",
@@ -41,15 +41,15 @@
       "renewal": "2026-11-01",
       "ret": "100",
       "npsRaw": "",
-      "sent": "1",
-      "rev": "",
+      "sent": "7",
+      "rev": "0",
       "sla": "97",
       "p12": "6",
       "p12base": "10",
       "flt": "1",
       "csipA": "0",
       "csipP": "100",
-      "csipQ": "0",
+      "csipQ": "10",
       "esc": "1",
       "escCats": [
         "Incident Management"
@@ -76,7 +76,7 @@
       "flt": "0",
       "csipA": "0",
       "csipP": "100",
-      "csipQ": "0",
+      "csipQ": "7",
       "esc": "1",
       "escCats": [
         "Incident Management"
@@ -103,7 +103,7 @@
       "flt": "0",
       "csipA": "0",
       "csipP": "100",
-      "csipQ": "0",
+      "csipQ": "10",
       "esc": "1",
       "escCats": [
         "Incident Management"
