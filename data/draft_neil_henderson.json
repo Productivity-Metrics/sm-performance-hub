@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T09:27:30.745Z",
+  "savedAt": "2026-10-06T09:29:30.749Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -47,9 +47,9 @@
       "p12": "2",
       "p12base": "2",
       "flt": "4",
-      "csipA": "",
-      "csipP": "",
-      "csipQ": "",
+      "csipA": "33",
+      "csipP": "31",
+      "csipQ": "16",
       "esc": "19",
       "escCats": [
         "Other",
