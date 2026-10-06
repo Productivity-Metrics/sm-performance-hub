@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T07:53:53.095Z",
+  "savedAt": "2026-10-06T07:55:53.105Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -52,8 +52,8 @@
       "csipQ": "16",
       "esc": "10",
       "escOthers": {
-        "0": "ESIM sync",
-        "1": "Dara usage",
+        "0": "Network coverage",
+        "1": "EOL devices",
         "2": "Transfer of ownership",
         "3": "BI Reporting",
         "4": "Customer Service Issues",
