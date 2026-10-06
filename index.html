@@ -2257,6 +2257,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3975,6 +3976,8 @@ function saveProgress(){
       })(),
     };
     localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    // Store SM name separately so cloud recovery only loads their own draft
+    try{ localStorage.setItem('smHub_smName', draft.smName||''); }catch(e){}
     try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
     // Also back up draft to GitHub so it survives browser cache clearing
     var _draftName=(draft.smName||'').trim();
@@ -4056,6 +4059,7 @@ function restoreProgress(){
 
 function clearDraft(){
   localStorage.removeItem(DRAFT_KEY);
+  try{ localStorage.removeItem('smHub_smName'); }catch(e){}
   try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){}
   // Also remove GitHub backup draft
   var smName=(document.getElementById('smName')||{value:''}).value||'';
@@ -4967,32 +4971,32 @@ window.addEventListener('load', function(){
     }catch(e){}
   }
   // No local draft — check GitHub for a backup draft
-  // (handles browser cache cleared, different device, etc.)
-  fetch('https://api.github.com/repos/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/contents/'+GH_CONFIG.path,{
-    headers:{'Authorization':'token '+GH_CONFIG.token,'Accept':'application/vnd.github.v3+json'}
-  }).then(function(r){return r.json();}).then(function(files){
-    if(!Array.isArray(files)) throw new Error('not array');
-    var draftFiles=files.filter(function(f){return f.name.startsWith('draft_')&&f.name.endsWith('.json');});
-    if(!draftFiles.length){ addCust(); updateCustBadge(); return; }
-    // Sort by most recently updated
-    // Fetch all draft files and pick the most recently saved
-    Promise.all(draftFiles.map(function(f){
-      return fetch(f.download_url).then(function(r){return r.json();}).catch(function(){return null;});
-    })).then(function(drafts){
-      var valid=drafts.filter(function(d){return d&&d.smName;});
-      if(!valid.length){ addCust(); updateCustBadge(); return; }
-      // Pick the most recently saved draft
-      valid.sort(function(a,b){ return (b.savedAt||'') > (a.savedAt||'') ? 1 : -1; });
-      var pd=valid[0];
-      try{localStorage.setItem('smHub_draft',JSON.stringify(pd));}catch(e){}
-      restoreProgress();
-      window._draftEnabled=true;
-      var dt=new Date(pd.savedAt);
-      showToast('\u21ba Draft restored for '+pd.smName+' \u2014 last saved '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' at '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
-      updateDraftBanner();
-    }).catch(function(){ addCust(); updateCustBadge(); });
+  // IMPORTANT: only load a draft that matches this SM's stored name
+  // to prevent loading another SM's draft on a shared/fresh browser
+  var _storedName='';
+  try{ _storedName=localStorage.getItem('smHub_smName')||''; }catch(e){}
+  if(!_storedName){
+    // No name stored on this device — can't safely identify whose draft to load
+    addCust(); updateCustBadge(); return;
+  }
+  var _safeStoredName=_storedName.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  var _expectedDraft='draft_'+_safeStoredName+'.json';
+  fetch('https://raw.githubusercontent.com/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/main/'+GH_CONFIG.path+'/'+_expectedDraft,{
+    headers:{'Authorization':'token '+GH_CONFIG.token}
+  }).then(function(r){ if(!r.ok) throw new Error('no draft'); return r.json(); })
+  .then(function(pd){
+    if(!pd||!pd.smName) throw new Error('invalid draft');
+    // Double-check the draft belongs to this SM
+    if(pd.smName.trim().toLowerCase()!==_storedName.trim().toLowerCase()) throw new Error('name mismatch');
+    try{localStorage.setItem('smHub_draft',JSON.stringify(pd));}catch(e){}
+    restoreProgress();
+    window._draftEnabled=true;
+    var dt=new Date(pd.savedAt);
+    showToast('\u21ba Draft restored for '+pd.smName+' \u2014 last saved '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' at '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+    updateDraftBanner();
   }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
