@@ -2261,6 +2261,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
+
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -5009,7 +5010,16 @@ window.addEventListener('load', function(){
   if(_existingDraft){
     try{
       var _pd = JSON.parse(_existingDraft);
-      if(_pd && _pd.smName){
+      // Verify draft belongs to this device's SM — prevents loading another SM's data
+      var _deviceName='';
+      try{ _deviceName=localStorage.getItem('smHub_smName')||''; }catch(e){}
+      var _draftOk = _pd && _pd.smName && (
+        !_deviceName ||  // no device name stored yet — trust the draft (first time)
+        _pd.smName.trim().toLowerCase()===_deviceName.trim().toLowerCase()
+      );
+      if(_draftOk){
+        // Store name from draft to lock this device to this SM
+        try{ localStorage.setItem('smHub_smName', _pd.smName); }catch(e){}
         restoreProgress();
         window._draftEnabled = true;
         var _dt = new Date(_pd.savedAt);
@@ -5018,6 +5028,10 @@ window.addEventListener('load', function(){
           +' at '+_dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
         updateDraftBanner();
         return;
+      } else if(_pd && _pd.smName && _deviceName && _pd.smName.trim().toLowerCase()!==_deviceName.trim().toLowerCase()){
+        // Draft belongs to a different SM — clear it and start fresh
+        try{ localStorage.removeItem('smHub_draft'); sessionStorage.removeItem('smHub_draft'); }catch(e){}
+        console.warn('Draft cleared: belonged to '+_pd.smName+', device is '+_deviceName);
       }
     }catch(e){}
   }
@@ -5047,6 +5061,7 @@ window.addEventListener('load', function(){
     updateDraftBanner();
   }).catch(function(){ addCust(); updateCustBadge(); });
 });
+
 
 
 
