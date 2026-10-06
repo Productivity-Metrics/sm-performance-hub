@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T08:13:53.656Z",
+  "savedAt": "2026-10-06T08:15:53.659Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -97,7 +97,9 @@
         "1": "ESIM Issues",
         "2": "Customer Service Issues",
         "3": "Incorrect Data reporting",
-        "4": "BI reporting"
+        "4": "BI reporting",
+        "6": "My O2 Business",
+        "7": "My O2w Business User addition"
       },
       "sv": "1",
       "leads": "0",
