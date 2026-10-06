@@ -14,14 +14,14 @@
   "availableHrs": 74,
   "utilisation": 73,
   "cfWeeks": [
+    0,
     44.5,
-    41,
-    0,
-    0,
+    39,
+    42.5,
     0
   ],
-  "cfTotal": 85.5,
-  "cfPct": 115.5,
+  "cfTotal": 126,
+  "cfPct": 170.3,
   "siteVisits": 1,
   "serviceReviews": 1,
   "leads": 0,
@@ -30,11 +30,11 @@
   "govAccts": 0,
   "maintAccts": 0,
   "baseAccts": 0,
-  "totalEscalations": 20,
+  "totalEscalations": 15,
   "totalHoursWorked": 85.5,
   "travelHrs": 8,
   "internalHrs": 4,
-  "csipHrs": 2,
+  "csipHrs": 1.5,
   "totalSTS": 0,
   "totalRecovered": 0,
   "totalAgedDebt": 0,
@@ -58,8 +58,8 @@
       ],
       "siteVisits": 1,
       "leads": 0,
-      "nps": 100,
-      "npsRaw": 9,
+      "nps": 0,
+      "npsRaw": 0,
       "sentiment": 7,
       "serviceReviews": 1,
       "sla": 98,
@@ -67,7 +67,7 @@
       "p12Baseline": 117,
       "openFaults": 0,
       "scoreBreakdown": {
-        "nps": 30,
+        "nps": 0,
         "sent": 24.5,
         "rev": 35,
         "sla": 39.2,
@@ -84,11 +84,11 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 89.5,
+      "vocScore": 59.5,
       "opsScore": 74.2,
-      "healthScore": 82.6,
-      "status": "Healthy"
+      "healthScore": 66.1,
+      "status": "Needs attention"
     }
   ],
-  "submittedAt": "2026-10-02T16:57:27.877Z"
+  "submittedAt": "2026-10-06T16:43:54.768Z"
 }
