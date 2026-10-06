@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T07:55:53.105Z",
+  "savedAt": "2026-10-06T07:57:53.657Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -54,12 +54,12 @@
       "escOthers": {
         "0": "Network coverage",
         "1": "EOL devices",
-        "2": "Transfer of ownership",
-        "3": "BI Reporting",
-        "4": "Customer Service Issues",
-        "5": "Invoice adding to portal",
-        "6": "My O2 Business additions",
-        "7": "O2 Rentals",
+        "2": "Replacement AP",
+        "3": "CCaaS connectivity",
+        "4": "O2 Rentals",
+        "5": "iPhone Launch",
+        "6": "Fixed lines",
+        "7": "CCaaS",
         "8": "ESIM Issues"
       },
       "sv": "0",
