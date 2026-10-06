@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T07:43:53.359Z",
+  "savedAt": "2026-10-06T07:45:53.096Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -56,7 +56,10 @@
         "1": "Dara usage",
         "2": "Transfer of ownership",
         "3": "BI Reporting",
-        "4": "Customer Service Issues"
+        "4": "Customer Service Issues",
+        "5": "Invoice adding to portal",
+        "6": "My O2 Business additions",
+        "7": "O2 Rentals"
       },
       "sv": "1",
       "leads": "0",
