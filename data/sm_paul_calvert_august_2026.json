@@ -16,12 +16,12 @@
   "cfWeeks": [
     22.2,
     0,
-    0,
-    29.6,
-    0
+    37,
+    37,
+    22.2
   ],
-  "cfTotal": 51.8,
-  "cfPct": 100,
+  "cfTotal": 118.4,
+  "cfPct": 228.6,
   "siteVisits": 0,
   "serviceReviews": 0,
   "leads": 0,
@@ -847,5 +847,5 @@
       "status": "Needs attention"
     }
   ],
-  "submittedAt": "2026-10-06T13:14:05.509Z"
+  "submittedAt": "2026-10-06T13:46:01.118Z"
 }
