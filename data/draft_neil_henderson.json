@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T08:15:53.659Z",
+  "savedAt": "2026-10-06T08:17:17.922Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -81,9 +81,9 @@
       "type": "Maintained",
       "renewal": "2025-11-11",
       "ret": "100",
-      "npsRaw": "0",
+      "npsRaw": "",
       "sent": "6",
-      "rev": "0",
+      "rev": "1",
       "sla": "98",
       "p12": "0",
       "p12base": "0",
@@ -99,9 +99,12 @@
         "3": "Incorrect Data reporting",
         "4": "BI reporting",
         "6": "My O2 Business",
-        "7": "My O2w Business User addition"
+        "7": "My O2w Business User addition",
+        "8": "Transfer of ownership",
+        "9": "IMEI bar",
+        "10": "O2 Rentals"
       },
-      "sv": "1",
+      "sv": "0",
       "leads": "0",
       "sts": "0",
       "rec": "0",
