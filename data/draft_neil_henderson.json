@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T08:09:53.106Z",
+  "savedAt": "2026-10-06T08:11:53.107Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -71,7 +71,7 @@
       },
       "sv": "4",
       "leads": "2",
-      "sts": "0",
+      "sts": "8748.00",
       "rec": "0",
       "aged": "0"
     },
@@ -91,8 +91,13 @@
       "csipA": "0",
       "csipP": "0",
       "csipQ": "0",
-      "esc": "8",
-      "escOthers": {},
+      "esc": "11",
+      "escOthers": {
+        "0": "ESIM sync issues",
+        "1": "ESIM Issues",
+        "2": "Customer Service Issues",
+        "3": "Incorrect Data reporting"
+      },
       "sv": "1",
       "leads": "0",
       "sts": "0",
