@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-10-06T09:21:31.663Z",
+  "savedAt": "2026-10-06T09:23:31.675Z",
   "smName": "Neil Henderson",
   "smEmail": "neil.henderson1@o2business.com",
   "smVertical": "Enterprise",
@@ -41,8 +41,8 @@
       "renewal": "2029-07-31",
       "ret": "1",
       "npsRaw": "",
-      "sent": "1",
-      "rev": "",
+      "sent": "7",
+      "rev": "3",
       "sla": "",
       "p12": "0",
       "p12base": "0",
@@ -67,10 +67,10 @@
         "Other",
         "Other",
         "Other",
+        "Delivery",
         "Billing",
-        "Billing",
-        "Billing",
-        "Billing"
+        "Incident Management",
+        "Change Management"
       ],
       "escOthers": {
         "0": "Network outage",
@@ -86,10 +86,11 @@
         "10": "Whitelisting",
         "11": "VPN issue",
         "12": "Sycurio",
-        "13": "Alvaria"
+        "13": "Alvaria",
+        "14": "VRF work"
       },
-      "sv": "",
-      "leads": "0",
+      "sv": "5",
+      "leads": "2",
       "sts": "0",
       "rec": "0",
       "aged": "0"
