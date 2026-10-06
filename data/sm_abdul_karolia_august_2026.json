@@ -17,11 +17,11 @@
     37.5,
     0,
     0,
-    37.7,
+    37.5,
     0
   ],
-  "cfTotal": 75.2,
-  "cfPct": 98.9,
+  "cfTotal": 75,
+  "cfPct": 98.7,
   "siteVisits": 0,
   "serviceReviews": 0,
   "leads": 0,
@@ -217,7 +217,7 @@
       "leads": 0,
       "nps": 0,
       "npsRaw": 0,
-      "sentiment": 7,
+      "sentiment": 10,
       "serviceReviews": 0,
       "sla": 98,
       "p12Incidents": 0,
@@ -225,7 +225,7 @@
       "openFaults": 0,
       "scoreBreakdown": {
         "nps": 0,
-        "sent": 24.5,
+        "sent": 35,
         "rev": 0,
         "sla": 39.2,
         "p12": 20,
@@ -241,10 +241,10 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 0,
-      "vocScore": 24.5,
+      "vocScore": 35,
       "opsScore": 99.2,
-      "healthScore": 58.1,
-      "status": "At Risk"
+      "healthScore": 63.9,
+      "status": "Needs attention"
     },
     {
       "name": "Entain (Ladbrokes)",
@@ -981,5 +981,5 @@
       "status": "At Risk"
     }
   ],
-  "submittedAt": "2026-10-06T12:51:44.370Z"
+  "submittedAt": "2026-10-06T13:01:38.098Z"
 }
