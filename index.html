@@ -393,22 +393,6 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 <div id="draftBanner" style="display:none;background:#1A2B4A;color:#fff;padding:10px 1.5rem;font-size:12px;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.1)"></div>
 <!-- FORM VIEW -->
 <div id="formView">
-
-    <!-- Draft confirmation modal -->
-    <div id="draftConfirmModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center">
-      <div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.25)">
-        <div style="font-size:24px;margin-bottom:10px">👋</div>
-        <div style="font-weight:700;font-size:16px;color:#1A2B4A;margin-bottom:8px">Is this your data?</div>
-        <div style="font-size:13px;color:#4B5563;margin-bottom:14px">We found a saved draft for:</div>
-        <div id="draftConfirmName" style="font-size:18px;font-weight:700;color:#1A2B4A;background:#F0F4FF;border-radius:8px;padding:12px 16px;margin-bottom:6px"></div>
-        <div id="draftConfirmDate" style="font-size:11px;color:#6B7280;margin-bottom:22px"></div>
-        <div style="display:flex;gap:10px">
-          <button id="draftConfirmYes" type="button" style="flex:1;background:#1A2B4A;color:#fff;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer">✅ Yes, that's me</button>
-          <button id="draftConfirmNo" type="button" style="flex:1;background:#FEF2F2;color:#A32D2D;border:1.5px solid #FECACA;border-radius:8px;padding:13px;font-size:14px;font-weight:600;cursor:pointer">❌ No, clear it</button>
-        </div>
-      </div>
-    </div>
-
 <div style="background:linear-gradient(135deg,#1A2B4A,#0F6E56);color:#fff;padding:18px 1.5rem">
   <div style="max-width:960px;margin:0 auto">
     <div style="font-size:17px;font-weight:600;margin-bottom:3px">Monthly Data Input</div>
@@ -2276,14 +2260,6 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
 
 
 
-
-
-
-
-
-
-
-
 /* =====================================================================
    STATIC DATA
 ===================================================================== */
@@ -3167,7 +3143,6 @@ function addCust(d){
   if(d.csipA!==undefined&&d.csipActions===undefined) d.csipActions=d.csipA;
   if(d.csipP!==undefined&&d.csipPct===undefined) d.csipPct=d.csipP;
   if(d.faults!==undefined&&d.flt===undefined) d.flt=d.faults;
-  if(d.escCats!==undefined&&d.escCategories===undefined) d.escCategories=d.escCats;
   custId++;
   const id="c"+custId;
   const n=document.getElementById("custList").children.length+1;
@@ -3346,11 +3321,8 @@ function recalc(id){
 function collectData(){
   const custs=Array.from(document.getElementById("custList").children).map(div=>{
     const id=div.id;
-      const nps=npsRaw!==null?npsToScore(npsRaw):null;
-      // NPS: read from select directly, null if no response selected
-      var _npsSelEl=document.getElementById("npsRaw_"+id);
-      var _npsRawVal=_npsSelEl&&_npsSelEl.value!==''?+_npsSelEl.value:null;
-      const npsRaw=_npsRawVal;
+    const nps=+document.getElementById("nps_"+id).value||0;
+    const npsRaw=+(document.getElementById("npsRaw_"+id)||{value:9}).value||0;
     const sent=+document.getElementById("sent_"+id).value||0;
     const rev=+document.getElementById("rev_"+id).value||0;
     const sla=+document.getElementById("sla_"+id).value||0;
@@ -3358,7 +3330,7 @@ function collectData(){
     const p12base=+(document.getElementById("p12base_"+id)||{value:0}).value||0;
     const faults=+document.getElementById("flt_"+id).value||0;
     const csipQ=+document.getElementById("csipQ_"+id).value||0;
-    const s=calcScore({nps:npsRaw!==null?npsToScore(npsRaw):null,sent,rev,sla,p12,faults,csipQ});
+    const s=calcScore({nps,sent,rev,sla,p12,faults,csipQ});
     return{
       name:document.getElementById("name_"+id).value||"(unnamed)",
       type:document.getElementById("type_"+id).value,
@@ -4017,8 +3989,7 @@ function saveProgress(){
     // Store SM name separately so cloud recovery only loads their own draft
     try{ localStorage.setItem('smHub_smName', draft.smName||''); }catch(e){}
     try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
-    // Draft saved to localStorage and sessionStorage only (no GitHub upload)
-    showToast('\u2705 Draft saved — use this same browser tomorrow to continue where you left off');
+    showToast('✅ Draft saved — use this same browser to continue where you left off');
     updateDraftBanner();
   }catch(e){showToast('Could not save: '+e.message);}
 }
@@ -4066,7 +4037,6 @@ function restoreProgress(){
             csipA:sv2s(c.csipA),
             csipP:sv2s(c.csipP),
             csipQ:sv2s(c.csipQ),
-            escCategories:c.escCats||c.escCategories||[],
             esc:sv2(c.esc)||0,
             sv:sv2s(c.sv),
             leads:sv2(c.leads)||0,
@@ -4112,6 +4082,7 @@ function clearDraft(){
   localStorage.removeItem(DRAFT_KEY);
   try{ localStorage.removeItem('smHub_smName'); }catch(e){}
   try{ sessionStorage.removeItem(DRAFT_KEY); }catch(e){}
+
   updateDraftBanner();
 }
 
@@ -4214,8 +4185,7 @@ function editSubmission(smName){
           faults:  c.openFaults||0,
           csipQ:   (c.csipQuality!==undefined&&c.csipQuality!==null&&c.csipQuality!=='')?c.csipQuality:'',
           csipP:   (c.csipPct!==undefined&&c.csipPct!==null&&c.csipPct!=='')?c.csipPct:'',
-          csipA:   (c.csipActions!==undefined&&c.csipActions!==null&&c.csipActions!=='')?c.csipActions:'',
-          escCategories: c.escCategories||[],
+          csipA:   c.csipActions||0,
           esc:     c.escalations||0,
           sv:      (c.siteVisits!==undefined&&c.siteVisits!==null)?c.siteVisits:'',
           leads:   c.leads||0,
@@ -4985,84 +4955,63 @@ window.addEventListener('load', function(){
   updateDraftBanner();
   populateServiceLeadFilter();
 
-  // Auto-save every 2 minutes — only when on Step 3 with a name entered
+  // Auto-save every 2 minutes only after SM has started saving
   setInterval(function(){
     if(!window._draftEnabled) return;
     var fv = document.getElementById('formView');
     if(fv && fv.style.display !== 'none'){
       var nm = (document.getElementById('smName')||{value:''}).value||'';
+      // Only auto-save when SM is on Step 3 (customers) — avoids saving empty customers[]
       var pg3 = document.getElementById('pg3');
       var onStep3 = pg3 && pg3.style.display !== 'none';
       if(nm.trim() && onStep3) saveProgress();
     }
   }, 120000);
 
-  // Check for a saved draft
-  var _raw = null;
-  try{ _raw = localStorage.getItem('smHub_draft'); }catch(e){}
-  if(!_raw){ try{ _raw = sessionStorage.getItem('smHub_draft'); }catch(e){} }
-
-  if(_raw){
+  // Auto-restore draft — check localStorage first, then GitHub backup
+  var _existingDraft = null;
+  try{ _existingDraft = localStorage.getItem('smHub_draft') || sessionStorage.getItem('smHub_draft'); }catch(e){}
+  if(_existingDraft){
     try{
-      var _pd = JSON.parse(_raw);
+      var _pd = JSON.parse(_existingDraft);
       if(_pd && _pd.smName){
-        // Show confirmation modal — SM must confirm it's their data
-        var modal = document.getElementById('draftConfirmModal');
-        var nameEl = document.getElementById('draftConfirmName');
-        var dateEl = document.getElementById('draftConfirmDate');
-        if(modal && nameEl){
-          nameEl.textContent = _pd.smName;
-          if(_pd.savedAt){
-            var dt = new Date(_pd.savedAt);
-            dateEl.textContent = 'Last saved: '
-              + dt.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})
-              + ' at ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-          }
-          modal.style.display = 'flex';
-
-          document.getElementById('draftConfirmYes').onclick = function(){
-            modal.style.display = 'none';
-            restoreProgress();
-            window._draftEnabled = true;
-            try{ localStorage.setItem('smHub_smName', _pd.smName); }catch(e){}
-            showToast('\u21ba Draft restored for '+_pd.smName);
-            updateDraftBanner();
-          };
-
-          document.getElementById('draftConfirmNo').onclick = function(){
-            modal.style.display = 'none';
-            // Clear the draft — it belongs to someone else
-            try{
-              localStorage.removeItem('smHub_draft');
-              localStorage.removeItem('smHub_smName');
-              sessionStorage.removeItem('smHub_draft');
-            }catch(e){}
-            addCust();
-            updateCustBadge();
-            showToast('Draft cleared \u2014 starting fresh');
-          };
-          return; // Wait for SM to confirm
-        }
+        restoreProgress();
+        window._draftEnabled = true;
+        var _dt = new Date(_pd.savedAt);
+        showToast('\u21ba Draft restored for '+_pd.smName+' \u2014 last saved '
+          +_dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})
+          +' at '+_dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+        updateDraftBanner();
+        return;
       }
     }catch(e){}
-    // Corrupt draft — clear and start fresh
-    try{ localStorage.removeItem('smHub_draft'); sessionStorage.removeItem('smHub_draft'); }catch(e){}
   }
-
-  // No draft found — start with one blank customer
-  addCust();
-  updateCustBadge();
+  // No local draft — check GitHub for a backup draft
+  // IMPORTANT: only load a draft that matches this SM's stored name
+  // to prevent loading another SM's draft on a shared/fresh browser
+  var _storedName='';
+  try{ _storedName=localStorage.getItem('smHub_smName')||''; }catch(e){}
+  if(!_storedName){
+    // No name stored on this device — can't safely identify whose draft to load
+    addCust(); updateCustBadge(); return;
+  }
+  var _safeStoredName=_storedName.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  var _expectedDraft='draft_'+_safeStoredName+'.json';
+  fetch('https://raw.githubusercontent.com/'+GH_CONFIG.owner+'/'+GH_CONFIG.repo+'/main/'+GH_CONFIG.path+'/'+_expectedDraft,{
+    headers:{'Authorization':'token '+GH_CONFIG.token}
+  }).then(function(r){ if(!r.ok) throw new Error('no draft'); return r.json(); })
+  .then(function(pd){
+    if(!pd||!pd.smName) throw new Error('invalid draft');
+    // Double-check the draft belongs to this SM
+    if(pd.smName.trim().toLowerCase()!==_storedName.trim().toLowerCase()) throw new Error('name mismatch');
+    try{localStorage.setItem('smHub_draft',JSON.stringify(pd));}catch(e){}
+    restoreProgress();
+    window._draftEnabled=true;
+    var dt=new Date(pd.savedAt);
+    showToast('\u21ba Draft restored for '+pd.smName+' \u2014 last saved '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' at '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+    updateDraftBanner();
+  }).catch(function(){ addCust(); updateCustBadge(); });
 });
-
-
-
-
-
-
-
-
-
-
 
 
 
