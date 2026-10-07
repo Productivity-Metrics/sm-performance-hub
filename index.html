@@ -3087,8 +3087,12 @@ function next(from){
     }
   }
   if(from===3){
-    // Step 3: at least one customer, and all customers need SLA + CSIP
+    // Step 3: silently remove any rows with no customer name entered
     var list=document.getElementById("custList");
+    Array.from(list.children).forEach(function(div){
+      var nm=(document.getElementById("name_"+div.id)||{value:""}).value.trim();
+      if(!nm){ div.remove(); updateCustBadge(); }
+    });
     if(!list||!list.children.length){toast("Add at least one customer");return;}
     var incomplete=[];
     Array.from(list.children).forEach(function(div){
@@ -3345,7 +3349,10 @@ function recalc(id){
 }
 
 function collectData(){
-  const custs=Array.from(document.getElementById("custList").children).map(div=>{
+  const custs=Array.from(document.getElementById("custList").children).filter(function(div){
+    var nm=(document.getElementById("name_"+div.id)||{value:""}).value.trim();
+    return nm && nm !== "(unnamed)";
+  }).map(div=>{
     const id=div.id;
     const nps=npsRaw!==null?npsToScore(npsRaw):null;
     var _npsSelEl=document.getElementById("npsRaw_"+id); var npsRaw=(_npsSelEl&&_npsSelEl.value!==''&&_npsSelEl.value!==null)?+_npsSelEl.value:null;
