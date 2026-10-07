@@ -4571,7 +4571,7 @@ function renderExec(){
   var sentEl=document.getElementById('execSentiment');
   if(sentEl){
     if(!sentIssue.length){sentEl.innerHTML='<div style="color:#3B6D11;padding:8px 0">\u2714 No accounts with sentiment below threshold</div>';}
-    else{sentEl.innerHTML='<div style="color:#6B7280;font-size:11px;margin-bottom:8px">'+sentIssue.length+' account'+(sentIssue.length!==1?'s':'')+' with sentiment below 6 \u2014 dissatisfaction risk regardless of operational metrics.</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+sentIssue.map(function(c){var col=c.sentiment<4?'#A32D2D':'#854F0B';return '<div style="background:#FEF2F2;border:.5px solid #FECACA;border-radius:6px;padding:6px 10px;font-size:11px;cursor:pointer" data-custname="'+c.name.replace(/"/g,'&quot;')+'" data-smname="'+c.sm.replace(/"/g,'&quot;')+'"><div style="font-weight:600;color:'+col+'">'+c.name+'</div><div style="color:#6B7280">'+c.sm+' · Sentiment: <strong style="color:'+col+'">'+c.sentiment+'/10</strong></div></div>';}).join('')+'</div>';if(sentEl){sentEl.addEventListener('click',function(e){var el=e.target;while(el&&el!==sentEl){if(el.dataset&&el.dataset.custname){execDrillCustomer(el.dataset.custname,el.dataset.smname||'');return;}el=el.parentElement;}});};}
+    else{sentEl.innerHTML='<div style="color:#6B7280;font-size:11px;margin-bottom:8px">'+sentIssue.length+' account'+(sentIssue.length!==1?'s':'')+' with sentiment below 6 \u2014 dissatisfaction risk regardless of operational metrics.</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+sentIssue.map(function(c){var col=c.sentiment<4?'#A32D2D':'#854F0B';return '<div style="background:#FEF2F2;border:.5px solid #FECACA;border-radius:6px;padding:6px 10px;font-size:11px;cursor:pointer" data-custname="'+c.name.replace(/"/g,'&quot;')+'" data-smname="'+c.sm.replace(/"/g,'&quot;')+'"><div style="font-weight:600;color:'+col+'">'+c.name+'</div><div style="color:#6B7280">'+c.sm+' · Sentiment: <strong style="color:'+col+'">'+c.sentiment+'/10</strong></div></div>';}).join('')+'</div>';if(sentEl&&!sentEl._sentClickBound){sentEl._sentClickBound=true;sentEl.addEventListener('click',function(e){var el=e.target;while(el&&el!==sentEl){if(el.dataset&&el.dataset.custname){execDrillCustomer(el.dataset.custname,el.dataset.smname||'');return;}el=el.parentElement;}});};}
   }
 
   // ── Strengths ───────────────────────────────────────────────────────────
@@ -4673,10 +4673,11 @@ function renderExec(){
     byPeriod[key].subs.push(s);
     (s.customers||[]).forEach(function(c){ var _bh=+(c.healthScore||c.health||0); var _bnoNPS=(c.npsRaw===null||c.npsRaw===undefined||c.npsRaw===''); var _badj=_bnoNPS?Math.max(0,Math.round((_bh-3)*10)/10):_bh; byPeriod[key].custs.push({health:_badj,sentiment:+(c.sentiment||0),sla:+(c.sla||0),atRisk:+(c.healthScore||c.health||0)<60,needsAttn:+(c.healthScore||c.health||0)>=60&&+(c.healthScore||c.health||0)<75}); });
 
-  // Add click delegation for escalation category bars
-  if(catEl) catEl.addEventListener('click', function(e){
+  });
+  // Add click delegation for escalation category bars (outside forEach to avoid duplicate listeners)
+  if(catEl&&!catEl._escClickBound){ catEl._escClickBound=true; catEl.addEventListener('click', function(e){
     var el=e.target; while(el&&el!==catEl){ if(el.dataset&&el.dataset.esccat){ execDrillEscCategory(el.dataset.esccat, null); return; } el=el.parentElement; }
-  });  });
+  }); }
   var periods=Object.values(byPeriod).sort(function(a,b){return a.ord-b.ord;});
 
   if(periods.length<2){
