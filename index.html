@@ -445,7 +445,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
       <div class="fg"><label>Total escalations this month</label><input type="number" id="totalEsc" value="0" min="0"></div>
     </div>
   </div>
-  <div class="nav-row"><div></div><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(1)">Continue to Time &amp; Activity →</button></div>
+  <div class="nav-row"><div></div><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save draft (this browser only)</button><button class="btn btn-pri" onclick="next(1)">Continue to Time &amp; Activity →</button></div>
 </div>
 
 <!-- STEP 2 -->
@@ -526,7 +526,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
     </div>
   </div>
   <div class="nav-row">
-    <button class="btn btn-sec" onclick="goTo(1)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(2)">Continue to Customers →</button>
+    <button class="btn btn-sec" onclick="goTo(1)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save draft (this browser only)</button><button class="btn btn-pri" onclick="next(2)">Continue to Customers →</button>
   </div>
 </div>
 
@@ -545,7 +545,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
   <div id="custList"></div>
   <button class="add-btn" onclick="addCust()">+ Add customer</button>
   <div class="nav-row">
-    <button class="btn btn-sec" onclick="goTo(2)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(3)">Review &amp; Export →</button>
+    <button class="btn btn-sec" onclick="goTo(2)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save draft (this browser only)</button><button class="btn btn-pri" onclick="next(3)">Review &amp; Export →</button>
   </div>
 </div>
 
@@ -561,7 +561,11 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
   </div>
   <div class="card">
     <div class="card-title">Export &amp; submit</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Click <strong>Submit to dashboard</strong> to update the team view instantly. Data is saved in this browser across sessions.</p>
+    <div style="background:#fff3cd;border:1px solid #f0ad4e;border-radius:8px;padding:14px 16px;margin-bottom:1.25rem;font-size:13px;line-height:1.6">
+      <div style="font-weight:700;font-size:14px;margin-bottom:6px">⚠️ Save Draft vs Submit — what's the difference?</div>
+      <div style="margin-bottom:6px">💾 <strong>Save Draft</strong> (Steps 1–3) stores your progress <em>in this browser only</em>. It is <strong>not</strong> permanently saved. If you clear your browser cache, switch browser or use a different device, your draft will be lost.</div>
+      <div style="color:#155724;font-weight:600">✅ <strong>Submit to dashboard</strong> permanently saves your data to the team dashboard. You must click this button below to ensure your inputs are not lost.</div>
+    </div>
     <div class="export-actions">
       <button class="btn btn-export" onclick="submitToDashboard()" style="font-size:15px;padding:13px 36px">✅ Submit to dashboard</button>
       <button class="btn btn-sec" onclick="dlCSV()">⬇ Download CSV</button>
@@ -1394,7 +1398,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
       <div class="fg"><label>Total escalations this month</label><input type="number" id="totalEsc" value="0" min="0"></div>
     </div>
   </div>
-  <div class="nav-row"><div></div><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(1)">Continue to Time &amp; Activity →</button></div>
+  <div class="nav-row"><div></div><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save draft (this browser only)</button><button class="btn btn-pri" onclick="next(1)">Continue to Time &amp; Activity →</button></div>
 </div>
 
 <!-- STEP 2 -->
@@ -1475,7 +1479,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
     </div>
   </div>
   <div class="nav-row">
-    <button class="btn btn-sec" onclick="goTo(1)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(2)">Continue to Customers →</button>
+    <button class="btn btn-sec" onclick="goTo(1)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save draft (this browser only)</button><button class="btn btn-pri" onclick="next(2)">Continue to Customers →</button>
   </div>
 </div>
 
@@ -1494,7 +1498,7 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
   <div id="custList"></div>
   <button class="add-btn" onclick="addCust()">+ Add customer</button>
   <div class="nav-row">
-    <button class="btn btn-sec" onclick="goTo(2)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save progress</button><button class="btn btn-pri" onclick="next(3)">Review &amp; Export →</button>
+    <button class="btn btn-sec" onclick="goTo(2)">← Back</button><button type="button" class="btn btn-sec" onclick="saveProgress()" style="font-size:12px">&#128190; Save draft (this browser only)</button><button class="btn btn-pri" onclick="next(3)">Review &amp; Export →</button>
   </div>
 </div>
 
@@ -1510,7 +1514,11 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
   </div>
   <div class="card">
     <div class="card-title">Export &amp; submit</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Click <strong>Submit to dashboard</strong> to update the team view instantly. Data is saved in this browser across sessions.</p>
+    <div style="background:#fff3cd;border:1px solid #f0ad4e;border-radius:8px;padding:14px 16px;margin-bottom:1.25rem;font-size:13px;line-height:1.6">
+      <div style="font-weight:700;font-size:14px;margin-bottom:6px">⚠️ Save Draft vs Submit — what's the difference?</div>
+      <div style="margin-bottom:6px">💾 <strong>Save Draft</strong> (Steps 1–3) stores your progress <em>in this browser only</em>. It is <strong>not</strong> permanently saved. If you clear your browser cache, switch browser or use a different device, your draft will be lost.</div>
+      <div style="color:#155724;font-weight:600">✅ <strong>Submit to dashboard</strong> permanently saves your data to the team dashboard. You must click this button below to ensure your inputs are not lost.</div>
+    </div>
     <div class="export-actions">
       <button class="btn btn-export" onclick="submitToDashboard()" style="font-size:15px;padding:13px 36px">✅ Submit to dashboard</button>
       <button class="btn btn-sec" onclick="dlCSV()">⬇ Download CSV</button>
@@ -3989,7 +3997,7 @@ function saveProgress(){
     // Store SM name separately so cloud recovery only loads their own draft
     try{ localStorage.setItem('smHub_smName', draft.smName||''); }catch(e){}
     try{ sessionStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }catch(e){}
-    showToast('✅ Draft saved — use this same browser to continue where you left off');
+    showToast('⚠️ Draft saved to this browser only — you MUST click “Submit to dashboard” on Step 4 to permanently save your data. Drafts are lost if you clear your browser or switch device.');
     updateDraftBanner();
   }catch(e){showToast('Could not save: '+e.message);}
 }
