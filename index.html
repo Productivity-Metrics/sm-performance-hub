@@ -4936,8 +4936,419 @@ function execDrillCustomer(custName, smName){
   +((c.npsConsecNoResp>=3)?'<div style="background:#EDE9FE;border-radius:8px;padding:10px 12px;font-size:12px;color:#5B21B6;margin-bottom:10px">'
     +'&#9888; NPS Disengaged — no response for '+c.npsConsecNoResp+' consecutive months</div>':'');
 
+  // Add export button at top of drill content
+  html = '<div style="display:flex;justify-content:flex-end;margin-bottom:12px">'
+    +'<button onclick="exportCustomerReport(\''+c.name.replace(/\'/g,"\\'")+"','"+c.sm.replace(/\'/g,"\\'")+'\''+')" style="background:#1A2B4A;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">&#128196; Export Customer Report</button>'
+    +'</div>' + html;
+
   openExecDrill(c.name, html);
 }
+
+// ─── CUSTOMER EXPORT REPORT ─────────────────────────────────────────────────
+function exportCustomerReport(custName, smName){
+  // Gather all submissions for this customer across all months
+  var allMonths = [];
+  submissions.forEach(function(sub){
+    var cust = (sub.customers||[]).find(function(c){ return (c.name||'').trim()===custName.trim(); });
+    if(cust){
+      allMonths.push({
+        month: sub.month, year: sub.year,
+        smName: sub.smName||smName,
+        smVertical: sub.smVertical||'Enterprise',
+        data: cust
+      });
+    }
+  });
+  // Sort chronologically
+  var monthOrder = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  allMonths.sort(function(a,b){
+    var ya=+(a.year||0), yb=+(b.year||0);
+    if(ya!==yb) return ya-yb;
+    return monthOrder.indexOf(a.month)-monthOrder.indexOf(b.month);
+  });
+
+  // Find current month data (most recent)
+  var current = allMonths.length ? allMonths[allMonths.length-1] : null;
+  if(!current){ showToast('No data found for '+custName); return; }
+
+  var c = current.data;
+
+  // YTD aggregates
+  var ytdMonths = allMonths;
+  function ytdAvg(fn){ var vals=ytdMonths.map(fn).filter(function(v){return v!==null&&v!==undefined&&v!=='';});  return vals.length?vals.reduce(function(a,b){return a+b;},0)/vals.length:null; }
+  function ytdSum(fn){ return ytdMonths.reduce(function(t,m){return t+(fn(m)||0);},0); }
+  function ytdMin(fn){ var vals=ytdMonths.map(fn).filter(function(v){return v!==null&&v!==undefined;}); return vals.length?Math.min.apply(null,vals):null; }
+  function ytdMax(fn){ var vals=ytdMonths.map(fn).filter(function(v){return v!==null&&v!==undefined;}); return vals.length?Math.max.apply(null,vals):null; }
+
+  var ytdNPSVals = ytdMonths.map(function(m){return m.data.npsRaw!==null&&m.data.npsRaw!==undefined&&m.data.npsRaw!==''?+m.data.npsRaw:null;}).filter(function(v){return v!==null;});
+  var ytdNPSAvg = ytdNPSVals.length ? Math.round(ytdNPSVals.reduce(function(a,b){return a+b;},0)/ytdNPSVals.length) : null;
+  var ytdSentAvg = ytdAvg(function(m){return m.data.sentiment||null;});
+  var ytdSLAAvg = ytdAvg(function(m){return m.data.sla||null;});
+  var ytdHealthAvg = ytdAvg(function(m){var s=calcScore({nps:m.data.nps,sent:m.data.sentiment||0,rev:m.data.serviceReviews||0,sla:m.data.sla||0,p12:m.data.p12Incidents||0,faults:m.data.openFaults||0,csipQ:m.data.csipQuality||0}); return s.health;});
+  var ytdAgedDebt = ytdAvg(function(m){return m.data.agedDebt||0;});
+  var ytdSCValue = ytdSum(function(m){return m.data.serviceCreditsValue||0;});
+  var ytdSCCount = ytdSum(function(m){return m.data.serviceCreditsCount||0;});
+  var ytdSTS = ytdSum(function(m){return m.data.sts||0;});
+  var ytdRecovered = ytdSum(function(m){return m.data.recovered||0;});
+  var ytdEsc = ytdSum(function(m){return m.data.escalations||0;});
+  var ytdP12 = ytdSum(function(m){return m.data.p12Incidents||0;});
+
+  // Escalation history — find repeat escalations (same category across multiple months)
+  var escHistory = {};
+  ytdMonths.forEach(function(m){
+    var cats = m.data.escCategories||[];
+    cats.forEach(function(cat){
+      if(!escHistory[cat]) escHistory[cat]={count:0, months:[]};
+      escHistory[cat].count++;
+      escHistory[cat].months.push(m.month+' '+m.year);
+    });
+  });
+  var repeatEsc = Object.entries(escHistory).filter(function(e){return e[1].count>1;}).sort(function(a,b){return b[1].count-a[1].count;});
+  var singleEsc = Object.entries(escHistory).filter(function(e){return e[1].count===1;});
+
+  // Score for current month
+  var curScore = calcScore({nps:c.nps,sent:c.sentiment||0,rev:c.serviceReviews||0,sla:c.sla||0,p12:c.p12Incidents||0,faults:c.openFaults||0,csipQ:c.csipQuality||0});
+  var curHealth = c.healthScore||curScore.health;
+  var hCol2 = curHealth>=75?'#3B6D11':curHealth>=60?'#854F0B':'#A32D2D';
+  var hLabel2 = curHealth>=75?'Healthy':curHealth>=60?'Needs Attention':'At Risk';
+
+  // NPS helpers
+  function npsBand(raw){ if(raw===null||raw===undefined||raw==='') return '—'; return +raw>=9?'Promoter':+raw>=7?'Passive':'Detractor'; }
+  function npsColor(raw){ if(raw===null||raw===undefined||raw==='') return '#6B7280'; return +raw>=9?'#3B6D11':+raw>=7?'#854F0B':'#A32D2D'; }
+  function fmtCcy(v){ if(!v) return '£0'; if(v>=1000000) return '£'+Math.round(v/100000)/10+'M'; if(v>=1000) return '£'+Math.round(v/100)/10+'k'; return '£'+v; }
+  function scoreColor(v,tgt){ return v>=tgt?'#3B6D11':v>=tgt*0.85?'#854F0B':'#A32D2D'; }
+  function sentLabel(v){ if(!v) return '—'; return v>=8?'Very Positive':v>=6?'Positive':v>=4?'Neutral':v>=2?'Negative':'Very Negative'; }
+
+  // Build trend sparkline data for NPS and Health
+  var sparkNPS = ytdMonths.map(function(m){return {label:m.month.slice(0,3),val:m.data.npsRaw!==null&&m.data.npsRaw!==undefined&&m.data.npsRaw!==''?+m.data.npsRaw:null};});
+  var sparkHealth = ytdMonths.map(function(m){var s=calcScore({nps:m.data.nps,sent:m.data.sentiment||0,rev:m.data.serviceReviews||0,sla:m.data.sla||0,p12:m.data.p12Incidents||0,faults:m.data.openFaults||0,csipQ:m.data.csipQuality||0}); return {label:m.month.slice(0,3)+' '+m.year,val:Math.round(s.health)};});
+
+  function buildSparkline(data, minV, maxV, lineColor, w, h){
+    if(!data||data.length<2) return '';
+    var pts = data.filter(function(d){return d.val!==null;});
+    if(pts.length<2) return '';
+    var vals = pts.map(function(p){return p.val;});
+    var lo = Math.min.apply(null,vals), hi = Math.max.apply(null,vals);
+    if(lo===hi){ lo=Math.max(0,lo-5); hi=hi+5; }
+    var pad=4;
+    function sx(i){ return pad + (i/(pts.length-1))*(w-pad*2); }
+    function sy(v){ return h-pad - ((v-lo)/(hi-lo))*(h-pad*2); }
+    var path='M'+pts.map(function(p,i){return sx(i).toFixed(1)+','+sy(p.val).toFixed(1);}).join(' L');
+    return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="overflow:visible">'
+      +'<polyline points="'+pts.map(function(p,i){return sx(i).toFixed(1)+','+sy(p.val).toFixed(1);}).join(' ')+'" fill="none" stroke="'+lineColor+'" stroke-width="1.5" stroke-linejoin="round"/>'
+      +pts.map(function(p,i){ return '<circle cx="'+sx(i).toFixed(1)+'" cy="'+sy(p.val).toFixed(1)+'" r="2.5" fill="'+lineColor+'"/><text x="'+sx(i).toFixed(1)+'" y="'+(h-1)+'" text-anchor="middle" font-size="6" fill="#9CA3AF">'+p.label+'</text>'; }).join('')
+      +'</svg>';
+  }
+
+  // ── HTML REPORT ──────────────────────────────────────────────────────────
+  var reportDate = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  var reportPeriod = current.month+' '+current.year;
+  var ytdLabel = ytdMonths.length>1?(ytdMonths[0].month.slice(0,3)+' – '+current.month.slice(0,3)+' '+current.year):(current.month+' '+current.year);
+
+  var html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    +'<title>Customer Report: '+custName+'</title>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{font-family:"Segoe UI",system-ui,sans-serif;background:#F4F5F7;color:#1A2B4A}'
+    +'.page{max-width:960px;margin:0 auto;padding:24px}'
+    +'.header{background:linear-gradient(135deg,#1A2B4A 0%,#185FA5 100%);color:#fff;border-radius:14px;padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden}'
+    +'.header::before{content:"";position:absolute;top:-30px;right:-30px;width:200px;height:200px;background:rgba(255,255,255,.05);border-radius:50%}'
+    +'.header::after{content:"";position:absolute;bottom:-40px;right:80px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%}'
+    +'.header-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}'
+    +'.header-left .cust-name{font-size:26px;font-weight:700;letter-spacing:-.3px}'
+    +'.header-left .cust-meta{opacity:.75;font-size:13px;margin-top:4px}'
+    +'.header-left .cust-sm{opacity:.85;font-size:14px;margin-top:8px}'
+    +'.header-right{text-align:center}'
+    +'.score-bubble{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.3);display:flex;flex-direction:column;align-items:center;justify-content:center}'
+    +'.score-bubble .score-num{font-size:28px;font-weight:700}'
+    +'.score-bubble .score-lbl{font-size:9px;opacity:.8;text-transform:uppercase;letter-spacing:.5px}'
+    +'.badge-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}'
+    +'.badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25)}'
+    +'.tabs{display:flex;gap:8px;margin-bottom:20px}'
+    +'.tab{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #E2E4E9;background:#fff;color:#6B7280;transition:all .15s}'
+    +'.tab.active{background:#1A2B4A;color:#fff;border-color:#1A2B4A}'
+    +'.tab-content{display:none}.tab-content.active{display:block}'
+    +'.section{background:#fff;border-radius:12px;border:.5px solid #E2E4E9;padding:20px 24px;margin-bottom:16px}'
+    +'.section-title{font-size:14px;font-weight:700;color:#1A2B4A;margin-bottom:16px;padding-bottom:10px;border-bottom:.5px solid #E2E4E9;display:flex;align-items:center;gap:8px}'
+    +'.section-title .pill{font-size:10px;font-weight:600;padding:2px 10px;border-radius:10px;background:#E6F1FB;color:#185FA5}'
+    +'.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}'
+    +'.metric-card{background:#F8FAFC;border-radius:10px;padding:14px 16px;border:.5px solid #E2E4E9}'
+    +'.metric-card .mc-label{font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}'
+    +'.metric-card .mc-value{font-size:22px;font-weight:700}'
+    +'.metric-card .mc-sub{font-size:10px;color:#6B7280;margin-top:3px}'
+    +'.metric-card .mc-bar{height:4px;background:#E2E4E9;border-radius:2px;margin-top:8px}'
+    +'.metric-card .mc-bar-fill{height:4px;border-radius:2px}'
+    +'.kv-table{width:100%;border-collapse:collapse}'
+    +'.kv-table tr{border-bottom:.5px solid #F3F4F6}'
+    +'.kv-table td{padding:8px 0;font-size:13px}'
+    +'.kv-table td:first-child{color:#6B7280;width:52%}'
+    +'.kv-table td:last-child{font-weight:600;text-align:right}'
+    +'.esc-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;margin:2px}'
+    +'.repeat-esc{background:#FEF2F2;color:#991B1B;border:.5px solid #FECACA}'
+    +'.single-esc{background:#F0F0F0;color:#374151}'
+    +'.trend-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}'
+    +'.trend-card{background:#F8FAFC;border-radius:10px;padding:14px 16px;border:.5px solid #E2E4E9}'
+    +'.trend-card .tc-label{font-size:11px;color:#6B7280;margin-bottom:8px}'
+    +'.export-bar{display:flex;gap:10px;margin-bottom:20px;justify-content:flex-end}'
+    +'.export-btn{padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:6px}'
+    +'.btn-pdf{background:#A32D2D;color:#fff}'
+    +'.btn-ppt{background:#0F6E56;color:#fff}'
+    +'.progress-bar-wrap{background:#E2E4E9;border-radius:4px;height:8px;margin-top:6px}'
+    +'.progress-bar{height:8px;border-radius:4px}'
+    +'@media print{body{background:#fff}.export-bar,.tabs{display:none!important}.tab-content{display:block!important}.section{break-inside:avoid}.page{padding:10px}}'
+    +'</style></head><body>'
+    +'<div class="page">'
+
+    // Export buttons
+    +'<div class="export-bar">'
+    +'<button class="export-btn btn-pdf" onclick="window.print()">&#128196; Export PDF</button>'
+    +'<button class="export-btn" style="background:#534AB7;color:#fff" onclick="exportAsPPT()">&#127912; Export PPT</button>'
+    +'</div>'
+
+    // Header
+    +'<div class="header">'
+    +'<div class="header-inner">'
+    +'<div class="header-left">'
+    +'<div class="cust-name">'+custName+'</div>'
+    +'<div class="cust-meta">'+c.type+(c.renewal?' · Renewal: '+c.renewal:'')+'</div>'
+    +'<div class="cust-sm">Service Manager: '+current.smName+'</div>'
+    +'<div class="badge-row">'
+    +'<span class="badge">&#128197; '+reportPeriod+'</span>'
+    +'<span class="badge">&#128202; '+hLabel2+'</span>'
+    +(ytdMonths.length>1?'<span class="badge">&#8635; '+ytdMonths.length+' months tracked</span>':'')
+    +'</div></div>'
+    +'<div class="header-right">'
+    +'<div class="score-bubble"><div class="score-num">'+Math.round(curHealth)+'</div><div class="score-lbl">Health</div></div>'
+    +'<div style="font-size:10px;opacity:.7;text-align:center;margin-top:6px">Generated '+reportDate+'</div>'
+    +'</div>'
+    +'</div></div>'
+
+    // Tabs
+    +'<div class="tabs" id="reportTabs">'
+    +'<div class="tab active" onclick="switchTab(\'monthly\')">&#128197; Monthly View</div>'
+    +'<div class="tab" onclick="switchTab(\'ytd\')">&#128202; Year to Date</div>'
+    +'</div>'
+
+    // ═══ MONTHLY TAB ═══════════════════════════════════════════════════
+    +'<div class="tab-content active" id="tab-monthly">'
+
+    // VoC section
+    +'<div class="section">'
+    +'<div class="section-title">&#127908; Voice of the Customer <span class="pill">'+reportPeriod+'</span></div>'
+    +'<div class="metric-grid">'
+    // NPS
+    +'<div class="metric-card">'
+    +'<div class="mc-label">NPS Response</div>'
+    +'<div class="mc-value" style="color:'+npsColor(c.npsRaw)+'">'+((c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!=='')?c.npsRaw:'–')+'</div>'
+    +'<div class="mc-sub">'+npsBand(c.npsRaw)+'</div>'
+    +(c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!==''?'<div class="mc-bar"><div class="mc-bar-fill" style="background:'+npsColor(c.npsRaw)+';width:'+Math.round((+c.npsRaw/10)*100)+'%"></div></div>':'')
+    +'</div>'
+    // Sentiment
+    +'<div class="metric-card">'
+    +'<div class="mc-label">Customer Sentiment</div>'
+    +'<div class="mc-value" style="color:'+scoreColor(c.sentiment||0,7)+'">'+(c.sentiment||'–')+'/10</div>'
+    +'<div class="mc-sub">'+sentLabel(c.sentiment||0)+'</div>'
+    +'<div class="mc-bar"><div class="mc-bar-fill" style="background:'+scoreColor(c.sentiment||0,7)+';width:'+Math.round((c.sentiment||0)/10*100)+'%"></div></div>'
+    +'</div>'
+    // Service Reviews
+    +'<div class="metric-card">'
+    +'<div class="mc-label">Service Reviews</div>'
+    +'<div class="mc-value" style="color:'+scoreColor(c.serviceReviews||0,1)+'">'+(c.serviceReviews||0)+'</div>'
+    +'<div class="mc-sub">Target: ≥1 per month</div>'
+    +'</div>'
+    // VoC score
+    +'<div class="metric-card">'
+    +'<div class="mc-label">VoC Score</div>'
+    +'<div class="mc-value" style="color:#534AB7">'+(c.vocScore||curScore.voc||0).toFixed(1)+'</div>'
+    +'<div class="mc-sub">Target: ≥70</div>'
+    +'<div class="mc-bar"><div class="mc-bar-fill" style="background:#534AB7;width:'+Math.min(100,(c.vocScore||curScore.voc||0)).toFixed(0)+'%"></div></div>'
+    +'</div>'
+    +'</div>'
+    +(c.npsConsecNoResp>=3?'<div style="background:#EDE9FE;border-radius:8px;padding:10px 14px;font-size:12px;color:#5B21B6;margin-top:14px">&#9888; NPS Disengaged — no response for '+c.npsConsecNoResp+' consecutive months. Consider re-engagement at next service review.</div>':'')
+    +'</div>'
+
+    // Performance section
+    +'<div class="section">'
+    +'<div class="section-title">&#9881;&#65039; Operational Performance <span class="pill">'+reportPeriod+'</span></div>'
+    +'<div class="metric-grid">'
+    +'<div class="metric-card"><div class="mc-label">SLA Compliance</div><div class="mc-value" style="color:'+scoreColor(c.sla||0,97)+'">'+(c.sla||0)+'%</div><div class="mc-sub">Target: ≥97%</div><div class="mc-bar"><div class="mc-bar-fill" style="background:'+scoreColor(c.sla||0,97)+';width:'+Math.min(100,c.sla||0)+'%"></div></div></div>'
+    +'<div class="metric-card"><div class="mc-label">P1/P2 Incidents</div><div class="mc-value" style="color:'+(+c.p12Incidents<=2?'#3B6D11':'#A32D2D')+'">'+(c.p12Incidents||0)+'</div><div class="mc-sub">Baseline: '+(c.p12Baseline||0)+' · Target: ≤2</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Open Faults</div><div class="mc-value" style="color:'+(+c.openFaults===0?'#3B6D11':'#A32D2D')+'">'+(c.openFaults||0)+'</div><div class="mc-sub">Target: 0</div></div>'
+    +'<div class="metric-card"><div class="mc-label">CSIP Complete</div><div class="mc-value" style="color:'+scoreColor(c.csipPct||0,80)+'">'+(c.csipPct||0)+'%</div><div class="mc-sub">Actions: '+(c.csipActions||0)+' · Quality: '+(c.csipQuality||0)+'/25</div><div class="mc-bar"><div class="mc-bar-fill" style="background:'+scoreColor(c.csipPct||0,80)+';width:'+(c.csipPct||0)+'%"></div></div></div>'
+    +'<div class="metric-card"><div class="mc-label">Ops Score</div><div class="mc-value" style="color:#0F6E56">'+(c.opsScore||curScore.ops||0).toFixed(1)+'</div><div class="mc-sub">Target: ≥70</div><div class="mc-bar"><div class="mc-bar-fill" style="background:#0F6E56;width:'+Math.min(100,c.opsScore||curScore.ops||0).toFixed(0)+'%"></div></div></div>'
+    +'<div class="metric-card"><div class="mc-label">Retention</div><div class="mc-value" style="color:'+scoreColor((c.retention||.95)*100,95)+'">'+(((c.retention||.95)*100).toFixed(1))+'%</div><div class="mc-sub">Target: ≥95%</div></div>'
+    +'</div></div>'
+
+    // Commercials section
+    +'<div class="section">'
+    +'<div class="section-title">&#128176; Commercials <span class="pill">'+reportPeriod+'</span></div>'
+    +'<div class="metric-grid">'
+    +'<div class="metric-card"><div class="mc-label">Aged Debt</div><div class="mc-value" style="color:'+(+(c.agedDebt||0)===0?'#3B6D11':+(c.agedDebt||0)<=50000?'#854F0B':'#A32D2D')+'">'+fmtCcy(c.agedDebt||0)+'</div><div class="mc-sub">Target: £0 · Risk: &gt;£50k</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Service Credits Value</div><div class="mc-value" style="color:'+(+(c.serviceCreditsValue||0)===0?'#3B6D11':'#A32D2D')+'">'+fmtCcy(c.serviceCreditsValue||0)+'</div><div class="mc-sub">Count: '+(c.serviceCreditsCount||0)+'</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Sales Through Service</div><div class="mc-value" style="color:#3B6D11">'+fmtCcy(c.sts||0)+'</div><div class="mc-sub">New revenue identified</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Recovered Revenue</div><div class="mc-value" style="color:#185FA5">'+fmtCcy(c.recovered||0)+'</div><div class="mc-sub">This month</div></div>'
+    +'</div></div>'
+
+    // Escalations section
+    +'<div class="section">'
+    +'<div class="section-title">&#9888;&#65039; Escalations <span class="pill">'+reportPeriod+'</span></div>'
+    +(c.escalations>0 || (c.escCategories&&c.escCategories.length)?
+        '<div style="margin-bottom:12px"><table class="kv-table">'
+        +'<tr><td>Escalation count this month</td><td style="color:#A32D2D">'+(c.escalations||0)+'</td></tr>'
+        +'</table></div>'
+        +(c.escCategories&&c.escCategories.length?'<div style="margin-bottom:8px"><div style="font-size:11px;color:#6B7280;margin-bottom:6px">Categories this month:</div>'
+          +c.escCategories.map(function(cat){ var isRepeat=escHistory[cat]&&escHistory[cat].count>1; return '<span class="esc-pill '+(isRepeat?'repeat-esc':'single-esc')+'">'+cat+(isRepeat?' &#8635;':'')+' </span>'; }).join('')+'</div>':'')
+        +(repeatEsc.length?'<div style="background:#FEF9EC;border:1px solid #F0AD4E;border-radius:8px;padding:12px;font-size:12px;color:#854F0B;margin-top:10px"><strong>&#9888; Repeat escalations identified:</strong><div style="margin-top:8px">'+repeatEsc.map(function(e){return '<div style="margin-bottom:4px"><strong>'+e[0]+'</strong> — '+e[1].count+'× ('+e[1].months.join(', ')+')</div>';}).join('')+'</div></div>':'')
+      :'<div style="color:#3B6D11;background:#EAF3DE;border-radius:8px;padding:12px;font-size:13px;font-weight:600">&#10003; No escalations this month</div>')
+    +'</div>'
+
+    +'</div>'
+
+    // ═══ YTD TAB ═══════════════════════════════════════════════════════
+    +'<div class="tab-content" id="tab-ytd">'
+    +'<div style="background:#E6F1FB;border-radius:10px;padding:12px 16px;font-size:12px;color:#185FA5;margin-bottom:16px">&#128202; Year-to-date summary across <strong>'+ytdMonths.length+' month'+(ytdMonths.length!==1?'s':'')+' </strong>: '+ytdLabel+'</div>'
+
+    // YTD VoC
+    +'<div class="section">'
+    +'<div class="section-title">&#127908; Voice of the Customer — YTD</div>'
+    +'<div class="metric-grid">'
+    +'<div class="metric-card"><div class="mc-label">Avg NPS Response</div><div class="mc-value" style="color:'+(ytdNPSAvg!==null?npsColor(ytdNPSAvg):'#6B7280')+'">'+(ytdNPSAvg!==null?ytdNPSAvg:'–')+'</div><div class="mc-sub">'+(ytdNPSVals.length)+' response'+(ytdNPSVals.length!==1?'s':'')+' · '+(ytdNPSAvg!==null?npsBand(ytdNPSAvg):'No data')+'</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Avg Sentiment</div><div class="mc-value" style="color:'+(ytdSentAvg!==null?scoreColor(ytdSentAvg,7):'#6B7280')+'">'+(ytdSentAvg!==null?ytdSentAvg.toFixed(1):'–')+'/10</div><div class="mc-sub">'+(ytdSentAvg!==null?sentLabel(ytdSentAvg):'No data')+'</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Avg Health Score</div><div class="mc-value" style="color:'+(ytdHealthAvg!==null?scoreColor(ytdHealthAvg,75):'#6B7280')+'">'+(ytdHealthAvg!==null?ytdHealthAvg.toFixed(1):'–')+'</div><div class="mc-sub">Target: ≥75</div></div>'
+    +'</div>'
+
+    // NPS sparkline
+    +(sparkNPS.filter(function(d){return d.val!==null;}).length>=2?
+      '<div class="trend-row" style="margin-top:14px">'
+      +'<div class="trend-card"><div class="tc-label">NPS Trend</div>'+buildSparkline(sparkNPS,0,10,'#534AB7',340,60)+'</div>'
+      +'<div class="trend-card"><div class="tc-label">Health Score Trend</div>'+buildSparkline(sparkHealth,0,100,'#0F6E56',340,60)+'</div>'
+      +'</div>':'')
+    +'</div>'
+
+    // YTD Performance
+    +'<div class="section">'
+    +'<div class="section-title">&#9881;&#65039; Operational Performance — YTD</div>'
+    +'<div class="metric-grid">'
+    +'<div class="metric-card"><div class="mc-label">Avg SLA</div><div class="mc-value" style="color:'+(ytdSLAAvg!==null?scoreColor(ytdSLAAvg,97):'#6B7280')+'">'+(ytdSLAAvg!==null?ytdSLAAvg.toFixed(1)+'%':'–')+'</div><div class="mc-sub">Target: ≥97%</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Total P1/P2 Incidents</div><div class="mc-value" style="color:'+(ytdP12<=6?'#3B6D11':ytdP12<=12?'#854F0B':'#A32D2D')+'">'+ytdP12+'</div><div class="mc-sub">Across '+ytdMonths.length+' months</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Total Escalations</div><div class="mc-value" style="color:'+(ytdEsc===0?'#3B6D11':ytdEsc<=3?'#854F0B':'#A32D2D')+'">'+ytdEsc+'</div><div class="mc-sub">Across '+ytdMonths.length+' months</div></div>'
+    +'</div></div>'
+
+    // YTD Commercials
+    +'<div class="section">'
+    +'<div class="section-title">&#128176; Commercials — YTD</div>'
+    +'<div class="metric-grid">'
+    +'<div class="metric-card"><div class="mc-label">Avg Aged Debt</div><div class="mc-value" style="color:'+(ytdAgedDebt===0?'#3B6D11':ytdAgedDebt<=50000?'#854F0B':'#A32D2D')+'">'+fmtCcy(Math.round(ytdAgedDebt))+'</div><div class="mc-sub">Monthly average</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Total Service Credits</div><div class="mc-value" style="color:'+(ytdSCValue===0?'#3B6D11':'#A32D2D')+'">'+fmtCcy(Math.round(ytdSCValue))+'</div><div class="mc-sub">'+ytdSCCount+' credits issued</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Total STS</div><div class="mc-value" style="color:#3B6D11">'+fmtCcy(Math.round(ytdSTS))+'</div><div class="mc-sub">Sales Through Service</div></div>'
+    +'<div class="metric-card"><div class="mc-label">Total Recovered</div><div class="mc-value" style="color:#185FA5">'+fmtCcy(Math.round(ytdRecovered))+'</div><div class="mc-sub">Revenue recovered</div></div>'
+    +'</div></div>'
+
+    // YTD Escalations
+    +'<div class="section">'
+    +'<div class="section-title">&#9888;&#65039; Escalation History — YTD</div>'
+    +(ytdEsc===0?'<div style="color:#3B6D11;background:#EAF3DE;border-radius:8px;padding:12px;font-size:13px;font-weight:600">&#10003; No escalations recorded this year</div>':
+      '<table class="kv-table" style="margin-bottom:14px"><tr><td>Total escalations</td><td style="color:#A32D2D">'+ytdEsc+'</td></tr></table>'
+      +(repeatEsc.length?'<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:600;color:#A32D2D;margin-bottom:8px">&#8635; Repeat Escalations (same issue multiple months):</div>'
+        +repeatEsc.map(function(e){return '<div style="background:#FEF2F2;border:.5px solid #FECACA;border-radius:8px;padding:10px 14px;margin-bottom:8px"><div style="font-weight:600;color:#991B1B">'+e[0]+'</div><div style="font-size:11px;color:#6B7280;margin-top:3px">Escalated '+e[1].count+'× — '+e[1].months.join(' · ')+'</div></div>';}).join('')+'</div>':'')
+      +(singleEsc.length?'<div><div style="font-size:12px;color:#6B7280;margin-bottom:6px">Single-occurrence escalations:</div>'
+        +singleEsc.map(function(e){return '<span class="esc-pill single-esc">'+e[0]+' ('+e[1].months[0]+')</span>';}).join('')+'</div>':''))
+    +'</div>'
+
+    // Monthly breakdown table
+    +'<div class="section">'
+    +'<div class="section-title">&#128197; Month-by-Month Breakdown</div>'
+    +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">'
+    +'<thead><tr style="border-bottom:1.5px solid #E2E4E9;color:#6B7280;font-size:11px">'
+    +'<th style="padding:6px 8px;text-align:left">Month</th>'
+    +'<th style="padding:6px 8px;text-align:center">Health</th>'
+    +'<th style="padding:6px 8px;text-align:center">NPS</th>'
+    +'<th style="padding:6px 8px;text-align:center">Sentiment</th>'
+    +'<th style="padding:6px 8px;text-align:center">SLA</th>'
+    +'<th style="padding:6px 8px;text-align:center">P1/P2</th>'
+    +'<th style="padding:6px 8px;text-align:center">Aged Debt</th>'
+    +'<th style="padding:6px 8px;text-align:center">Escalations</th>'
+    +'</tr></thead><tbody>'
+    +ytdMonths.map(function(m){
+      var d=m.data;
+      var s=calcScore({nps:d.nps,sent:d.sentiment||0,rev:d.serviceReviews||0,sla:d.sla||0,p12:d.p12Incidents||0,faults:d.openFaults||0,csipQ:d.csipQuality||0});
+      var isLast=(m===current);
+      return '<tr style="border-bottom:.5px solid #F3F4F6'+(isLast?';background:#F0F4FF':'')+(isLast?';font-weight:600':'')+'">'
+        +'<td style="padding:7px 8px">'+m.month+' '+m.year+(isLast?' &#9654;':' ')+'</td>'
+        +'<td style="padding:7px 8px;text-align:center;font-weight:700;color:'+scoreColor(s.health,75)+'">'+Math.round(s.health)+'</td>'
+        +'<td style="padding:7px 8px;text-align:center;color:'+npsColor(d.npsRaw)+'">'+(d.npsRaw!==null&&d.npsRaw!==undefined&&d.npsRaw!==''?d.npsRaw:'–')+'</td>'
+        +'<td style="padding:7px 8px;text-align:center;color:'+scoreColor(d.sentiment||0,7)+'">'+(d.sentiment||'–')+'</td>'
+        +'<td style="padding:7px 8px;text-align:center;color:'+scoreColor(d.sla||0,97)+'">'+(d.sla||0)+'%</td>'
+        +'<td style="padding:7px 8px;text-align:center;color:'+(+d.p12Incidents<=2?'#3B6D11':'#A32D2D')+'">'+(d.p12Incidents||0)+'</td>'
+        +'<td style="padding:7px 8px;text-align:center;color:'+(+(d.agedDebt||0)===0?'#3B6D11':+(d.agedDebt||0)<=50000?'#854F0B':'#A32D2D')+'">'+fmtCcy(d.agedDebt||0)+'</td>'
+        +'<td style="padding:7px 8px;text-align:center;color:'+(+d.escalations===0?'#3B6D11':'#A32D2D')+'">'+(d.escalations||0)+'</td>'
+        +'</tr>';
+    }).join('')
+    +'</tbody></table></div></div>'
+
+    +'</div>'
+
+    // PPT export script
+    +'<script>'
+    +'function switchTab(t){'
+    +'document.querySelectorAll(".tab").forEach(function(b,i){b.classList.toggle("active",i===(t==="ytd"?1:0));});'
+    +'document.querySelectorAll(".tab-content").forEach(function(c,i){c.classList.toggle("active",i===(t==="ytd"?1:0));});'
+    +'}'
+    +'function exportAsPPT(){'
+    // Build PPTX using PptxGenJS from CDN
+    +'var script=document.createElement("script");'
+    +'script.src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js";'
+    +'script.onload=function(){'
+    +'var pptx=new PptxGenJS();'
+    +'pptx.layout="LAYOUT_16x9";'
+    +'pptx.theme={headFontFace:"Segoe UI",bodyFontFace:"Segoe UI"};'
+    // Slide 1: Cover
+    +'var s1=pptx.addSlide();'
+    +'s1.background={color:"1A2B4A"};'
+    +'s1.addText("'+custName.replace(/'/g,"\\'")+'",{x:0.5,y:1.2,w:8,h:1.2,fontSize:36,bold:true,color:"FFFFFF",fontFace:"Segoe UI"});'
+    +'s1.addText("Customer Report · '+reportPeriod+'",{x:0.5,y:2.5,w:8,h:0.5,fontSize:16,color:"AABBCC",fontFace:"Segoe UI"});'
+    +'s1.addText("Service Manager: '+current.smName.replace(/'/g,"\\'")+'",{x:0.5,y:3.1,w:8,h:0.4,fontSize:13,color:"AABBCC"});'
+    +'s1.addText("Health Score: '+Math.round(curHealth)+'  ·  '+hLabel2+'",{x:0.5,y:4.0,w:8,h:0.5,fontSize:18,bold:true,color:"'+(hCol2.replace('#',''))+'",fontFace:"Segoe UI"});'
+    +'s1.addText("Generated '+reportDate+'",{x:0.5,y:4.7,w:8,h:0.3,fontSize:10,color:"778899"});'
+    // Slide 2: VoC
+    +'var s2=pptx.addSlide();'
+    +'s2.addText("Voice of the Customer",{x:0.5,y:0.2,w:9,h:0.6,fontSize:22,bold:true,color:"1A2B4A"});'
+    +'s2.addText("'+reportPeriod+'",{x:0.5,y:0.8,w:9,h:0.3,fontSize:12,color:"6B7280"});'
+    +'var rows2=[["Metric","Value","Target","Status"],["NPS Response","'+(c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!==''?c.npsRaw+' ('+npsBand(c.npsRaw)+')':'No response')+'","≥9 (Promoter)","'+(c.npsRaw!==null&&c.npsRaw!==undefined&&c.npsRaw!==''&&+c.npsRaw>=9?'✓ Met':'✗ Not met')+'"],["Customer Sentiment","'+(c.sentiment||0)+'/10","≥7/10","'+(+(c.sentiment||0)>=7?'✓ Met':'✗ Not met')+'"],["Service Reviews","'+(c.serviceReviews||0)+'","≥1","'+(+(c.serviceReviews||0)>=1?'✓ Met':'✗ Not met')+'"],["VoC Score","'+(c.vocScore||curScore.voc||0).toFixed(1)+'","≥70","'+(+(c.vocScore||curScore.voc||0)>=70?'✓ Met':'✗ Not met')+'"]];'
+    +'s2.addTable(rows2,{x:0.5,y:1.2,w:9,colW:[3,2.5,2,1.5],border:{pt:0.5,color:"E2E4E9"},fontFace:"Segoe UI",fontSize:12,align:"left",autoPage:false,rowH:0.4,fill:{color:"F8FAFC"},valign:"middle"});'
+    // Slide 3: Performance
+    +'var s3=pptx.addSlide();'
+    +'s3.addText("Operational Performance",{x:0.5,y:0.2,w:9,h:0.6,fontSize:22,bold:true,color:"1A2B4A"});'
+    +'s3.addText("'+reportPeriod+'",{x:0.5,y:0.8,w:9,h:0.3,fontSize:12,color:"6B7280"});'
+    +'var rows3=[["Metric","Value","Target","Status"],["SLA Compliance","'+(c.sla||0)+'%","≥97%","'+(+(c.sla||0)>=97?'✓ Met':'✗ Not met')+'"],["P1/P2 Incidents","'+(c.p12Incidents||0)+' (baseline '+(c.p12Baseline||0)+')","≤2","'+(+(c.p12Incidents||0)<=2?'✓ Met':'✗ Not met')+'"],["Open Faults","'+(c.openFaults||0)+'","0","'+(+(c.openFaults||0)===0?'✓ Met':'✗ Not met')+'"],["CSIP Complete","'+(c.csipPct||0)+'%","≥80%","'+(+(c.csipPct||0)>=80?'✓ Met':'✗ Not met')+'"],["CSIP Quality","'+(c.csipQuality||0)+'/25","≥20","'+(+(c.csipQuality||0)>=20?'✓ Met':'✗ Not met')+'"],["Ops Score","'+(c.opsScore||curScore.ops||0).toFixed(1)+'","≥70","'+(+(c.opsScore||curScore.ops||0)>=70?'✓ Met':'✗ Not met')+'"]];'
+    +'s3.addTable(rows3,{x:0.5,y:1.2,w:9,colW:[3,2.5,2,1.5],border:{pt:0.5,color:"E2E4E9"},fontFace:"Segoe UI",fontSize:12,align:"left",autoPage:false,rowH:0.4,fill:{color:"F8FAFC"},valign:"middle"});'
+    // Slide 4: Commercials
+    +'var s4=pptx.addSlide();'
+    +'s4.addText("Commercials",{x:0.5,y:0.2,w:9,h:0.6,fontSize:22,bold:true,color:"1A2B4A"});'
+    +'s4.addText("'+reportPeriod+' | YTD: '+ytdLabel+'",{x:0.5,y:0.8,w:9,h:0.3,fontSize:12,color:"6B7280"});'
+    +'var rows4=[["Metric","This Month","YTD"],["Aged Debt","'+fmtCcy(c.agedDebt||0)+'","Avg '+fmtCcy(Math.round(ytdAgedDebt))+'"],["Service Credits Value","'+fmtCcy(c.serviceCreditsValue||0)+'","'+fmtCcy(Math.round(ytdSCValue))+'"],["Service Credit Count","'+(c.serviceCreditsCount||0)+'","'+(Math.round(ytdSCCount))+'"],["Sales Through Service","'+fmtCcy(c.sts||0)+'","'+fmtCcy(Math.round(ytdSTS))+'"],["Recovered Revenue","'+fmtCcy(c.recovered||0)+'","'+fmtCcy(Math.round(ytdRecovered))+'"]];'
+    +'s4.addTable(rows4,{x:0.5,y:1.2,w:9,colW:[3.5,2.75,2.75],border:{pt:0.5,color:"E2E4E9"},fontFace:"Segoe UI",fontSize:12,align:"left",autoPage:false,rowH:0.4,fill:{color:"F8FAFC"},valign:"middle"});'
+    // Slide 5: Escalations
+    +'var s5=pptx.addSlide();'
+    +'s5.addText("Escalations",{x:0.5,y:0.2,w:9,h:0.6,fontSize:22,bold:true,color:"1A2B4A"});'
+    +'s5.addText("'+reportPeriod+' | YTD: '+ytdLabel+'",{x:0.5,y:0.8,w:9,h:0.3,fontSize:12,color:"6B7280"});'
+    +'var escRows5=[["Category","Occurrences","Months","Type"]];'
+    +''+repeatEsc.map(function(e){ return 'escRows5.push(["'+e[0].replace(/'/g,"\\'")+'","'+e[1].count+'","'+e[1].months.join(', ').replace(/'/g,"\\'")+'","⚠ Repeat"]);'; }).join('')
+    +singleEsc.map(function(e){ return 'escRows5.push(["'+e[0].replace(/'/g,"\\'")+'","1","'+e[1].months[0].replace(/'/g,"\\'")+'","Single"]);'; }).join('')
+    +'if(escRows5.length===1) escRows5.push(["No escalations recorded","—","—","✓"]);'
+    +'s5.addTable(escRows5,{x:0.5,y:1.2,w:9,colW:[3,1.5,3,1.5],border:{pt:0.5,color:"E2E4E9"},fontFace:"Segoe UI",fontSize:12,align:"left",autoPage:false,rowH:0.4,fill:{color:"F8FAFC"},valign:"middle"});'
+    +'pptx.writeFile({fileName:"Customer_Report_'+custName.replace(/[^a-zA-Z0-9]/g,'_')+'_'+current.month+'_'+current.year+'.pptx"});'
+    +'};document.head.appendChild(script);'
+    +'}'
+    +'<\/script>'
+    +'</div></body></html>';
+
+  // Open in new window
+  var win = window.open('','_blank','width=1000,height=800,scrollbars=yes');
+  win.document.write(html);
+  win.document.close();
+}
+// ─── END CUSTOMER EXPORT ────────────────────────────────────────────────────
 
 function execDrillEscCategory(cat, allCusts){
   // Find all customers with this escalation category
