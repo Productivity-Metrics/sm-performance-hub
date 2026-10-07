@@ -2956,8 +2956,26 @@ async function submitToDashboard(){
   var data=collectData();
   if(!data.smName){showToast('Please enter your name first');return;}
   if(!data.customers.length){showToast('Please add at least one customer');return;}
-  showToast('Saving\u2026');
-  await saveStore(data);
+  var btn=document.querySelector('[onclick="submitToDashboard()"]');
+  if(btn){ btn.disabled=true; btn.textContent='\u23f3 Saving\u2026'; }
+  showToast('\u23f3 Saving to dashboard\u2026');
+  var ok=await saveStore(data);
+  if(!ok){
+    if(btn){ btn.disabled=false; btn.textContent="\u2705 Submit to dashboard"; }
+    var errBox=document.getElementById('submitErrorBox');
+    if(!errBox){
+      errBox=document.createElement('div');
+      errBox.id='submitErrorBox';
+      errBox.style.cssText='background:#fee2e2;border:2px solid #dc2626;color:#7f1d1d;border-radius:10px;padding:16px 20px;margin:16px 0;font-size:14px;font-weight:600;line-height:1.5';
+      var exportCard=document.querySelector('.export-actions');
+      if(exportCard) exportCard.parentNode.insertBefore(errBox, exportCard);
+    }
+    errBox.innerHTML='\u274c <strong>Submit failed \u2014 your data has NOT been saved to the dashboard.</strong><br>Please check your internet connection and click Submit again. Do not close this page.';
+    errBox.style.display='block';
+    return;
+  }
+  var errBox=document.getElementById('submitErrorBox');
+  if(errBox) errBox.style.display='none';
   clearDraft();
   activePeriod=data.year+'-'+String(mNum(data.month)).padStart(2,'0');
   showDash();
