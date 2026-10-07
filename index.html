@@ -3200,7 +3200,7 @@ function addCust(d){
           <option value=""${(data.npsRaw===undefined||data.npsRaw===null||data.npsRaw==='')?' selected':''}>No response this month</option>
           ${[10,9,8,7,6,5,4,3,2,1,0].map(v=>`<option value="${v}"${(data.npsRaw!==undefined&&data.npsRaw!==null&&data.npsRaw!==''&&+data.npsRaw===v)?' selected':''}>${v} — ${v>=9?'Promoter':v>=7?'Passive':'Detractor'}</option>`).join('')}
         </select>
-        <input type="hidden" id="nps_${id}" value="${data.nps!==undefined?data.nps:npsToScore(data.npsRaw!==undefined?data.npsRaw:9)}">
+        <input type="hidden" id="nps_${id}" value="${(data.npsRaw!==undefined&&data.npsRaw!==null&&data.npsRaw!=='')?npsToScore(data.npsRaw):'' }">
         <div class="sub">How would this customer rate us 0–10? 9–10 = Promoter, 7–8 = Passive, 0–6 = Detractor</div>
       </div>
         <div class="fg"><label>Meeting sentiment <span class="tgt">(1–10, target ≥7)</span></label>
@@ -3329,8 +3329,8 @@ function recalc(id){
 function collectData(){
   const custs=Array.from(document.getElementById("custList").children).map(div=>{
     const id=div.id;
-    const nps=+document.getElementById("nps_"+id).value||0;
-    const npsRaw=+(document.getElementById("npsRaw_"+id)||{value:9}).value||0;
+    const nps=npsRaw!==null?npsToScore(npsRaw):null;
+    var _npsSelEl=document.getElementById("npsRaw_"+id); var npsRaw=(_npsSelEl&&_npsSelEl.value!==''&&_npsSelEl.value!==null)?+_npsSelEl.value:null;
     const sent=+document.getElementById("sent_"+id).value||0;
     const rev=+document.getElementById("rev_"+id).value||0;
     const sla=+document.getElementById("sla_"+id).value||0;
@@ -3845,7 +3845,7 @@ async function loadPreviousCustomers(){
       p12base: c.p12Baseline||0,
       // ── VARIABLE: clear so SM enters fresh values ──
       ret:     0.95,  // default retention
-      npsRaw:  9,     // default to Promoter
+      npsRaw:  null,  // no default — blank until SM enters a value
       sent:    '',    // blank — SM must enter fresh sentiment
       rev:     0,
       sla:     '',    // blank — SM must enter fresh SLA
