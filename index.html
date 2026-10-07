@@ -2366,9 +2366,12 @@ async function saveStore(sub){
       {method:'PUT',headers:{'Authorization':'token '+GH_CONFIG.token,'Content-Type':'application/json','User-Agent':'SM-Hub'},
        body:JSON.stringify(body)});
     if(r.ok){setStatus('\u2601\ufe0f Saved to shared dashboard','ok');return true;}
-    setStatus('\u26a0\ufe0f Save failed (HTTP '+r.status+'). Please try submitting again.','warn');
+    var errBody=''; try{var ej=await r.json();errBody=ej.message||'';}catch(e2){}
+    setStatus('\u26a0\ufe0f Save failed (HTTP '+r.status+(errBody?' \u2014 '+errBody:'')+').','warn');
+    console.error('saveStore PUT failed',r.status,errBody,'file:',filePath);
   }catch(e){
-    setStatus('\u26a0\ufe0f Network error. Please check your connection and try again.','warn');
+    setStatus('\u26a0\ufe0f Network error \u2014 '+e.message+'. Please check your connection and try again.','warn');
+    console.error('saveStore network error',e);
   }
   return false;
 }
@@ -2970,7 +2973,8 @@ async function submitToDashboard(){
       var exportCard=document.querySelector('.export-actions');
       if(exportCard) exportCard.parentNode.insertBefore(errBox, exportCard);
     }
-    errBox.innerHTML='\u274c <strong>Submit failed \u2014 your data has NOT been saved to the dashboard.</strong><br>Please check your internet connection and click Submit again. Do not close this page.';
+    var statusMsg=(document.getElementById('spStatus')||{textContent:''}).textContent||'';
+    errBox.innerHTML='\u274c <strong>Submit failed \u2014 your data has NOT been saved to the dashboard.</strong><br>Please check your internet connection and click Submit again. Do not close this page.'+(statusMsg?'<br><span style="font-size:12px;font-weight:400;opacity:.8">Detail: '+statusMsg+'</span>':'');
     errBox.style.display='block';
     return;
   }
