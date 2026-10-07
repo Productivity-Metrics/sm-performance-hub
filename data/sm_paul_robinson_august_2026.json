@@ -196,7 +196,7 @@
       "leads": 0,
       "nps": 100,
       "npsRaw": 9,
-      "sentiment": 1,
+      "sentiment": null,
       "serviceReviews": 1,
       "sla": 98,
       "p12Incidents": 0,
