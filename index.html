@@ -2567,10 +2567,15 @@ function mbar(val,max,col){
 }
 function fmtK(n){ return n>=1000?'\u00a3'+(n/1000).toFixed(0)+'k':'\u00a3'+Math.round(n); }
 function prodIdx(sm){
-  var cf=Math.min((sm.cfPct||0)/82*25,25);
-  var hl=Math.min((sm.health||0)/80*25,25);
-  var cx=Math.min(((sm.nps||0)/70*10+(sm.sentiment||0)/10*10),20);
+  // CF time: 25pts — target 82%, capped at 100%
+  var cf=Math.min((sm.cfPct||0)/100*25,25);
+  // Health: 25pts — scored out of 100 so strong performers (>80) differentiate from those just at target
+  var hl=Math.min((sm.health||0)/100*25,25);
+  // Customer experience: 20pts — NPS score (0/50/100) + sentiment (0-10)
+  var cx=Math.min(((sm.nps||0)/100*10+(sm.sentiment||0)/10*10),20);
+  // Commercial ops: 20pts — SLA vs 97% target + CSIP vs 80% target
   var co=Math.min(((sm.sla||0)/97*10+(sm.csip||0)/80*10),20);
+  // Revenue contribution: 10pts — STS vs team target + leads vs 4/month target
   var rv=Math.min(((sm.sts||0)/212800*5+(sm.leads||0)/4*5),10);
   return Math.round(cf+hl+cx+co+rv);
 }
