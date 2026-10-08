@@ -2505,22 +2505,36 @@ function aggregate(){
       // Recalculate health live from raw submitted metrics so formula updates
       // (e.g. the sentiment override) apply retroactively to historical submissions,
       // rather than trusting a healthScore value frozen at submission time.
+      // If no NPS this month, check for a prior response within the same calendar quarter
+      // Find which submission this customer's data came from (latest sub that has this customer)
+      var _custSub = ss.reduce(function(best,s){
+        var found=(s.customers||[]).find(function(x){return (x.name||'').trim()===(c.name||'').trim();});
+        if(!found) return best;
+        if(!best) return s;
+        return (mKey(s)>mKey(best))?s:best;
+      },null) || (ss.length?ss[ss.length-1]:null);
+      var _npsRaw = c.npsRaw;
+      var _npsRawBlank = (_npsRaw===null||_npsRaw===undefined||_npsRaw==='');
+      var _qNpsRaw = (_npsRawBlank&&_custSub) ? getQuarterNPS(name, c.name, _custSub.month, _custSub.year) : null;
+      var _effectiveNpsRaw = _npsRawBlank ? _qNpsRaw : _npsRaw; // use quarter carry-forward if available
+      var _effectiveNps = (_effectiveNpsRaw!==null&&_effectiveNpsRaw!==undefined&&_effectiveNpsRaw!=='') ? npsToScore(_effectiveNpsRaw) : (c.nps||0);
       var liveScore = calcScore({
-        nps: c.nps||0, sent: c.sentiment||0, rev: c.serviceReviews||0,
+        nps: _effectiveNps, sent: c.sentiment||0, rev: c.serviceReviews||0,
         sla: c.sla||0, p12: c.p12Incidents||0, p12base: c.p12Baseline||0,
         faults: c.openFaults||0, csipQ: c.csipQuality||0
       });
       custRows.push({name:c.name,sm:name,siIdx:idx,type:c.type,vertical:ss.length>0?(ss[ss.length-1].smVertical||'Enterprise'):'Enterprise',
-        // NPS non-response penalty
-        npsNoResp:(c.npsRaw===null||c.npsRaw===undefined||c.npsRaw===''),
+        // NPS non-response: only penalise if no response anywhere in the quarter
+        npsNoResp:_npsRawBlank,
+        npsQCarryFwd:(_npsRawBlank&&_qNpsRaw!==null), // true = used a prior quarter value
         npsConsecNoResp:getNPSConsecutiveNonResponse(name,c.name),
         health:(function(){
           var h=liveScore.health;
-          var noResp=(c.npsRaw===null||c.npsRaw===undefined||c.npsRaw==='');
-          if(noResp) h=Math.max(0,h-3); // -3pts for no NPS this month
+          // Only apply -3pt penalty if no NPS response anywhere in the quarter
+          if(_npsRawBlank && _qNpsRaw===null) h=Math.max(0,h-3);
           return Math.round(h*10)/10;
         })(),
-        retention:c.retention,nps:c.nps,npsRaw:c.npsRaw,sentiment:c.sentiment||0,
+        retention:c.retention,nps:c.nps,npsRaw:_npsRaw,npsEffective:_effectiveNpsRaw,sentiment:c.sentiment||0,
         sla:c.sla,csip:c.csipPct,sts:c.sts||0,aged:c.agedDebt||c.aged||0,
         recovered:c.recovered||0,p12:c.p12Incidents||0,faults:c.openFaults||0,
         scoreBreakdown:liveScore.breakdown,voc:liveScore.voc,ops:liveScore.ops,
@@ -3228,6 +3242,7 @@ function addCust(d){
         </select>
         <input type="hidden" id="nps_${id}" value="${(data.npsRaw!==undefined&&data.npsRaw!==null&&data.npsRaw!=='')?npsToScore(data.npsRaw):'' }">
         <div class="sub">How would this customer rate us 0–10? 9–10 = Promoter, 7–8 = Passive, 0–6 = Detractor</div>
+        <div id="npsQNote_${id}" style="display:none;margin-top:5px;font-size:11px;font-weight:600;color:#534AB7;background:#EDE9FE;border-radius:5px;padding:4px 8px">&#8634; Using this quarter's earlier NPS response — score unaffected</div>
       </div>
         <div class="fg"><label>Meeting sentiment <span class="tgt">(1–10, target ≥7)</span></label>
           <div style="margin-top:3px">
@@ -3316,11 +3331,26 @@ function recalc(id){
   const p12base=+(document.getElementById("p12base_"+id)||{value:0}).value||0;
   const faults=+document.getElementById("flt_"+id).value||0;
   const csipQ=+document.getElementById("csipQ_"+id).value||0;
-  const s=calcScore({nps:nps,sent:sent,rev:rev,sla:sla,p12:p12,p12base:p12base,faults:faults,csipQ:csipQ});
-  // -3pt penalty if no NPS response this month
+  // If no NPS this month, check for a prior response in the same quarter
   var _npsBlank=(npsRaw===null);
-  var _adjHealth=_npsBlank?Math.max(0,Math.round((s.health-3)*10)/10):s.health;
+  var _effectiveNps=nps;
+  var _qCarryFwd=false;
+  if(_npsBlank){
+    var _formSM=(document.getElementById('smName')||{value:''}).value.trim();
+    var _formMonth=(document.getElementById('repMonth')||{value:''}).value;
+    var _formYear=(document.getElementById('repYear')||{value:''}).value||new Date().getFullYear();
+    var _custNm=(document.getElementById('name_'+id)||{value:''}).value.trim();
+    var _qNps=getQuarterNPS(_formSM,_custNm,_formMonth,_formYear);
+    if(_qNps!==null){ _effectiveNps=npsToScore(_qNps); _qCarryFwd=true; }
+    else { _effectiveNps=0; }
+  }
+  const s=calcScore({nps:_effectiveNps,sent:sent,rev:rev,sla:sla,p12:p12,p12base:p12base,faults:faults,csipQ:csipQ});
+  // -3pt health penalty only if no NPS response anywhere in the quarter
+  var _adjHealth=(_npsBlank&&!_qCarryFwd)?Math.max(0,Math.round((s.health-3)*10)/10):s.health;
   const cl=hClass(_adjHealth);
+  // Show/hide the quarter carry-forward note
+  var _qNoteEl=document.getElementById('npsQNote_'+id);
+  if(_qNoteEl) _qNoteEl.style.display=_qCarryFwd?'block':'none';
   document.getElementById("svoc_"+id).textContent=s.voc.toFixed(1);
   document.getElementById("sops_"+id).textContent=s.ops.toFixed(1);
   document.getElementById("shealth_"+id).textContent=_adjHealth.toFixed(1);
@@ -4855,6 +4885,34 @@ function buildNPSLookup(){
 }
 function getNPSConsecutiveNonResponse(smName, custName){
   return _npsLookup[(smName||'').trim()+'|||'+(custName||'').trim()]||0;
+}
+
+// Returns the most recent NPS raw value for a customer within the same calendar quarter,
+// looking back across all submissions. Returns null if none found.
+// Quarters: Q1 Jan-Mar, Q2 Apr-Jun, Q3 Jul-Sep, Q4 Oct-Dec
+var _MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function getQuarterNPS(smName, custName, month, year){
+  var mIdx = _MONTHS.indexOf(month); if(mIdx<0) return null;
+  var qStart = Math.floor(mIdx/3)*3; // 0=Jan, 3=Apr, 6=Jul, 9=Oct
+  var qEnd   = qStart+2;
+  var yr = +year;
+  // Collect all submissions by this SM in the same quarter/year that have an NPS for this customer
+  var matches = [];
+  submissions.forEach(function(s){
+    if((s.smName||'').trim() !== (smName||'').trim()) return;
+    if(+s.year !== yr) return;
+    var sIdx = _MONTHS.indexOf(s.month||'');
+    if(sIdx < qStart || sIdx > qEnd) return;
+    if(sIdx >= mIdx) return; // only look at earlier months in the quarter
+    var cust = (s.customers||[]).find(function(c){ return (c.name||'').trim()===(custName||'').trim(); });
+    if(!cust) return;
+    if(cust.npsRaw===null||cust.npsRaw===undefined||cust.npsRaw==='') return;
+    matches.push({ord:sIdx, npsRaw:cust.npsRaw});
+  });
+  if(!matches.length) return null;
+  // Return the most recent (highest ord) match
+  matches.sort(function(a,b){return b.ord-a.ord;});
+  return matches[0].npsRaw;
 }
 
 
