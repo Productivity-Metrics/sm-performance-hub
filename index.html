@@ -3998,7 +3998,7 @@ function saveProgress(){
       cf4:document.getElementById('cf4')?.value||'0',
       cf5:(document.getElementById('cf5')||{value:'0'}).value||'0',
       siteVisits:document.getElementById('siteVisits')?.value||'',
-      smUtil:document.getElementById('smUtil')?.value||'',
+      utilisation:document.getElementById('smUtil')?.value||'',
       totalSTS:document.getElementById('totalSTS')?.value||'0',
       totalRecov:document.getElementById('totalRecov')?.value||'0',
       totalAgedDebt:document.getElementById('totalAgedDebt')?.value||'0',
@@ -4198,7 +4198,7 @@ function editSubmission(smName){
     setVal('smSL',         sub.serviceLead||'');
     setVal('repMonth',     sub.month||'');
     setVal('repYear',      sub.year||'');
-    setVal('smUtil',       sub.utilisation||'');
+    setVal('smUtil',       sub.utilisation||sub.smUtil||'');
     setVal('directedAccts', sub.directedAccts||'');
     setVal('govAccts',     sub.govAccts||'');
     setVal('maintAccts',   sub.maintAccts||'');
