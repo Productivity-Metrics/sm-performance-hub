@@ -794,7 +794,6 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
                 <th style="padding:10px 8px;text-align:center;white-space:nowrap">P1/P2 Incidents<br><span style="font-weight:400;color:#9CB0D0">&le;2</span></th>
                 <th style="padding:10px 8px;text-align:center;white-space:nowrap">Open Faults<br><span style="font-weight:400;color:#9CB0D0">0</span></th>
                 <th style="padding:10px 8px;text-align:center;white-space:nowrap">CSIP %<br><span style="font-weight:400;color:#9CB0D0">&ge;80% (20/25)</span></th>
-                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Report</th>
               </tr>
             </thead>
           <tbody id="custBody"></tbody>
@@ -1736,7 +1735,6 @@ table.dash-table tr:hover td{background:#F5F8FF;cursor:pointer}
                 <th style="padding:10px 8px;text-align:center;white-space:nowrap">P1/P2 Incidents<br><span style="font-weight:400;color:#9CB0D0">&le;2</span></th>
                 <th style="padding:10px 8px;text-align:center;white-space:nowrap">Open Faults<br><span style="font-weight:400;color:#9CB0D0">0</span></th>
                 <th style="padding:10px 8px;text-align:center;white-space:nowrap">CSIP %<br><span style="font-weight:400;color:#9CB0D0">&ge;80% (20/25)</span></th>
-                <th style="padding:10px 8px;text-align:center;white-space:nowrap">Report</th>
               </tr>
             </thead>
           <tbody id="custBody"></tbody>
@@ -2894,7 +2892,11 @@ function renderCustomers(){
     var vo=computeVocOps(c);
     // Show raw metric values — NPS score, sentiment (1-10), reviews count, SLA%, p12 count, faults count, CSIP%
     rows.push('<tr style="border-bottom:.5px solid #E2E4E9;cursor:pointer" data-brow="'+rid+'">'
-      +'<td class="tl" style="padding:6px 8px;font-size:12px;font-weight:500;min-width:160px;position:sticky;left:0;background:#fff">'+c.name+'</td>'
+      +'<td class="tl" style="padding:6px 8px;font-size:12px;font-weight:500;min-width:160px;position:sticky;left:0;background:#fff">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;gap:6px">'
+      +'<span>'+c.name+'</span>'
+      +'<button onclick="event.stopPropagation();exportCustomerReport(\''+c.name.replace(/\'/g,"\\'")+"','"+c.sm.replace(/\'/g,"\\'")+'\''+')" title="Export customer report" style="flex-shrink:0;background:#1A2B4A;color:#fff;border:none;border-radius:5px;padding:3px 7px;font-size:10px;cursor:pointer;white-space:nowrap;line-height:1.4">&#128196;</button>'
+      +'</div></td>'
       +'<td style="text-align:center;padding:8px 6px;white-space:nowrap;min-width:130px">'+hBadge(c.health)+'</td>'
       +'<td style="padding:8px 6px;font-size:12px">'+c.sm+'</td>'
       +'<td style="padding:8px 6px;font-size:11px;text-align:center;color:#6B7280">'+(c.vertical||'Ent')+'</td>'
@@ -2909,7 +2911,6 @@ function renderCustomers(){
       +cell(c.p12||0, 2, 'lte', null)
       +cell(c.faults||0, 0, 'lte', null)
       +cell(c.csip||0, 80, 'gte', function(v){return v+'%';})
-      +'<td style="padding:6px 5px;text-align:center"><button onclick="event.stopPropagation();exportCustomerReport(\''+c.name.replace(/\'/g,"\\'")+"','"+c.sm.replace(/\'/g,"\\'")+'\''+')" title="Export customer report" style="background:#1A2B4A;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;white-space:nowrap">&#128196; Export</button></td>'
       +'</tr>');
     // Expand row shows the score contribution breakdown for context
     if(vo.bd || c.nps){
