@@ -51,8 +51,8 @@
       "retention": 0.83,
       "escalations": 4,
       "escCategories": [
-        "Incident Management",
-        "Incident Management",
+        "Billing",
+        "Billing",
         "Change Management",
         "Delivery"
       ],
@@ -139,23 +139,23 @@
       "escalations": 2,
       "escCategories": [
         "Delivery",
-        "Other: SD WAN - Future Design Proposal for Contract Renewal discussions - Resource Secured - Contract renewal due in 2027"
+        "Other: SD-WAN - Future Design Proposal for Contract resign discussions. Resource secured - Contract resign due in 2027"
       ],
       "siteVisits": 0,
       "leads": 0,
       "nps": null,
       "npsRaw": null,
-      "sentiment": 8,
+      "sentiment": 7,
       "serviceReviews": 1,
-      "sla": 83.34,
+      "sla": 100,
       "p12Incidents": 1,
       "p12Baseline": 15,
       "openFaults": 0,
       "scoreBreakdown": {
         "nps": 0,
-        "sent": 28,
+        "sent": 24.5,
         "rev": 35,
-        "sla": 33.3,
+        "sla": 40,
         "p12": 18,
         "faults": 15,
         "csipQ": 20,
@@ -169,9 +169,9 @@
       "sts": 0,
       "recovered": 0,
       "agedDebt": 1726,
-      "vocScore": 63,
-      "opsScore": 86.3,
-      "healthScore": 73.5,
+      "vocScore": 59.5,
+      "opsScore": 93,
+      "healthScore": 74.6,
       "status": "Needs attention"
     },
     {
@@ -243,8 +243,8 @@
         "p12baseline": 0,
         "sentimentCapped": false
       },
-      "csipActions": 0,
-      "csipPct": 100,
+      "csipActions": 1,
+      "csipPct": 80,
       "csipQuality": 20,
       "sts": 0,
       "recovered": 0,
@@ -272,7 +272,7 @@
       "serviceReviews": 2,
       "sla": 78,
       "p12Incidents": 0,
-      "p12Baseline": 15,
+      "p12Baseline": 20,
       "openFaults": 2,
       "scoreBreakdown": {
         "nps": 0,
@@ -298,5 +298,5 @@
       "status": "Needs attention"
     }
   ],
-  "submittedAt": "2026-10-07T16:33:01.310Z"
+  "submittedAt": "2026-10-08T11:30:56.527Z"
 }
